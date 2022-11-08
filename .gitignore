@@ -6,3 +6,6 @@
 # Script outputs
 ulp_output.txt
 dxfimp.scr
+
+# Silabs IDE
+**/GNU*/
