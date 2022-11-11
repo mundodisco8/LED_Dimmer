@@ -202,6 +202,14 @@
             <file name="ecode.h" linked="false" uri="studio:/sdk/platform/emdrv/common/inc/ecode.h"/>
           </folder>
         </folder>
+        <folder name="gpiointerrupt">
+          <folder name="src">
+            <file name="gpiointerrupt.c" linked="false" uri="studio:/sdk/platform/emdrv/gpiointerrupt/src/gpiointerrupt.c"/>
+          </folder>
+          <folder name="inc">
+            <file name="gpiointerrupt.h" linked="false" uri="studio:/sdk/platform/emdrv/gpiointerrupt/inc/gpiointerrupt.h"/>
+          </folder>
+        </folder>
         <folder name="nvm3">
           <folder name="src">
             <file name="nvm3_default_common_linker.c" linked="false" uri="studio:/sdk/platform/emdrv/nvm3/src/nvm3_default_common_linker.c"/>
@@ -257,6 +265,11 @@
           <file name="em_system.h" linked="false" uri="studio:/sdk/platform/emlib/inc/em_system.h"/>
           <file name="em_timer.h" linked="false" uri="studio:/sdk/platform/emlib/inc/em_timer.h"/>
           <file name="em_usart.h" linked="false" uri="studio:/sdk/platform/emlib/inc/em_usart.h"/>
+        </folder>
+        <folder name="init">
+          <folder name="gpio_simple">
+            <file name="sl_emlib_gpio_simple_init.h" linked="false" uri="studio:/sdk/platform/emlib/init/gpio_simple/sl_emlib_gpio_simple_init.h"/>
+          </folder>
         </folder>
       </folder>
       <folder name="radio">
@@ -708,6 +721,8 @@
   <includePath uri="studio:/project/gecko_sdk_4.1.3/platform/service/device_init/inc"/>
   <includePath uri="studio:/project/gecko_sdk_4.1.3/platform/emdrv/common/inc"/>
   <includePath uri="studio:/project/gecko_sdk_4.1.3/platform/emlib/inc"/>
+  <includePath uri="studio:/project/gecko_sdk_4.1.3/platform/emlib/init/gpio_simple"/>
+  <includePath uri="studio:/project/gecko_sdk_4.1.3/platform/emdrv/gpiointerrupt/inc"/>
   <includePath uri="studio:/project/gecko_sdk_4.1.3/platform/service/hfxo_manager/inc"/>
   <includePath uri="studio:/project/gecko_sdk_4.1.3/app/bluetooth/common/in_place_ota_dfu"/>
   <includePath uri="studio:/project/gecko_sdk_4.1.3/platform/service/iostream/inc"/>

@@ -13,6 +13,8 @@
 #include "sl_sleeptimer.h"
 #include "app_log.h"
 #include "sl_bluetooth.h"
+#include "sl_emlib_gpio_simple_init.h"
+#include "gpiointerrupt.h"
 #include "sl_iostream_stdlib_config.h"
 #include "sl_iostream_init_usart_instances.h"
 #include "sl_mbedtls.h"
@@ -40,6 +42,8 @@ void sl_platform_init(void)
 
 void sl_driver_init(void)
 {
+  sl_emlib_gpio_simple_init();
+  GPIOINT_Init();
 }
 
 void sl_service_init(void)

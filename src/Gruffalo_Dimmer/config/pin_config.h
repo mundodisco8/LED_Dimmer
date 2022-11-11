@@ -59,14 +59,6 @@
 // [GPIO]$
 
 // $[TIMER0]
-// TIMER0 CC0 on PA01
-#define TIMER0_CC0_PORT                          gpioPortA
-#define TIMER0_CC0_PIN                           1
-
-// TIMER0 CC1 on PA02
-#define TIMER0_CC1_PORT                          gpioPortA
-#define TIMER0_CC1_PIN                           2
-
 // [TIMER0]$
 
 // $[TIMER1]
@@ -120,11 +112,14 @@
 // [MODEM]$
 
 // $[CUSTOM_PIN_NAME]
-#define quad0_0_PORT                             gpioPortA
-#define quad0_0_PIN                              1
+#define btn1_PORT                                gpioPortC
+#define btn1_PIN                                 5
 
-#define quad0_1_PORT                             gpioPortA
-#define quad0_1_PIN                              2
+#define quad1_1_PORT                             gpioPortC
+#define quad1_1_PIN                              6
+
+#define quad1_0_PORT                             gpioPortC
+#define quad1_0_PIN                              7
 
 // [CUSTOM_PIN_NAME]$
 

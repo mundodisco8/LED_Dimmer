@@ -9,3 +9,6 @@ dxfimp.scr
 
 # Silabs IDE
 **/GNU*/
+
+# VS Code
+**/.vscode/

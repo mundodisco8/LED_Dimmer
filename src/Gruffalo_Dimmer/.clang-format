@@ -1,0 +1,84 @@
+﻿---
+# Brompton's Clang Format file v0.0.1
+#
+# Changelog:
+# v0.0.1 (25/9/2020):
+# - First version of this file
+
+
+# Base it on Google's Standard, with 4 spaces as indentation
+BasedOnStyle: Google
+IndentWidth: '4'
+Standard: Cpp11
+UseTab: Never
+
+# Settings for C/C++
+Language: Cpp
+# 90 chars per line, reflow comments so they stay within limits
+ColumnLimit: '120'
+ReflowComments: 'true'
+
+# Short includes alphabetically. Will respect "include groups"
+SortIncludes: 'true'
+IncludeBlocks: Preserve
+
+# These control when to align text under certain conditions
+# Align arguments after an open bracket ( '(', '[', '{'), on statements that are too long for a single line
+AlignAfterOpenBracket: Align
+# Align adjacent macros and variables, for enhanced readability.
+AlignConsecutiveMacros: 'true'
+AlignConsecutiveAssignments: 'true'
+# Align the '\' on scaped newlines, because it looks neater
+AlignEscapedNewlines: Left
+
+# These keep statements that could go on a single line to be collapsed. They take more space, but are more readable
+# ... Code Blocks { ... }
+AllowShortBlocksOnASingleLine: 'false'
+# ... Switch cases
+AllowShortCaseLabelsOnASingleLine: 'false'
+# ... short functions, like getters and setters
+AllowShortFunctionsOnASingleLine: Empty
+# ... single line ifs
+AllowShortIfStatementsOnASingleLine: Never
+# ... single line loops
+AllowShortLoopsOnASingleLine: 'false'
+
+# Provides a more compact view when a funtion parameters or arguments take more than one line
+BinPackArguments: 'true'
+BinPackParameters: 'true'
+
+
+# Indent cases on a switch, instead of leaving them at the same level than the switch statement.
+IndentCaseLabels: 'true'
+# Don't indent preprocessor the same way than code, as it indents #includes in headers and looks odd.
+IndentPPDirectives: None
+IndentWrappedFunctionNames: 'true'
+NamespaceIndentation: None
+
+# Put the pointer operator next to the type, instead of next to the variable name:
+# DerivePointerAlignment has to be set to false, otherwise clang might see lots of right-aligned
+# pointers and thing that that is what you want.
+DerivePointerAlignment: false
+PointerAlignment: Left
+
+# All about those extra spaces...
+# ... remove spaces after an open-curly brace and before a close-curly brace
+Cpp11BracedListStyle: 'true'
+# ... space before a list, when used to initialise an object
+SpaceBeforeCpp11BracedList: 'true'
+# ... logical not (!) next to expression
+SpaceAfterLogicalNot: 'false'
+# ... space between the '=' on assignments
+SpaceBeforeAssignmentOperators: 'true'
+# ... space after and before the parentheses in a C-style cast.
+SpacesInCStyleCastParentheses: 'false'
+# ... spaces inside () and []
+SpacesInParentheses: 'false'
+SpacesInSquareBrackets: 'false'
+# ... spaces before a ( or a [, but only on control statements.
+SpaceBeforeParens: 'ControlStatements'
+
+
+# indent for C++ access modifier
+AccessModifierOffset: -4
+...

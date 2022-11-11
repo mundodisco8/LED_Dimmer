@@ -30,13 +30,16 @@ component:
 - {id: in_place_ota_dfu}
 - {id: bluetooth_feature_sm}
 - {id: BGM220PC22WGA}
-- {id: bluetooth_feature_legacy_advertiser}
 - {id: mpu}
+- {id: bluetooth_feature_legacy_advertiser}
 - {id: gatt_configuration}
 - {id: bluetooth_stack}
+- {id: gpiointerrupt}
 - {id: bluetooth_feature_gatt}
 - {id: bluetooth_feature_legacy_scanner}
 - {id: app_log}
+- instance: [btn1_Pin, quad1_0_Pin, quad1_1_Pin]
+  id: emlib_gpio_simple_init
 - {id: bluetooth_feature_connection}
 - instance: [debugSerial]
   id: iostream_usart

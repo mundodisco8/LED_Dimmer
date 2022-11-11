@@ -12,6 +12,9 @@
     <file name="sl_bluetooth_config.h" generated="true" linked="false"/>
     <file name="sl_hfxo_manager_config.h" generated="true" linked="false"/>
     <file name="app_log_config.h" generated="true" linked="false"/>
+    <file name="sl_emlib_gpio_init_btn1_Pin_config.h" generated="true" linked="false"/>
+    <file name="sl_emlib_gpio_init_quad1_0_Pin_config.h" generated="true" linked="false"/>
+    <file name="sl_emlib_gpio_init_quad1_1_Pin_config.h" generated="true" linked="false"/>
     <file name="sl_bluetooth_connection_config.h" generated="true" linked="false"/>
     <file name="app_assert_config.h" generated="true" linked="false"/>
     <file name="sl_sleeptimer_config.h" generated="true" linked="false"/>
