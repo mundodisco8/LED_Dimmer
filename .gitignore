@@ -10,9 +10,5 @@ dxfimp.scr
 # Silabs IDE
 **/GNU*/
 
-# VS Code
-**/.vscode/
-*.code-workspace
-
 # Build folder for the tests
 **/test/build/
