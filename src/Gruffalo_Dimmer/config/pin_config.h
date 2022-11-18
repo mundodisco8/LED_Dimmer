@@ -112,13 +112,13 @@
 // [MODEM]$
 
 // $[CUSTOM_PIN_NAME]
-#define btn1_PORT                                gpioPortC
+#define btn1_PORT                                portC
 #define btn1_PIN                                 5
 
-#define quad1_1_PORT                             gpioPortC
+#define quad1_1_PORT                             portC
 #define quad1_1_PIN                              6
 
-#define quad1_0_PORT                             gpioPortC
+#define quad1_0_PORT                             portC
 #define quad1_0_PIN                              7
 
 // [CUSTOM_PIN_NAME]$

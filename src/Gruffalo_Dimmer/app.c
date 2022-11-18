@@ -39,6 +39,8 @@
  *altered from any source distribution.
  *
  ******************************************************************************/
+#include "stdbool.h"
+
 #include "em_common.h"
 #include "em_gpio.h"
 
@@ -51,7 +53,11 @@
 #include "gatt_db.h"
 #include "pin_config.h"
 
+#include "buttonActions.h"
 #include "buttons.h"
+#include "interrupt_HW.h"
+
+#include "gpiointerrupt.h"
 
 // The advertising set handle allocated from Bluetooth stack.
 static uint8_t advertising_set_handle = 0xff;
@@ -65,7 +71,10 @@ SL_WEAK void app_init(void) {
     // This is called once during start-up.                                    //
     /////////////////////////////////////////////////////////////////////////////
     app_log_error("Booted up!\r\n");
-    configureGPIO();
+    initialiseInterrupts();
+    initButton(getButton1(), btn1_PORT, btn1_PIN, button1Pressed, button1Released);
+    configureButtonInterrupts(getButton1(), gpioCallbackButton1);
+    configureQuadratureInterrupts(gpioCallbackQuad1);
 }
 
 /******************************************************************************
@@ -78,21 +87,21 @@ SL_WEAK void app_process_action(void) {
     // Do not call blocking functions from here!                               //
     /////////////////////////////////////////////////////////////////////////////
 
-    static uint32_t oldButton = 0;
     static uint32_t oldRotary = 4000;
-
-    uint32_t button = getButton();
-    if (button != oldButton) {
-        app_log_info("Button %d\r\n", button);
-        oldButton = button;
-    }
-
-    uint32_t rotary = getRotary();
+    uint32_t rotary           = getRotary();
     if (rotary != oldRotary) {
         app_log_warning("Rotary %d\r\n", rotary);
         oldRotary = rotary;
     }
 
+    static uint32_t oldButton = 0;
+    uint32_t button           = getButton();
+    if (button != oldButton) {
+        app_log_info("Button %d\r\n", button);
+        oldButton = button;
+    }
+
+    //    app_log_debug("%d\r\n", GPIO_PinInGet(btn1_PORT, btn1_PIN));
 }
 
 /******************************************************************************
