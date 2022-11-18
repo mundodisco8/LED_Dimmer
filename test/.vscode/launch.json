@@ -4,11 +4,12 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+
         {
-            "name": "(gdb) Launch",
+            "name": "Ceedling Stepping",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/test/out/test_debounce.out",
+            "program": "${workspaceFolder}/build/test/out/${fileBasenameNoExtension}.out",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
@@ -28,7 +29,28 @@
                     "ignoreFailures": true
                 }
             ]
+        },
+        {
+            // Use the following for the Ceedling Explorer Debug Configuration
+            "name": "ceedling_gdb",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/test/out/${command:ceedlingExplorer.debugTestExecutable}",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": true,
+            "MIMode": "gdb",
+            // May omit the following if gdb is on the PATH
+            "miDebuggerPath": "",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
         }
-
     ]
 }

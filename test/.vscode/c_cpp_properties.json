@@ -7,14 +7,17 @@
         {
             "name": "GCC",
             "includePath": [
-                "${workspaceFolder}/**",
+                "${workspaceFolder:Gruffalo_Dimmer}/**",
                 "${workspaceFolder:Gruffalo_Dimmer}/inc",
                 "${UnityPath}",
-                "${workspaceFolder}/build/test/mocks"
+                "${workspaceFolder:Gruffalo_Dimmer}/build/test/mocks",
+                "${workspaceFolder:Gruffalo_Dimmer}/config",
+                "${workspaceFolder:test}/build/test/mocks"
             ],
             "browse": {
                 "path": [
-                    "${workspaceFolder:Gruffalo_Dimmer}/**"
+                    "${workspaceFolder:Gruffalo_Dimmer}/**",
+                    "${workspaceFolder:test}/**"
                 ]
             },
             "defines": [
