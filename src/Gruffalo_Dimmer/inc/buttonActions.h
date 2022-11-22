@@ -3,12 +3,13 @@
 
 #include "inttypes.h"
 
-void gpioCallbackButton1NoCtx(uint8_t intNo);
 void gpioCallbackButton1(uint8_t intNo, void* ctx);
-void gpioCallbackQuad1(uint8_t intNo);
+void gpioCallbackQuad1(uint8_t intNo, void* ctx);
 
 void button1Pressed(void);
 void button1Released(void);
+void quad1ClockWise(void);
+void quad1CounterClockWise(void);
 
 uint32_t getRotary(void);
 uint32_t getButton(void);

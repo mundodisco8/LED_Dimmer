@@ -55,12 +55,17 @@
 
 #include "buttonActions.h"
 #include "buttons.h"
-#include "interrupt_HW.h"
-
-#include "gpiointerrupt.h"
 
 // The advertising set handle allocated from Bluetooth stack.
 static uint8_t advertising_set_handle = 0xff;
+
+// Our buttons
+button_t button0 = {0};
+button_t button1 = {0};
+
+// And our quad encoders
+quad_encoder_t quad0 = {0};
+quad_encoder_t quad1 = {0};
 
 /******************************************************************************
  * Application Init.
@@ -71,10 +76,12 @@ SL_WEAK void app_init(void) {
     // This is called once during start-up.                                    //
     /////////////////////////////////////////////////////////////////////////////
     app_log_error("Booted up!\r\n");
-    initialiseInterrupts();
-    initButton(getButton1(), btn1_PORT, btn1_PIN, button1Pressed, button1Released);
-    configureButtonInterrupts(getButton1(), gpioCallbackButton1);
-    configureQuadratureInterrupts(gpioCallbackQuad1);
+    uint32_t button1GPIOIntNo = 0;
+    uint32_t quad1GPIOIntNo = 0;
+    initButton(&button1, btn1_PORT, btn1_PIN, button1Pressed, button1Released);
+    initQuadEncoder(&quad1, quad1_0_PORT, quad1_0_PIN, quad1_1_PORT, quad1_1_PIN, quad1ClockWise, quad1CounterClockWise);
+    configureButtonInterrupts(&button1, gpioCallbackButton1, &button1GPIOIntNo);
+    configureQuadratureInterrupts(&quad1, gpioCallbackQuad1, &quad1GPIOIntNo);
 }
 
 /******************************************************************************

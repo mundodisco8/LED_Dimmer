@@ -30,12 +30,15 @@ void gpioCallbackButton1(uint8_t intNo, void* ctx) {
     setSamplingTimerBtn1((button_t*)ctx);
 }
 
-void gpioCallbackQuad1(uint8_t intNo) {
+void gpioCallbackQuad1(uint8_t intNo, void* ctx) {
     (void)intNo;
-    if (readPin(quad1_1_PORT, quad1_1_PIN) == 1) {
-        rotaryCount++;
+    // Trivial, but makes it easier to read
+    quad_encoder_t* quadPtr = (quad_encoder_t*) ctx;
+    // The pin 0 has triggered a falling interrupt, read pin 1 to determine if we are CW or CCW
+    if (readPin(quadPtr->pin1Port, quadPtr->pin1No) == 1) {
+        quadPtr->clockWiseAction();
     } else {
-        rotaryCount--;
+        quadPtr->counterClockWiseAction();
     }
 }
 
@@ -45,6 +48,14 @@ void button1Pressed(void) {
 
 void button1Released(void) {
     app_log_info("Btn1 Released\r\n");
+}
+
+void quad1ClockWise(void) {
+    rotaryCount++;
+}
+
+void quad1CounterClockWise(void) {
+    rotaryCount--;
 }
 
 uint32_t getRotary(void) {

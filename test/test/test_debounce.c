@@ -20,6 +20,20 @@ void setUp(void) {
 void tearDown(void) {
 }
 
+// Test getters to get 100% coverage
+extern const uint32_t DEBOUNCE_TIME_MS;
+extern const uint32_t DEBOUNCE_SAMPLING_PERIOD_MS;
+
+void test_getDebounceTime(void) {
+    uint32_t debounce = getDebounceTime();
+    TEST_ASSERT_EQUAL_UINT32(DEBOUNCE_TIME_MS, debounce);
+}
+
+void test_getSamplingTime(void) {
+    uint32_t sampling = getDebounceSamplingPeriod();
+    TEST_ASSERT_EQUAL_UINT32(DEBOUNCE_SAMPLING_PERIOD_MS, sampling);
+}
+
 // List of Tests for samplingTimerCallback
 // * Integrator increases
 // * Integrator decreases

@@ -53,7 +53,7 @@ void sleeptimerDebounceCallback(sl_sleeptimer_timer_handle_t *handle, void *data
     // for the current state
     (void) handle;
     app_log_warning("Debouncer Callback\r\n");
-    stopTimers((button_t*)data);
+    stopButtonTimers((button_t*)data);
 }
 
 // Action to run when a sampling timer has timed out
