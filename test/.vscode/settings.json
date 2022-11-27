@@ -1,3 +1,7 @@
 {
-    "ceedlingExplorer.debugConfiguration": "ceedling_gdb"
+    "ceedlingExplorer.debugConfiguration": "ceedling_gdb",
+    "search.exclude": {
+        "build": true,
+        "src": true,
+    }
 }

@@ -1,5 +1,5 @@
-#ifndef TIMERS_HW_H
-#define TIMERS_HW_H
+#ifndef _SLEEPTIMER_HW_H
+#define _SLEEPTIMER_HW_H
 
 #include "inttypes.h"
 
@@ -17,4 +17,4 @@ uint32_t setSamplingTimerBtn1(button_t* btnPtr);
 // Stops the timers associated to a button
 uint32_t stopButtonTimers(button_t* btnPtr);
 
-#endif // TIMERS_HW_H
+#endif // _SLEEPTIMER_HW_H

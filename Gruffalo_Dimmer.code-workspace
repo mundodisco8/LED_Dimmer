@@ -7,5 +7,9 @@
 			"path": "test"
 		}
 	],
-    "settings": {}
+    "settings": {
+            "search.exclude": {
+                "**/.vscode": true
+            }
+    }
 }

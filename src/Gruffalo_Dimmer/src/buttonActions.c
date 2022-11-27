@@ -7,12 +7,13 @@
 #include "buttonActions.h"
 
 // Other SiLabs headers
-#include "pin_config.h"
 #include "app_log.h"
 
 // Project Libraries
 #include "buttons.h"
-#include "timers_HW.h"
+#include "sleeptimer_HW.h"
+#include "PWMControl.h"
+#include "gpio_HW.h"
 
 // TODO: Quick and dirty test to see that everything is wired
 // A button press will increase the counter of button presses and a button release will print a message
@@ -42,20 +43,35 @@ void gpioCallbackQuad1(uint8_t intNo, void* ctx) {
     }
 }
 
+static uint32_t currPercent = 0;
+
 void button1Pressed(void) {
-    buttonCount++;
+    currPercent +=10;
+    if (currPercent > 100) {
+        currPercent = 0;
+    }
+    app_log_info("Set PWM to %d%\r\n", currPercent);
+    setDutyCycle(CC_CHANNEL_0, currPercent);
 }
 
 void button1Released(void) {
-    app_log_info("Btn1 Released\r\n");
+    // app_log_info("Btn1 Released\r\n");
 }
 
 void quad1ClockWise(void) {
-    rotaryCount++;
+    if (currPercent < 100) {
+        currPercent++;
+        app_log_debug("%d\r\n", currPercent);
+        setDutyCycle(CC_CHANNEL_0, currPercent);
+    }
 }
 
 void quad1CounterClockWise(void) {
-    rotaryCount--;
+    if (currPercent > 0) {
+        currPercent--;
+        app_log_debug("%d\r\n", currPercent);
+        setDutyCycle(CC_CHANNEL_0, currPercent);
+    }
 }
 
 uint32_t getRotary(void) {

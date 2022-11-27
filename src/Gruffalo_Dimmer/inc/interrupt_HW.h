@@ -9,10 +9,7 @@
 
 #include "inttypes.h"
 
-//typedef for interrupt callback functions
-typedef void (*callbackPtr_t)(uint8_t intNo);
-//typedef for interrupt callback functions with context
-typedef void (*callbackCtxPtr_t)(uint8_t intNo, void *ctx);
+#include "interrupt_HW_types.h"
 
 // Initialises the GPIO Odd and Even interrupts.
 void initialiseInterrupts(void);

@@ -5,7 +5,7 @@
 #include "inttypes.h"
 #include "mock_gpio_HW.h"
 #include "mock_interrupt_HW.h"
-#include "mock_timers_HW.h"
+#include "mock_sleeptimer_HW.h"
 #include "pin_config.h"
 
 extern button_t button0;
@@ -55,9 +55,9 @@ void fakeCCWAction(void) {}
 
 void test_initQuadratureDoesItsJob(void) {
     uint32_t pin0No = 1;
-    pin_port_t port0 = portB;
+    pinPort_t port0 = portB;
     uint32_t pin1No = 2;
-    pin_port_t port1 = portC;
+    pinPort_t port1 = portC;
     quad_encoder_t testQuad = {0};
     uint32_t retVal = initQuadEncoder(&testQuad, port0, pin0No, port1, pin1No, fakeCWAction, fakeCCWAction);
     TEST_ASSERT_EQUAL_UINT32(BTN_OK, retVal);

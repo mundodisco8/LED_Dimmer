@@ -30,8 +30,8 @@ component:
 - {id: in_place_ota_dfu}
 - {id: bluetooth_feature_sm}
 - {id: BGM220PC22WGA}
-- {id: mpu}
 - {id: bluetooth_feature_legacy_advertiser}
+- {id: mpu}
 - {id: gatt_configuration}
 - {id: bluetooth_stack}
 - {id: gpiointerrupt}

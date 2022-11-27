@@ -16,12 +16,11 @@
 #include "debounce.h"
 
 #include "stddef.h"
-
 #include "inttypes.h"
 
-#include "timers_HW.h"
 #include "gpio_HW.h"
 
+#include "sleeptimer_HW.h"
 /******************************************************************************
 written by Kenneth A. Kuhn
 version 1.00

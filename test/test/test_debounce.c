@@ -3,7 +3,7 @@
 #include "debounce.h"
 #include "mock_buttons.h"
 #include "mock_gpio_HW.h"
-#include "mock_timers_HW.h"
+#include "mock_sleeptimer_HW.h"
 
 /*
  * Unit tests for "debounce.h

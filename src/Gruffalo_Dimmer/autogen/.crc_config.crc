@@ -23,6 +23,7 @@ sl_hfxo_manager_config.h=-306968694
 sl_iostream_usart_debugSerial_config.h=-855335646
 sl_memory_config.h=503032768
 sl_power_manager_config.h=-10151242
+sl_pwm_init_pwm0_config.h=-1646401554
 sl_rail_util_pa_config.h=-2122058088
 sl_rail_util_pti_config.h=167094148
 sl_sleeptimer_config.h=-1879962229

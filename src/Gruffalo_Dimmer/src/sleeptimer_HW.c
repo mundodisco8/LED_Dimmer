@@ -1,6 +1,6 @@
 
 ////
-// TIMERS_HW.C
+// sleeptimer_HW
 ////
 
 // Wrapper Library for the sleeptimer component, to provide a seam for unit testing
@@ -14,7 +14,9 @@
 //    'sl_sleeptimer.h` junk under the hood
 // I'll try 3 and see how it goes. It's a bit ugly and not as flexible as I wanted, but this is just a hobby project
 
-#include "timers_HW.h"
+#include "sleeptimer_HW.h"
+
+#include "em_gpio.h"
 
 #include "pin_config.h"
 #include "sl_sleeptimer.h"
@@ -22,6 +24,7 @@
 
 #include "debounce.h"
 
+// TODO: can we include these timers in the button_t object?
 // Handles for the two timers for each of the two buttons we have.
 sl_sleeptimer_timer_handle_t debounceTimerBtn0;
 sl_sleeptimer_timer_handle_t debounceTimerBtn1;
@@ -118,7 +121,7 @@ uint32_t setSamplingTimerBtn1(button_t* btnPtr){
 // Parameters: btnPtr, a pointer to a button_t object whose timers are going to be stopped
 uint32_t stopButtonTimers(button_t* btnPtr){
     uint32_t retVal = SL_STATUS_OK;
-    if ((btnPtr->btnPort = btn1_PORT) && (btnPtr->pinNo == btn1_PIN)) {
+    if ((btnPtr->btnPort = (pinPort_t)btn1_PORT) && (btnPtr->pinNo == btn1_PIN)) {
         if (isTimerRunning(&debounceTimerBtn1)) {
             retVal = sl_sleeptimer_stop_timer(&debounceTimerBtn1);
             if (retVal != SL_STATUS_OK) {
@@ -144,3 +147,7 @@ uint32_t stopButtonTimers(button_t* btnPtr){
     }
     return retVal;
 }
+
+////
+// Hardware Timer
+////
