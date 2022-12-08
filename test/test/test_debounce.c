@@ -1,6 +1,7 @@
+#include "debounce.h"
+
 #include <unity.h>
 
-#include "debounce.h"
 #include "mock_buttons.h"
 #include "mock_gpio_HW.h"
 #include "mock_sleeptimer_HW.h"

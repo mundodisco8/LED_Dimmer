@@ -1,19 +1,18 @@
-#include <string.h>
+#include "buttons.h"
+
 #include <unity.h>
 
-#include "buttons.h"
+#include <string.h>
 #include "inttypes.h"
+
+#include "pin_config.h"
+
 #include "mock_gpio_HW.h"
 #include "mock_interrupt_HW.h"
 #include "mock_sleeptimer_HW.h"
-#include "pin_config.h"
-
-extern button_t button0;
-extern button_t button1;
+#include "mock_app_log.h"
 
 void setUp() {
-    memset(&button0, 0x00, sizeof(button_t));
-    memset(&button1, 0x00, sizeof(button_t));
 }
 
 void tearDown() {
@@ -54,9 +53,9 @@ void fakeCWAction(void) {}
 void fakeCCWAction(void) {}
 
 void test_initQuadratureDoesItsJob(void) {
-    uint32_t pin0No = 1;
+    uint8_t pin0No = 1;
     pinPort_t port0 = portB;
-    uint32_t pin1No = 2;
+    uint8_t pin1No = 2;
     pinPort_t port1 = portC;
     quad_encoder_t testQuad = {0};
     uint32_t retVal = initQuadEncoder(&testQuad, port0, pin0No, port1, pin1No, fakeCWAction, fakeCCWAction);

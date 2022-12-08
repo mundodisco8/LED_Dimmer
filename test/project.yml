@@ -39,6 +39,8 @@
   :support:
     - test/support
   :libraries: []
+  :include:
+     - ../test/**
 
 :defines:
   # in order to add common defines:
@@ -57,9 +59,12 @@
   :mock_prefix: mock_
   :when_no_prototypes: :warn
   :enforce_strict_ordering: TRUE
+  :treat_inlines:
+    :include
   :plugins:
     - :ignore
     - :callback
+    - :ignore_arg
   :treat_as:
     uint8:    HEX8
     uint16:   HEX16
@@ -80,7 +85,7 @@
     :html_medium_threshold: 75
     :html_high_threshold: 90
     :print_summary: true
-    :report_include: "^../src/Gruffalo_Dimmer/src.*"
+    :report_include: "../src/Gruffalo_Dimmer/src/.*"
   :report_generator:
     # Optional plugin files for custom reports or custom history storage (separated by semicolon).
     # :plugins: CustomReports.dll
@@ -99,10 +104,11 @@
     # Exclusion filters take precedence over inclusion filters.
     # Wildcards are allowed, but not regular expressions.
     # :file_filters: "-./vendor/*;-./build/*;-./test/*;-./lib/*;+./src/*"
+    :file_filters: "-gecko;-../src/Gruffalo_Dimmer/gecko_sdk_4.1.3/*"
 
     # The verbosity level of the log messages.
     # Values: Verbose, Info, Warning, Error, Off
-    # :verbosity: debug
+    # :verbosity: Verbose
 
     # Optional tag or build version.
     # :tag: <tag>
@@ -116,7 +122,7 @@
     # :gcov_executable: <gcov_cmd>
 
     # Optionally set the number of threads to use in parallel. Defaults to 1.
-    # :num_parallel_threads: 12
+    :num_parallel_threads: 12
 
     # Optional list of one or more command line arguments to pass to Report Generator.
     # Useful for configuring Risk Hotspots and Other Settings.

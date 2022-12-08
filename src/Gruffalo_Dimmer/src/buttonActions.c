@@ -43,7 +43,7 @@ void gpioCallbackQuad1(uint8_t intNo, void* ctx) {
     }
 }
 
-static uint32_t currPercent = 0;
+static uint8_t currPercent = 0;
 
 void button1Pressed(void) {
     currPercent +=10;

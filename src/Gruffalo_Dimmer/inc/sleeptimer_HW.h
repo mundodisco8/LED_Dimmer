@@ -5,6 +5,16 @@
 
 #include "buttons.h"
 
+// This would be part of a real sleeptimer_HW were we only wrap the sleeptimer functions
+// TODO: test this as a way to export timer handles without sharing
+typedef struct button_timer_handle button_timer_handle_t;
+// Add functions to "create/initialise" a timer
+// Because we are using static allocation, the only way to do it is to have an array of sl_timers and grab them
+// as you need them, and error out if too many are requested?
+// Add function to assign a button_timer to a button / assign a sleeptimer to the button_timer member of the button_t struct?
+
+// This would be part of a new "buttonTimers.h" or something like that.
+
 // Sets the debounce timer for btn 0
 uint32_t setDebounceTimerBnt0(button_t* btnPtr);
 // Sets the debounce timer for btn 1

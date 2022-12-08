@@ -15,7 +15,7 @@ void initialiseInterrupts(void) {
 // Parameters: pinNo: a uint32_t with the interrupt number to associate the callback with
 //             callbackPtr: a pointer to a callback of type callbackPtr_t, to be called when the interrupt triggers
 // Returns: nothing
-void setInterruptCallback(uint32_t pinNo, callbackPtr_t callbackPtr) {
+void setInterruptCallback(uint8_t pinNo, callbackPtr_t callbackPtr) {
     GPIOINT_CallbackRegister(pinNo, callbackPtr);
 }
 
@@ -31,7 +31,7 @@ void setInterruptCallback(uint32_t pinNo, callbackPtr_t callbackPtr) {
 //             ctxPtr: a pointer to the context to be passed to the callback function.
 // Returns: the interrupt number registered, which will be the same to pinNo if it's not registered when this function
 //          is called, or something else if the pinNo interrupt is already registered.
-uint32_t setInterruptCallbackWCtx(uint32_t pinNo, callbackCtxPtr_t cbCtxPtr, void* ctxPtr) {
+uint32_t setInterruptCallbackWCtx(uint8_t pinNo, callbackCtxPtr_t cbCtxPtr, void* ctxPtr) {
     uint32_t retVal = GPIOINT_CallbackRegisterExt(pinNo, cbCtxPtr, ctxPtr);
     if (retVal == INTERRUPT_UNAVAILABLE) {
         app_log_error("Error 0x%04X registering interrupt callback with Ctx\r\n", retVal);

@@ -12,7 +12,8 @@
                 "${UnityPath}",
                 "${workspaceFolder:Gruffalo_Dimmer}/build/test/mocks",
                 "${workspaceFolder:Gruffalo_Dimmer}/config",
-                "${workspaceFolder:test}/build/test/mocks"
+                "${workspaceFolder:test}/build/test/mocks",
+                "${workspaceFolder:test}/test/support"
             ],
             "browse": {
                 "path": [

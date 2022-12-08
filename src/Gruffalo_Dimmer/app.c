@@ -57,6 +57,9 @@
 #include "buttons.h"
 #include "PWMControl.h"
 
+#define DEBUG_EFM_USER
+#include "sl_assert.h"
+
 // The advertising set handle allocated from Bluetooth stack.
 static uint8_t advertising_set_handle = 0xff;
 
@@ -88,8 +91,7 @@ SL_WEAK void app_init(void) {
 
     // Init PWM on TIMER0
     initTimer0HW();
-    initTimer0CCChanel(CC_CHANNEL_0, portC, 3, 250, PWM_ACTIVE_HIGH);
-    runTimer0();
+    initTimer0CCChannel(CC_CHANNEL_0, portC, 3, 250, PWM_ACTIVE_HIGH);
 }
 
 /******************************************************************************
@@ -101,6 +103,19 @@ SL_WEAK void app_process_action(void) {
     // This is called infinitely.                                              //
     // Do not call blocking functions from here!                               //
     /////////////////////////////////////////////////////////////////////////////
+
+    // NOTE: Prints "../app.c:105 :app_process_action: Status: 40 = 0x0028 (?) Assertion failed"
+    // app_assert_status(40);
+    // NOTE: Prints "../app.c:107 :app_process_action: Status: 40 = 0x0028 (?) Assertion failed: Hey 60"
+    // app_assert_status_f(40, "Hey %d\r\n", 60);
+    // NOTE: Prints "../app.c:111 :app_process_action: Assertion 'a == b' failed: 1 is not 2"
+    // uint32_t a = 1;
+    // uint32_t b = 2;
+    // app_assert( a == b, "1 is not 2");
+    // NOTE: Prints "../app.c:115 :app_process_action: Assertion 'a == b' failed"
+    // uint32_t a = 1;
+    // uint32_t b = 2;
+    // app_assert_s(a == b);
 
     static uint32_t oldRotary = 4000;
     uint32_t rotary           = getRotary();

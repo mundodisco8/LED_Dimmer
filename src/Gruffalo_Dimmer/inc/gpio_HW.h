@@ -9,12 +9,12 @@
 void enableGPIOClock(void);
 
 // Read the state of an input pin
-uint32_t readPin(pinPort_t port, uint32_t pinNo);
+uint32_t readPin(pinPort_t port, uint8_t pinNo);
 
 // Set the pin mode
-void setPinMode(pinPort_t port, uint32_t pin, pinMode_t mode, bool dout);
+void setPinMode(pinPort_t port, uint8_t pin, pinMode_t mode, bool dout);
 
-void configurePinInterrupt(pinPort_t port, uint32_t pinNo, uint32_t intNo, bool risingEdge, bool fallingEdge,
+void configurePinInterrupt(pinPort_t port, uint8_t pinNo, uint32_t intNo, bool risingEdge, bool fallingEdge,
                            bool enable);
 void enablePinInterrupts(uint32_t pinsToEnable);
 

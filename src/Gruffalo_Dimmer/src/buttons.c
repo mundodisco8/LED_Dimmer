@@ -31,7 +31,7 @@
 //             pressedAction: a buttonCallback_t pointer to the callback to call when the button is pressed
 //             releasedAction: a buttonCallback_t pointer to the callback to call when the button is released
 // Returns: true on sucess, false if the button_t pointer passed is null
-btnError_t initButton(button_t* btnPtr, pinPort_t pinPort, uint32_t pinNo, actionCallback_t pressedAction, actionCallback_t releasedAction) {
+btnError_t initButton(button_t* btnPtr, pinPort_t pinPort, uint8_t pinNo, actionCallback_t pressedAction, actionCallback_t releasedAction) {
     if (btnPtr == NULL) {
         return BTN_NULL_POINTER_PASSED;
     }
@@ -52,7 +52,7 @@ btnError_t initButton(button_t* btnPtr, pinPort_t pinPort, uint32_t pinNo, actio
 //             CWAction: a buttonCallback_t pointer to the callback to call when the button is pressed
 //             CCWAction: a buttonCallback_t pointer to the callback to call when the button is released
 // Returns: true on sucess, false if the button_t pointer passed is null
-btnError_t initQuadEncoder(quad_encoder_t* quadPtr, pinPort_t pin0Port, uint32_t pin0No, pinPort_t pin1Port, uint32_t pin1No, actionCallback_t CWAction, actionCallback_t CCWAction){
+btnError_t initQuadEncoder(quad_encoder_t* quadPtr, pinPort_t pin0Port, uint8_t pin0No, pinPort_t pin1Port, uint8_t pin1No, actionCallback_t CWAction, actionCallback_t CCWAction){
     if (quadPtr == NULL) {
         // Not much we can do it the quad encoder pointer is NULL
         return BTN_NULL_POINTER_PASSED;

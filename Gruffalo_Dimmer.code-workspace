@@ -10,6 +10,10 @@
     "settings": {
             "search.exclude": {
                 "**/.vscode": true
+            },
+            "files.associations": {
+                "*.h": "c",
+                "typeinfo": "cpp"
             }
     }
 }

@@ -24,6 +24,10 @@
 
 #include "debounce.h"
 
+struct button_timer_handle {
+  sl_sleeptimer_timer_handle_t* joelTimerPtr;
+};
+
 // TODO: can we include these timers in the button_t object?
 // Handles for the two timers for each of the two buttons we have.
 sl_sleeptimer_timer_handle_t debounceTimerBtn0;
@@ -35,7 +39,7 @@ sl_sleeptimer_timer_handle_t samplingTimerBtn1;
 // Tells if a timer is currently running or not
 // Parameters: handlePtr: pointer to the handle for the timer to check.
 // Returns: true if the timer is running, and false if it isn't or there was a problem checking it
-bool isTimerRunning(sl_sleeptimer_timer_handle_t* handlePtr) {
+static bool isTimerRunning(sl_sleeptimer_timer_handle_t* handlePtr) {
     bool timerRunning = false;
     uint32_t retVal = sl_sleeptimer_is_timer_running(handlePtr, &timerRunning);
     if (retVal != SL_STATUS_OK) {
@@ -50,7 +54,7 @@ bool isTimerRunning(sl_sleeptimer_timer_handle_t* handlePtr) {
 ////
 
 // Action to run when a debounce timer has timed out
-void sleeptimerDebounceCallback(sl_sleeptimer_timer_handle_t *handle, void *data) {
+static void sleeptimerDebounceCallback(sl_sleeptimer_timer_handle_t *handle, void *data) {
     // If the debounce timer callback is executed, it means the integrator hasn't converged in the debouncing time
     // given. Stop the sampling timer, because it's periodic, and reset the integrator value to the default value
     // for the current state
@@ -60,7 +64,7 @@ void sleeptimerDebounceCallback(sl_sleeptimer_timer_handle_t *handle, void *data
 }
 
 // Action to run when a sampling timer has timed out
-void sleeptimerSamplingCallback(sl_sleeptimer_timer_handle_t *handle, void *data) {
+static void sleeptimerSamplingCallback(sl_sleeptimer_timer_handle_t *handle, void *data) {
     (void) handle;
     // When a sampling sleeptimer runs out, calls samplingTimerCallback from debounce.h, passing a button_t object as
     // context data.
