@@ -1,0 +1,5 @@
+(sym_lib_table
+  (lib (name "LED_Dimmer-eagle-import")(type "KiCad")(uri "${KIPRJMOD}/LED_Dimmer-eagle-import.kicad_sym")(options "")(descr ""))
+  (lib (name "BGM220P_Breakout")(type "KiCad")(uri "${KIPRJMOD}/Libraries/BGM220P_Breakout.kicad_sym")(options "")(descr ""))
+  (lib (name "Gruffalo_Dimmer")(type "KiCad")(uri "${KIPRJMOD}/Libraries/Gruffalo_Dimmer.kicad_sym")(options "")(descr ""))
+)
