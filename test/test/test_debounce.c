@@ -1,10 +1,14 @@
 #include "debounce.h"
 
+// Ugly, but debounce has two static functions that are not testable otherwise, as they are only called as
+// callbacks of a timer running out, and we can't trigger that timer in the test.
+#include "debounce.c"
+
 #include <unity.h>
 
 #include "mock_buttons.h"
 #include "mock_gpio_HW.h"
-#include "mock_sleeptimer_HW.h"
+#include "mock_sleepyTimers_HW.h"
 
 /*
  * Unit tests for "debounce.h
@@ -15,25 +19,19 @@
 void fakePressAction(void) {}
 void fakeReleaseAction(void) {}
 
+// Some timer handlers for the buttons
+timerHandle_t debounceTimer = {0};
+timerHandle_t samplingTimer = {0};
+
 void setUp(void) {
 }
 
 void tearDown(void) {
 }
 
-// Test getters to get 100% coverage
-extern const uint32_t DEBOUNCE_TIME_MS;
-extern const uint32_t DEBOUNCE_SAMPLING_PERIOD_MS;
-
-void test_getDebounceTime(void) {
-    uint32_t debounce = getDebounceTime();
-    TEST_ASSERT_EQUAL_UINT32(DEBOUNCE_TIME_MS, debounce);
-}
-
-void test_getSamplingTime(void) {
-    uint32_t sampling = getDebounceSamplingPeriod();
-    TEST_ASSERT_EQUAL_UINT32(DEBOUNCE_SAMPLING_PERIOD_MS, sampling);
-}
+////
+// samplingTimerCallback
+////
 
 // List of Tests for samplingTimerCallback
 // * Integrator increases
@@ -85,7 +83,6 @@ void test_IntegratorNotBelow0(void) {
     TEST_ASSERT_EQUAL_INT32(0, testBtn.integrator);
 }
 
-extern int32_t INTEGRATOR_TARGET;
 void test_IntegratorNotAboveMax(void) {
     button_t testBtn = {
         .btnPort = portA,
@@ -96,14 +93,17 @@ void test_IntegratorNotAboveMax(void) {
         .releasedAction = fakeReleaseAction};
 
     readPin_ExpectAndReturn(portA, 1, 1);
-    stopButtonTimers_ExpectAndReturn(&testBtn, 0);
+    // Expectations for stopButtonTimers. Ignore parameters as we are not testing it here.
+    // Retunr false so we exit the execution faster. It doesn't change the outcome
+    SLP_isTimerRunning_IgnoreAndReturn(false);
+
     samplingTimerCallback(&testBtn);
     TEST_ASSERT_EQUAL_INT32(INTEGRATOR_TARGET, testBtn.integrator);
 }
 
 // In the previous test, I realised that if I leave the button actions pointing to NULL, we get an exception when
 // that "action" is called. Add some code to fix it
-void test_ButtonActionIsNull(void){
+void test_ButtonActionIsNull(void) {
     button_t testBtn = {
         .btnPort = portA,
         .pinNo = 1,
@@ -113,14 +113,18 @@ void test_ButtonActionIsNull(void){
         .releasedAction = NULL};
 
     readPin_ExpectAndReturn(portA, 1, 1);
-    stopButtonTimers_ExpectAndReturn(&testBtn, 0);
+    // Expectations for stopButtonTimers. Ignore parameters as we are not testing it here.
+    // Retunr false so we exit the execution faster. It doesn't change the outcome
+    SLP_isTimerRunning_IgnoreAndReturn(false);
     samplingTimerCallback(&testBtn);
 
     // Same thing with the release action
     testBtn.integrator = 0;
     testBtn.state = BUTTON_PRESSED;
     readPin_ExpectAndReturn(portA, 1, 0);
-    stopButtonTimers_ExpectAndReturn(&testBtn, 0);
+    // Expectations for stopButtonTimers. Ignore parameters as we are not testing it here.
+    // Retunr false so we exit the execution faster. It doesn't change the outcome
+    SLP_isTimerRunning_IgnoreAndReturn(false);
     samplingTimerCallback(&testBtn);
     // TODO: Don't know how to pass this test. If fails, it throws an exception
     // So if the tests don't complain about bad memory, it means it worked?
@@ -174,7 +178,9 @@ void test_fromReleasedToPressed(void) {
     }
     // Press the button an additional time, the button state must switch
     readPin_ExpectAndReturn(portA, 1, 1);
-    stopButtonTimers_ExpectAndReturn(&testBtn, 0);
+    // Expectations for stopButtonTimers. Ignore parameters as we are not testing it here.
+    // Retunr false so we exit the execution faster. It doesn't change the outcome
+    SLP_isTimerRunning_IgnoreAndReturn(false);
     samplingTimerCallback(&testBtn);
 
     TEST_ASSERT_EQUAL_UINT32(BUTTON_PRESSED, testBtn.state);
@@ -198,7 +204,9 @@ void test_fromPressedToReleased(void) {
     }
     // Press the button an additional time, the button state must switch
     readPin_ExpectAndReturn(portA, 1, 0);
-    stopButtonTimers_ExpectAndReturn(&testBtn, 0);
+    // Expectations for stopButtonTimers. Ignore parameters as we are not testing it here.
+    // Retunr false so we exit the execution faster. It doesn't change the outcome
+    SLP_isTimerRunning_IgnoreAndReturn(false);
     samplingTimerCallback(&testBtn);
 
     TEST_ASSERT_EQUAL_UINT32(BUTTON_RELEASED, testBtn.state);
@@ -218,8 +226,9 @@ void test_someNoisyInputs(void) {
     // integrator values = 1  2  3  2  1  2  3  4  5  4  5
     // this is used to check the expected state, based on the input
     uint32_t buttonExpectedState1[] = {BUTTON_RELEASED, BUTTON_RELEASED, BUTTON_RELEASED, BUTTON_RELEASED, BUTTON_RELEASED, BUTTON_RELEASED, BUTTON_RELEASED, BUTTON_RELEASED, BUTTON_PRESSED, BUTTON_PRESSED, BUTTON_PRESSED};
-    // Let's ignore stopButtonTimers as it's a tad tricky to inject the expectations
-    stopButtonTimers_IgnoreAndReturn(0);
+    // Expectations for stopButtonTimers. Ignore parameters as we are not testing it here.
+    // Retunr false so we exit the execution faster. It doesn't change the outcome
+    SLP_isTimerRunning_IgnoreAndReturn(false);
 
     for (uint32_t i = 0; i < (sizeof(buttonExpectedPress1) / sizeof(buttonExpectedPress1[0])); i++) {
         readPin_ExpectAndReturn(portA, 1, buttonExpectedPress1[i]);
@@ -263,7 +272,9 @@ void test_corruptionGuardOn0(void) {
     testBtn.integrator = -50;
     readPin_ExpectAndReturn(portA, 1, 0);
     // This SHOULD trigger a call to stopTimmers
-    stopButtonTimers_ExpectAndReturn(&testBtn, 0);
+    // Expectations for stopButtonTimers. Ignore parameters as we are not testing it here.
+    // Retunr false so we exit the execution faster. It doesn't change the outcome
+    SLP_isTimerRunning_IgnoreAndReturn(false);
     samplingTimerCallback(&testBtn);
     TEST_ASSERT_EQUAL_INT32(0, testBtn.integrator);
 }
@@ -285,8 +296,9 @@ void test_corruptionGuardOn1(void) {
     testBtn.state = BUTTON_RELEASED;
     testBtn.integrator = 50;
     readPin_ExpectAndReturn(portA, 1, 0);
-    // This SHOULD trigger a call to stopTimmers
-    stopButtonTimers_ExpectAndReturn(&testBtn, 0);
+    // Expectations for stopButtonTimers. Ignore parameters as we are not testing it here.
+    // Retunr false so we exit the execution faster. It doesn't change the outcome
+    SLP_isTimerRunning_IgnoreAndReturn(false);
     samplingTimerCallback(&testBtn);
     TEST_ASSERT_EQUAL_INT32(5, testBtn.integrator);
 }
@@ -296,7 +308,7 @@ void test_corruptionGuardOn1(void) {
 // when the integrator reaches 0 and the initial state is BUTTON_PRESSED.
 // This is important because we will use the change of state to stop the timers and we don't want to do it if the
 // integrator is, for example, at 0, rises to 1 on a press but then noise returns it to 0.
-void test_stateChangesOnlyWhenNeeded(void){
+void test_stateChangesOnlyWhenNeeded(void) {
     // Test that BUTTON_PRESSED is only set if state is BUTTON_RELEASED
     button_t testBtn = {
         .btnPort = portA,
@@ -304,7 +316,9 @@ void test_stateChangesOnlyWhenNeeded(void){
         .state = BUTTON_RELEASED,
         .integrator = 0,
         .pressedAction = fakePressAction,
-        .releasedAction = fakeReleaseAction};
+        .releasedAction = fakeReleaseAction,
+        .samplingTimerPtr = &samplingTimer,
+        .debounceTimerPtr = &debounceTimer};
 
     // Test a noisy press
     uint32_t buttonExpectedPress[] = {1, 0, 1, 0, 0, 1, 1, 1, 1, 1};
@@ -315,8 +329,215 @@ void test_stateChangesOnlyWhenNeeded(void){
         readPin_ExpectAndReturn(portA, 1, buttonExpectedPress[i]);
     }
     // Stop timer should be called only once, at the last call of samplingTimerCallback()
-    stopButtonTimers_ExpectAndReturn(&testBtn, 0);
+    // Expectations for stopButtonTimers. Ignore parameters as we are not testing it here.
+    // Retunr false so we exit the execution faster. It doesn't change the outcome
+    SLP_isTimerRunning_ExpectAndReturn(testBtn.samplingTimerPtr, false);
+    SLP_isTimerRunning_ExpectAndReturn(testBtn.debounceTimerPtr, false);
     for (uint32_t i = 0; i < (sizeof(buttonExpectedPress) / sizeof(buttonExpectedPress[0])); i++) {
         samplingTimerCallback(&testBtn);
     }
+}
+
+////
+// StartButtonTimer()
+//
+// Also tests getDebounceTime() and getDebounceSamplingPeriod() (statics called by it)
+////
+
+// 1) Start a sampling timer that is not already running
+//    a) Also test that getDebounceSamplingPeriod() returns the right value
+// 2) Start a sampling timer that IS already running
+// 3) Start a debounce timer that is not already running
+//    a) Also test that getDebounceTime() returns the right value
+// 4) Start a debounce timer that IS already running
+// 5) Checks that we hit the logging function when an error is returned by the SLP* functions
+
+// extern const uint32_t DEBOUNCE_TIME_MS;
+// extern const uint32_t DEBOUNCE_SAMPLING_PERIOD_MS;
+
+void test_startButtonTimer_SamplingTimerNotRunning(void) {
+    button_t testButton = {.samplingTimerPtr = &samplingTimer};
+
+    SLP_isTimerRunning_ExpectAndReturn(testButton.samplingTimerPtr, false);
+    SLP_startPeriodicTimer_ExpectAndReturn(testButton.samplingTimerPtr, DEBOUNCE_SAMPLING_PERIOD_MS, NULL, &testButton, SLPTIMER_OK);
+    // Sadly, the callback is a static function, so I can't test that startPeriodicTimer will be called with it as a parameter
+    SLP_startPeriodicTimer_IgnoreArg_callback();
+
+    uint32_t retVal = startButtonTimer(&testButton, TIMER_SAMPLE);
+    TEST_ASSERT_EQUAL_UINT32(SLPTIMER_OK, retVal);
+}
+
+void test_startButtonTimer_SamplingTimerISRunning(void) {
+    button_t testButton = {
+        .samplingTimerPtr = &samplingTimer};
+
+    SLP_isTimerRunning_ExpectAndReturn(testButton.samplingTimerPtr, true);
+    // startPeriodictimer is not called in this case
+
+    uint32_t retVal = startButtonTimer(&testButton, TIMER_SAMPLE);
+    TEST_ASSERT_EQUAL_UINT32(SLPTIMER_OK, retVal);
+}
+
+void test_startButtonTimer_DebounceTimerNotRunning(void) {
+    button_t testButton = {.debounceTimerPtr = &debounceTimer};
+
+    SLP_isTimerRunning_ExpectAndReturn(testButton.debounceTimerPtr, false);
+    SLP_startTimer_ExpectAndReturn(testButton.debounceTimerPtr, DEBOUNCE_TIME_MS, NULL, &testButton, SLPTIMER_OK);
+    // Sadly, the callback is a static function, so I can't test that startPeriodicTimer will be called with it as a parameter
+    SLP_startTimer_IgnoreArg_callback();
+
+    uint32_t retVal = startButtonTimer(&testButton, TIMER_DEBOUNCE);
+    TEST_ASSERT_EQUAL_UINT32(SLPTIMER_OK, retVal);
+}
+void test_startButtonTimer_DebounceTimerISRunning(void) {
+    button_t testButton = {
+        .debounceTimerPtr = &debounceTimer};
+
+    SLP_isTimerRunning_ExpectAndReturn(testButton.debounceTimerPtr, true);
+    // startPeriodictimer is not called in this case
+
+    uint32_t retVal = startButtonTimer(&testButton, TIMER_DEBOUNCE);
+    TEST_ASSERT_EQUAL_UINT32(SLPTIMER_OK, retVal);
+}
+
+// This test that the log lines are hit. As in tests we disable logging, this is more something you would spot on the
+// coverage report.
+void test_startButtonTimer_ErrorOnSLP_startPeriodicTimer(void) {
+    button_t testButton = {.samplingTimerPtr = &samplingTimer};
+
+    SLP_isTimerRunning_ExpectAndReturn(testButton.samplingTimerPtr, false);
+    SLP_startPeriodicTimer_ExpectAndReturn(testButton.samplingTimerPtr, DEBOUNCE_SAMPLING_PERIOD_MS, NULL, &testButton, SLPTIMER_ERROR);
+    // Sadly, the callback is a static function, so I can't test that startPeriodicTimer will be called with it as a parameter
+    SLP_startPeriodicTimer_IgnoreArg_callback();
+
+    uint32_t retVal = startButtonTimer(&testButton, TIMER_SAMPLE);
+    TEST_ASSERT_EQUAL_UINT32(SLPTIMER_ERROR, retVal);
+}
+
+////
+// stopButtonTimers
+//
+// This is a static function, so it has to be tested via the samplingTimerCallback()
+////
+
+// 1) Check both timers, both are running, stop them
+// 2) Check both timers, both are NOT running, nothing to do
+// 3) Check the sampling timer, is running, try to stop it but stop fails
+
+void test_stopButtonTimers_BothAreRunnig(void) {
+    // To trigger stopButtonTimers, we set the button as RELEASED and integrator as INTEGRATOR_TARGET - 1, and then
+    // mock a readPin showing a press, to get the integrator to the convergence value
+
+    button_t testBtn = {
+        .state = BUTTON_RELEASED,
+        .integrator = INTEGRATOR_TARGET - 1,
+        .samplingTimerPtr = &samplingTimer,
+        .debounceTimerPtr = &debounceTimer};
+
+    // Mock the button being pressed. Ignore parameters,  samplingTimerCallback is not being tested here
+    readPin_IgnoreAndReturn(1);
+
+    SLP_isTimerRunning_ExpectAndReturn(testBtn.samplingTimerPtr, true);
+    SLP_stopTimer_ExpectAndReturn(testBtn.samplingTimerPtr, SLPTIMER_OK);
+
+    SLP_isTimerRunning_ExpectAndReturn(testBtn.debounceTimerPtr, true);
+    SLP_stopTimer_ExpectAndReturn(testBtn.debounceTimerPtr, SLPTIMER_OK);
+
+    samplingTimerCallback(&testBtn);
+}
+
+void test_stopButtonTimers_NoneRunnig(void) {
+    // To trigger stopButtonTimers, we set the button as RELEASED and integrator as INTEGRATOR_TARGET - 1, and then
+    // mock a readPin showing a press, to get the integrator to the convergence value
+
+    button_t testBtn = {
+        .state = BUTTON_RELEASED,
+        .integrator = INTEGRATOR_TARGET - 1,
+        .samplingTimerPtr = &samplingTimer,
+        .debounceTimerPtr = &debounceTimer};
+
+    // Mock the button being pressed. Ignore parameters,  samplingTimerCallback is not being tested here
+    readPin_IgnoreAndReturn(1);
+
+    SLP_isTimerRunning_ExpectAndReturn(testBtn.samplingTimerPtr, false);
+
+    SLP_isTimerRunning_ExpectAndReturn(testBtn.debounceTimerPtr, false);
+
+    samplingTimerCallback(&testBtn);
+}
+
+void test_stopButtonTimers_SamplingTimerRunningButErrorOnStop(void) {
+    // To trigger stopButtonTimers, we set the button as RELEASED and integrator as INTEGRATOR_TARGET - 1, and then
+    // mock a readPin showing a press, to get the integrator to the convergence value
+
+    button_t testBtn = {
+        .state = BUTTON_RELEASED,
+        .integrator = INTEGRATOR_TARGET - 1,
+        .samplingTimerPtr = &samplingTimer,
+        .debounceTimerPtr = &debounceTimer};
+
+    // Mock the button being pressed. Ignore parameters,  samplingTimerCallback is not being tested here
+    readPin_IgnoreAndReturn(1);
+
+    SLP_isTimerRunning_ExpectAndReturn(testBtn.samplingTimerPtr, true);
+    SLP_stopTimer_ExpectAndReturn(testBtn.samplingTimerPtr, SLPTIMER_ERROR);
+
+    samplingTimerCallback(&testBtn);
+}
+
+void test_stopButtonTimers_DebounceTimersRunningButErrorOnStop(void) {
+    // To trigger stopButtonTimers, we set the button as RELEASED and integrator as INTEGRATOR_TARGET - 1, and then
+    // mock a readPin showing a press, to get the integrator to the convergence value
+
+    button_t testBtn = {
+        .state = BUTTON_RELEASED,
+        .integrator = INTEGRATOR_TARGET - 1,
+        .samplingTimerPtr = &samplingTimer,
+        .debounceTimerPtr = &debounceTimer};
+
+    // Mock the button being pressed. Ignore parameters,  samplingTimerCallback is not being tested here
+    readPin_IgnoreAndReturn(1);
+
+    SLP_isTimerRunning_ExpectAndReturn(testBtn.samplingTimerPtr, false);
+    SLP_isTimerRunning_ExpectAndReturn(testBtn.debounceTimerPtr, true);
+    SLP_stopTimer_ExpectAndReturn(testBtn.debounceTimerPtr, SLPTIMER_ERROR);
+
+    samplingTimerCallback(&testBtn);
+}
+
+////
+// sleeptimerDebounceCallback() and sleeptimerSamplingCallback()
+//
+// Static functions that are called as callbacks of timers expiring, so they require to include the .c file. Urgh!
+////
+
+// The debounce timer times out, so we pass a button to its callback and turn both timers off
+void test_sleepTimerDebounceCallback(void) {
+    button_t testBtn = {
+        .samplingTimerPtr = &samplingTimer,
+        .debounceTimerPtr = &debounceTimer};
+
+    SLP_isTimerRunning_ExpectAndReturn(testBtn.samplingTimerPtr, true);
+    SLP_stopTimer_ExpectAndReturn(testBtn.samplingTimerPtr, SLPTIMER_OK);
+
+    SLP_isTimerRunning_ExpectAndReturn(testBtn.debounceTimerPtr, true);
+    SLP_stopTimer_ExpectAndReturn(testBtn.debounceTimerPtr, SLPTIMER_OK);
+
+    // Pass null as the timerHandle_t, is not used, we don't care
+    sleeptimerDebounceCallback(NULL, &testBtn);
+}
+
+// The sampling timer times out, so we run the samplingTimerCallback.
+// Let's assume that the button is as default (released, integrator on 0, GPIO returns pressed)
+void test_sleeptimerSamplingCallback(void) {
+    button_t testBtn = {
+        .integrator = 0,
+        .state = BUTTON_RELEASED};
+
+    readPin_IgnoreAndReturn(1);
+
+    // The timerHandle is not used, we can pass NULL
+    sleeptimerSamplingCallback(NULL, &testBtn);
+    // Integrator will increase
+    TEST_ASSERT_EQUAL_UINT32(1, testBtn.integrator);
 }

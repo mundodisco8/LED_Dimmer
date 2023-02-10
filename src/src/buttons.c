@@ -16,13 +16,21 @@
 #include "buttons.h"
 
 // Stdlib
-#include <stddef.h>
 #include <stdbool.h>
+#include <stddef.h>
 
 // Project's Libraries
-#include "sleeptimer_HW.h"
 #include "gpio_HW.h"
 #include "interrupt_HW.h"
+#include "sleepyTimers_HW.h"
+
+// TO DELETE?
+//////
+//// function prototypes
+//////
+//
+//static uint32_t setDebounceTimer(button_t* btnPtr);
+//static uint32_t setSamplingTimer(button_t* btnPtr);
 
 // Initialises the button_t struct with the default values and associates the pressed and released actions.
 // Parameters: btnPtr: a pointer to a button_t object which will be initialised
@@ -31,16 +39,21 @@
 //             pressedAction: a buttonCallback_t pointer to the callback to call when the button is pressed
 //             releasedAction: a buttonCallback_t pointer to the callback to call when the button is released
 // Returns: true on sucess, false if the button_t pointer passed is null
-btnError_t initButton(button_t* btnPtr, pinPort_t pinPort, uint8_t pinNo, actionCallback_t pressedAction, actionCallback_t releasedAction) {
-    if (btnPtr == NULL) {
+btnError_t initButton(button_t* btnPtr, pinPort_t pinPort, uint8_t pinNo, actionCallback_t pressedAction,
+                      actionCallback_t releasedAction, timerHandle_t* debounceTimerPtr,
+                      timerHandle_t* samplingTimerPtr) {
+    if ((btnPtr == NULL) || (debounceTimerPtr == NULL) || (samplingTimerPtr == NULL)) {
         return BTN_NULL_POINTER_PASSED;
     }
-    btnPtr->btnPort = pinPort;
-    btnPtr->pinNo = pinNo;
-    btnPtr->integrator = 0;
-    btnPtr->state = BUTTON_RELEASED; //buttons are released by default
-    btnPtr->pressedAction = pressedAction;
-    btnPtr->releasedAction = releasedAction;
+    btnPtr->btnPort          = pinPort;
+    btnPtr->pinNo            = pinNo;
+    btnPtr->integrator       = 0;
+    btnPtr->state            = BUTTON_RELEASED;  // buttons are released by default
+    btnPtr->pressedAction    = pressedAction;
+    btnPtr->releasedAction   = releasedAction;
+    btnPtr->debounceTimerPtr = debounceTimerPtr;
+    btnPtr->samplingTimerPtr = samplingTimerPtr;
+
     return BTN_OK;
 }
 // Initialises the quad_encoder_t struct with the default values and associates the CW and CCW actions.
@@ -52,16 +65,17 @@ btnError_t initButton(button_t* btnPtr, pinPort_t pinPort, uint8_t pinNo, action
 //             CWAction: a buttonCallback_t pointer to the callback to call when the button is pressed
 //             CCWAction: a buttonCallback_t pointer to the callback to call when the button is released
 // Returns: true on sucess, false if the button_t pointer passed is null
-btnError_t initQuadEncoder(quad_encoder_t* quadPtr, pinPort_t pin0Port, uint8_t pin0No, pinPort_t pin1Port, uint8_t pin1No, actionCallback_t CWAction, actionCallback_t CCWAction){
+btnError_t initQuadEncoder(quad_encoder_t* quadPtr, pinPort_t pin0Port, uint8_t pin0No, pinPort_t pin1Port,
+                           uint8_t pin1No, actionCallback_t CWAction, actionCallback_t CCWAction) {
     if (quadPtr == NULL) {
         // Not much we can do it the quad encoder pointer is NULL
         return BTN_NULL_POINTER_PASSED;
     }
-    quadPtr->pin0No = pin0No;
-    quadPtr->pin0Port = pin0Port;
-    quadPtr->pin1No = pin1No;
-    quadPtr->pin1Port = pin1Port;
-    quadPtr->clockWiseAction = CWAction;
+    quadPtr->pin0No                 = pin0No;
+    quadPtr->pin0Port               = pin0Port;
+    quadPtr->pin1No                 = pin1No;
+    quadPtr->pin1Port               = pin1Port;
+    quadPtr->clockWiseAction        = CWAction;
     quadPtr->counterClockWiseAction = CCWAction;
     return BTN_OK;
 }
@@ -77,7 +91,7 @@ btnError_t initQuadEncoder(quad_encoder_t* quadPtr, pinPort_t pin0Port, uint8_t 
 //          The interrupt number set in the uint32_t pointed by intNoPtr
 btnError_t configureButtonInterrupts(button_t* btnPtr, callbackCtxPtr_t callback, uint32_t* intNoPtr) {
     // We need btnPtr and intNoPtr to not be null for this to work
-    if((btnPtr == NULL) || (intNoPtr == NULL)) {
+    if ((btnPtr == NULL) || (intNoPtr == NULL)) {
         return BTN_NULL_POINTER_PASSED;
     }
     // GPIO clock and pin direction already set by GPIO Init module
@@ -85,7 +99,7 @@ btnError_t configureButtonInterrupts(button_t* btnPtr, callbackCtxPtr_t callback
     if (*intNoPtr == 0xFF) {
         // No ints available
         return BTN_NO_INTS_AVAILABLE;
-    } // Else, an int was correctly configured, and returned in intPin
+    }  // Else, an int was correctly configured, and returned in intPin
     // We call configurePinInterrupt with whatever pin numnber setInterruptCallbackWCtx retunrs, not with
     // pinNo, as one would expect, just in case they are not the same number
     configurePinInterrupt(btnPtr->btnPort, btnPtr->pinNo, *intNoPtr, true, true, true);
@@ -102,11 +116,11 @@ btnError_t configureButtonInterrupts(button_t* btnPtr, callbackCtxPtr_t callback
 // Returns: the interrupt number set, or 0xFF if no interrupt was available.
 //          The interrupt number set in the uint32_t pointed by intNoPtr
 btnError_t configureQuadratureInterrupts(quad_encoder_t* quadPtr, callbackCtxPtr_t callback, uint32_t* intNoPtr) {
-     // The rotary encoder is a PEC11R-4115F-S0018 -> 18 detents and 18 pulses. Each click generates a full pulse, so
+    // The rotary encoder is a PEC11R-4115F-S0018 -> 18 detents and 18 pulses. Each click generates a full pulse, so
     // there's only two codes 00 and 01 to care about, as the encoder will always return to 11 (00 can only achieved if
     // you fiddle and try to hold the shaft between detents).
 
-    //Null pointer guards
+    // Null pointer guards
     if ((quadPtr == NULL) || (intNoPtr == NULL)) {
         return BTN_NULL_POINTER_PASSED;
     }
@@ -121,11 +135,42 @@ btnError_t configureQuadratureInterrupts(quad_encoder_t* quadPtr, callbackCtxPtr
     return BTN_OK;
 }
 
-// DELETE? test functions, to be removed
-// button_t* getButton0(void) {
-//     return &button0;
-// }
+// TO DELETE?
+////
+// Debouncing and timer handling
+////
 
-// button_t* getButton1(void) {
-//     return &button1;
-// }
+// Sets the debounce timer for a button
+// Parameters: btnPtr, a pointer to a button_t object to be passed as a context
+//static uint32_t startDebounceTimer(button_t* btnPtr) {
+//    (void)btnPtr;
+//    uint32_t retVal = SLPTIMER_OK;
+//    if (!SLP_isTimerRunning(&debounceTimerBtn1)) {
+//        retVal = sl_sleeptimer_start_timer_ms(&debounceTimerBtn1, getDebounceTime(), sleeptimerDebounceCallback, btnPtr,
+//                                              0, 0);
+//        if (retVal != SL_STATUS_OK) {
+//            app_log_error("Error 0x%04X starting debounce timer btn1 running\r\n", retVal);
+//            return retVal;
+//        }
+//    }
+//    return retVal;
+//}
+//
+//uint32_t startButtonTimer(button_t* btnPtr, timerType_t timerType) {
+//    uint32_t retVal = SL_STATUS_OK;
+//    if (!isTimerRunning(&samplingTimerBtn1)) {
+//        if (timerType == TIMER_SAMPLING) {
+//            retVal = sl_sleeptimer_start_periodic_timer_ms(btnPtr->samplingTimerPtr, getDebounceSamplingPeriod(),
+//                                                           sleeptimerSamplingCallback, btnPtr, 0, 0);
+//        } else {  // Only two types of timers, TIMER_SAMPLE and TIMER_DEBOUNCE
+//            retVal = sl_sleeptimer_start_timer_ms(btnPtr->samplingTimerPtr, getDebounceTime(),
+//                                                  sleeptimerDebounceCallback, btnPtr, 0, 0);
+//        }
+//        if (retVal != SL_STATUS_OK) {
+//            app_log_error("Error 0x%04X starting sampling timer btn1\r\n", retVal);
+//            return retVal;
+//        }
+//        // app_log_debug("Sampling Timer1 Set\r\n");
+//    }
+//    return retVal;
+//}

@@ -9,8 +9,12 @@
 
 #include "mock_gpio_HW.h"
 #include "mock_interrupt_HW.h"
-#include "mock_sleeptimer_HW.h"
+#include "mock_sleepyTimers_HW.h"
 #include "mock_app_log.h"
+
+// Fake timers: we just need the memory, but we won't use it in this unit testing
+timerHandle_t debounceTimer;
+timerHandle_t samplingtimer;
 
 void setUp() {
 }
@@ -28,7 +32,8 @@ void fakeReleasedAction(void) {}
 
 void test_initButtonsDoesItsJob(void) {
     button_t testBtn = {0};
-    uint32_t retVal = initButton(&testBtn, portA, 1, fakePressedAction, fakeReleasedAction);
+
+    uint32_t retVal = initButton(&testBtn, portA, 1, fakePressedAction, fakeReleasedAction, &debounceTimer, &samplingtimer);
     // Check retVal is true
     TEST_ASSERT_EQUAL_UINT32(BTN_OK, retVal);
     TEST_ASSERT_EQUAL_UINT32(portA, testBtn.btnPort);
@@ -37,14 +42,28 @@ void test_initButtonsDoesItsJob(void) {
     TEST_ASSERT_EQUAL_INT32(0, testBtn.integrator);
     TEST_ASSERT_EQUAL_PTR(fakePressedAction, testBtn.pressedAction);
     TEST_ASSERT_EQUAL_PTR(fakeReleasedAction, testBtn.releasedAction);
+    TEST_ASSERT_EQUAL_PTR(&debounceTimer, testBtn.debounceTimerPtr);
+    TEST_ASSERT_EQUAL_PTR(&samplingtimer, testBtn.samplingTimerPtr);
 }
 
-// Protection against null pointers: button_t ptr is Null
-void test_initButtonsNullPointer(void) {
+// Protection against null pointers: because of shortcircuiting in OR comparisons, there's only need to test the three
+// checks individually, and that will cover all the cases of the if statement
+void test_initButtons_ButtonIsNullPointer(void) {
     button_t* testPtr = NULL;
-    uint32_t retVal = initButton(testPtr, portA, 1, fakePressedAction, fakeReleasedAction);
+    uint32_t retVal = initButton(testPtr, portA, 1, fakePressedAction, fakeReleasedAction, &debounceTimer, &samplingtimer);
     TEST_ASSERT_EQUAL_INT32(BTN_NULL_POINTER_PASSED, retVal);
 }
+
+void test_initButtons_TimersAreNullPtrs(void) {
+    button_t* testPtr = {0};
+    uint32_t retVal = initButton(testPtr, portA, 1, fakePressedAction, fakeReleasedAction, NULL, &samplingtimer);
+    TEST_ASSERT_EQUAL_INT32(BTN_NULL_POINTER_PASSED, retVal);
+
+    retVal = initButton(testPtr, portA, 1, fakePressedAction, fakeReleasedAction, &debounceTimer, NULL);
+    TEST_ASSERT_EQUAL_INT32(BTN_NULL_POINTER_PASSED, retVal);
+
+}
+
 ////
 // init Quadrature encoder
 ////

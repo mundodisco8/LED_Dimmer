@@ -66,6 +66,11 @@ static uint8_t advertising_set_handle = 0xff;
 // Our buttons
 button_t button0 = {0};
 button_t button1 = {0};
+// and their timers
+timerHandle_t samplingTimerBtn0 = {0};
+timerHandle_t samplingTimerBtn1 = {0};
+timerHandle_t debounceTimerBtn0 = {0};
+timerHandle_t debounceTimerBtn1 = {0};
 
 // And our quad encoders
 quad_encoder_t quad0 = {0};
@@ -84,7 +89,7 @@ SL_WEAK void app_init(void) {
     // Init GPIOs for buttons and quads
     uint32_t button1GPIOIntNo = 0;
     uint32_t quad1GPIOIntNo = 0;
-    initButton(&button1, (pinPort_t)btn1_PORT, btn1_PIN, button1Pressed, button1Released);
+    initButton(&button1, (pinPort_t)btn1_PORT, btn1_PIN, button1Pressed, button1Released, &debounceTimerBtn1, &samplingTimerBtn1);
     initQuadEncoder(&quad1, (pinPort_t)quad1_0_PORT, quad1_0_PIN, (pinPort_t)quad1_1_PORT, quad1_1_PIN, quad1ClockWise, quad1CounterClockWise);
     configureButtonInterrupts(&button1, gpioCallbackButton1, &button1GPIOIntNo);
     configureQuadratureInterrupts(&quad1, gpioCallbackQuad1, &quad1GPIOIntNo);

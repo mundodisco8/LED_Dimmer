@@ -1,19 +1,23 @@
 {
 	"folders": [
-		{
-			"path": "src/Gruffalo_Dimmer"
-		},
-		{
-			"path": "test"
-		}
-	],
+        {
+            "path": "src/"
+        },
+        {
+            "path": "test"
+        },
+        {
+            "path": "testStaticInlines"
+        }
+    ],
     "settings": {
             "search.exclude": {
                 "**/.vscode": true
             },
             "files.associations": {
                 "*.h": "c",
-                "typeinfo": "cpp"
+                "typeinfo": "cpp",
+                "xutility": "c"
             }
     }
 }

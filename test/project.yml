@@ -16,6 +16,8 @@
   :ceedling_version: 0.31.1
   :default_tasks:
     - test:all
+  :options_paths:
+    - ../test/
 
 #:test_build:
 #  :use_assembly: TRUE
@@ -34,8 +36,8 @@
     - +:test/**
     - -:test/support
   :source:
-    - ../src/Gruffalo_Dimmer/**
-    - ../src/Gruffalo_Dimmer/inc/**
+    - ../src/**
+    - ../src/inc/**
   :support:
     - test/support
   :libraries: []
@@ -59,12 +61,13 @@
   :mock_prefix: mock_
   :when_no_prototypes: :warn
   :enforce_strict_ordering: TRUE
-  :treat_inlines:
-    :include
+  # :treat_inlines:
+  #   :exclude
   :plugins:
     - :ignore
     - :callback
     - :ignore_arg
+    - :return_thru_ptr
   :treat_as:
     uint8:    HEX8
     uint16:   HEX16

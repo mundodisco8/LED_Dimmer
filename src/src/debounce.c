@@ -15,12 +15,14 @@
 
 #include "debounce.h"
 
-#include "stddef.h"
 #include "inttypes.h"
+#include "stddef.h"
 
 #include "gpio_HW.h"
 
-#include "sleeptimer_HW.h"
+#include "app_log.h"
+
+#include "sleepyTimers_HW.h"
 /******************************************************************************
 written by Kenneth A. Kuhn
 version 1.00
@@ -94,12 +96,24 @@ const uint32_t DEBOUNCE_TIME_MS            = 500;  // Max time for the button to
 const uint32_t DEBOUNCE_SAMPLING_PERIOD_MS = 10;   // read the button every this ms
 const int32_t INTEGRATOR_TARGET            = 5;    // Button is stable after SAMPLING * TARGET ms
 
+////
+// forward declarations
+////
+
+static uint32_t stopButtonTimers(button_t* btnPtr);
+static void sleeptimerDebounceCallback(timerHandle_t* handle, void* data);
+static void sleeptimerSamplingCallback(timerHandle_t* handle, void* data);
+
+////
+// getters for the timer durations
+////
+
 // Returns the value of the duration of the debounce timer.
-uint32_t getDebounceTime(void) {
+static uint32_t getDebounceTime(void) {
     return DEBOUNCE_TIME_MS;
 }
 // Returns the value of the debounce sampling period.
-uint32_t getDebounceSamplingPeriod(void) {
+static uint32_t getDebounceSamplingPeriod(void) {
     return DEBOUNCE_SAMPLING_PERIOD_MS;
 }
 
@@ -129,24 +143,95 @@ void samplingTimerCallback(button_t* btnPtr) {
        output will only change states if the integrator has reached a limit, either
        0 or MAXIMUM. */
 
-    //corruption guard
+    // corruption guard
     if (btnPtr->integrator > INTEGRATOR_TARGET) {
         btnPtr->integrator = INTEGRATOR_TARGET;
     } else if (btnPtr->integrator < 0) {
         btnPtr->integrator = 0;
-    } // else 0 < integrator < INTEGRATOR_TARGET, do nothing
+    }  // else 0 < integrator < INTEGRATOR_TARGET, do nothing
 
     if ((btnPtr->state == BUTTON_RELEASED) && (btnPtr->integrator == INTEGRATOR_TARGET)) {
-        btnPtr->state      = BUTTON_PRESSED;
+        btnPtr->state = BUTTON_PRESSED;
         stopButtonTimers(btnPtr);
         if (btnPtr->pressedAction != NULL) {
             btnPtr->pressedAction();
-        } //else, action was NULL, assert, I guess?
+        }  // else, action was NULL, assert, I guess?
     } else if ((btnPtr->state == BUTTON_PRESSED) && (btnPtr->integrator == 0)) {
-        btnPtr->state      = BUTTON_RELEASED;
+        btnPtr->state = BUTTON_RELEASED;
         stopButtonTimers(btnPtr);
         if (btnPtr->releasedAction != NULL) {
             btnPtr->releasedAction();
-        } //else, action was NULL, assert, I guess?
-    }  // else, or integrator is 0 but button is released or integrator is INTEGRATOR_TARGET but button is pressed, do nothing
+        }  // else, action was NULL, assert, I guess?
+    }  // else, or integrator is 0 but button is released or integrator is INTEGRATOR_TARGET but button is pressed, do
+       // nothing
+}
+
+////
+// Starting and stopping the sampling and callback timers
+////
+
+// Start the timers of a button. To be called on a button's GPIO interrupt
+uint32_t startButtonTimer(button_t* btnPtr, timerType_t timerType) {
+    uint32_t retVal = SLPTIMER_OK;
+    // TODO: check for null pointers? initButton should protect against it.
+    if (timerType == TIMER_SAMPLE) {
+        if (!SLP_isTimerRunning(btnPtr->samplingTimerPtr)) {  // Don't restart it if it's already running, or noise
+                                                              // would extend the debounce time
+            retVal = SLP_startPeriodicTimer(btnPtr->samplingTimerPtr, getDebounceSamplingPeriod(),
+                                            sleeptimerSamplingCallback, btnPtr);
+        }
+    } else {  // Only two types of timers, TIMER_SAMPLE and TIMER_DEBOUNCE
+        if (!SLP_isTimerRunning(btnPtr->debounceTimerPtr)) {
+            retVal = SLP_startTimer(btnPtr->debounceTimerPtr, getDebounceTime(), sleeptimerDebounceCallback, btnPtr);
+        }
+    }
+    if (retVal != SLPTIMER_OK) {
+        app_log_error("Error 0x%04X starting %s timer\r\n", retVal,
+                      (timerType == TIMER_SAMPLE ? "sampling" : "debouncing"));
+    }
+    return retVal;
+}
+
+// Stops the timers associated to a button
+// Parameters: btnPtr, a pointer to a button_t object whose timers are going to be stopped
+static uint32_t stopButtonTimers(button_t* btnPtr) {
+    uint32_t retVal = SLPTIMER_OK;
+
+    if (SLP_isTimerRunning(btnPtr->samplingTimerPtr)) {
+        retVal = SLP_stopTimer(btnPtr->samplingTimerPtr);
+        if (retVal != SLPTIMER_OK) {
+            app_log_error("Error 0x%04X stopping sampling timer\r\n", retVal);
+            return retVal;
+        }
+    }
+    if (SLP_isTimerRunning(btnPtr->debounceTimerPtr)) {
+        retVal = SLP_stopTimer(btnPtr->debounceTimerPtr);
+        if (retVal != SLPTIMER_OK) {
+            app_log_error("Error 0x%04X stopping debounce timer\r\n", retVal);
+        return retVal;
+        }
+    }
+    return SLPTIMER_OK;
+}
+
+////
+// Timer callbacks
+////
+
+// Action to run when a debounce timer has timed out
+static void sleeptimerDebounceCallback(timerHandle_t* handle, void* data) {
+    // If the debounce timer callback is executed, it means the integrator hasn't converged in the debouncing time
+    // given. Stop the sampling timer, because it's periodic, and reset the integrator value to the default value
+    // for the current state
+    (void)handle;
+    app_log_warning("Debouncer Callback\r\n");
+    stopButtonTimers((button_t*)data);
+}
+
+// Action to run when a sampling timer has timed out
+static void sleeptimerSamplingCallback(timerHandle_t* handle, void* data) {
+    (void)handle;
+    // When a sampling sleeptimer runs out, calls samplingTimerCallback from debounce.h, passing a button_t object as
+    // context data.
+    samplingTimerCallback((button_t*)data);
 }
