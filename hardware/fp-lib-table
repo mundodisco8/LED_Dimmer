@@ -1,5 +1,5 @@
 (fp_lib_table
-  (lib (name "LED_Dimmer")(type "KiCad")(uri "$(KIPRJMOD)/Libraries/LED_Dimmer.pretty")(options "")(descr ""))
+  (version 7)
   (lib (name "Gruffalo_Dimmer")(type "KiCad")(uri "${KIPRJMOD}/Libraries/Gruffalo_Dimmer.pretty")(options "")(descr ""))
   (lib (name "BGM220P_Breakout")(type "KiCad")(uri "${KIPRJMOD}/Libraries/BGM220P_Breakout.pretty")(options "")(descr ""))
 )
