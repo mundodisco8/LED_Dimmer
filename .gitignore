@@ -3,7 +3,7 @@
 *.l#*
 *.s#*
 **/*-backups/**
-
+**/*.kicad*-bak
 
 # Script outputs
 ulp_output.txt

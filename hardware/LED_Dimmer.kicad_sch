@@ -18484,7 +18484,7 @@
 
   (sheet (at 117.475 55.245) (size 29.845 19.05) (fields_autoplaced)
     (stroke (width 0.1524) (type solid))
-    (fill (color 0 0 0 0.0000))
+    (fill (color 0 0 0 0.0))
     (uuid 3c753329-f242-4dd5-b38c-c56b85f8717b)
     (property "Sheetname" "Encoder1" (at 117.475 54.5334 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
@@ -18513,7 +18513,7 @@
 
   (sheet (at 117.475 28.575) (size 29.845 19.05) (fields_autoplaced)
     (stroke (width 0.1524) (type solid))
-    (fill (color 0 0 0 0.0000))
+    (fill (color 0 0 0 0.0))
     (uuid d036ae25-52f4-493f-aaaa-543e74aa6438)
     (property "Sheetname" "Encoder0" (at 117.475 27.8634 0)
       (effects (font (size 1.27 1.27)) (justify left bottom))
