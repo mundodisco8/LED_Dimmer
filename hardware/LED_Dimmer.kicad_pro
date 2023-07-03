@@ -516,8 +516,8 @@
     ]
   ],
   "text_variables": {
-    "GIT_HASH": "<2dc1eef>",
-    "TODAY": "2023-06-28",
+    "GIT_HASH": "<70cef97>",
+    "TODAY": "2023-07-03",
     "git_hash": "Git hash: <2dc1eef>"
   }
 }

@@ -2,19 +2,19 @@
 <export version="E">
   <design>
     <source>/LED_Dimmer/hardware/LED_Dimmer.kicad_sch</source>
-    <date>Wed Jun 28 12:55:26 2023</date>
+    <date>Mon Jul  3 16:02:58 2023</date>
     <tool>Eeschema 7.0.5.1-1-g8f565ef7f0-dirty-deb11</tool>
-    <textvar name="GIT_HASH">&lt;2dc1eef&gt;</textvar>
-    <textvar name="TODAY">2023-06-28</textvar>
+    <textvar name="GIT_HASH">&lt;70cef97&gt;</textvar>
+    <textvar name="TODAY">2023-07-03</textvar>
     <textvar name="git_hash">Git hash: &lt;2dc1eef&gt;</textvar>
     <sheet number="1" name="/" tstamps="/">
       <title_block>
         <title>Gruffalo Dimmer</title>
         <company/>
         <rev>v2.0.0</rev>
-        <date>2023-06-28</date>
+        <date>2023-07-03</date>
         <source>LED_Dimmer.kicad_sch</source>
-        <comment number="1" value="Generated from Git Commit &lt;2dc1eef&gt;"/>
+        <comment number="1" value="Generated from Git Commit &lt;70cef97&gt;"/>
         <comment number="2" value=""/>
         <comment number="3" value=""/>
         <comment number="4" value=""/>
