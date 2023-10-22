@@ -1,10 +1,38 @@
-# Backups
-*.b#*
-*.l#*
-*.s#*
-**/*-backups/**
-**/*.kicad*-bak
+# For PCBs designed using KiCad: http://www.kicad-pcb.org/
+# Format documentation: http://kicad-pcb.org/help/file-formats/
 
-# Script outputs
-ulp_output.txt
-dxfimp.scr
+## Kibot - Artifacts
+**/Artifacts/**
+kibot_errors.filter
+*-erc.txt
+*-drc.txt
+*.log
+*.ogv
+
+# Temporary files
+*.000
+*.*bak
+*.bck
+*.sch-bak
+*.kicad_pcb-bak
+*~
+_autosave-*
+*.tmp
+*-cache.lib
+*-rescue.lib
+*-save.pro
+*-save.kicad_pcb
+hardware/**-backups/**
+*.lck
+
+# Netlist files (exported from Eeschema)
+*.net
+
+# Autorouter files (exported from Pcbnew)
+*.dsn
+*.ses
+
+# Fabrication Outputs: gerbers / boms / etc
+*.xml
+*.csv
+hardware/Snowflake-backups/**
