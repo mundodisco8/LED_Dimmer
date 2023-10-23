@@ -26,9 +26,9 @@ jobs:
     steps:
       - name: Checkout Step
         uses: actions/checkout@v4
-      # In case we want to SSH into the machine
-      - name: Setup upterm session
-        uses: lhotari/action-upterm@v1
+      # # In case we want to SSH into the machine
+      # - name: Setup upterm session
+      #   uses: lhotari/action-upterm@v1
       - name: KiBot does its thing
         uses: INTI-CMNB/KiBot@v2_dk7
         with:
