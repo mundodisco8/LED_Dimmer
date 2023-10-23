@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - Hardware
     paths:
     - '**.kicad_sch'
     - '**.kicad_pcb'
