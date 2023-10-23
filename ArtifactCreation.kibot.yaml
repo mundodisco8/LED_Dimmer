@@ -136,7 +136,6 @@ import:
   - file: config/blender.kibot.yaml
   - file: config/stenciljig.kibot.yaml
   - file: config/stepmodel.kibot.yaml
-  - file: config/assemblyinstructions.kibot.yaml
   - file: config/archive.kibot.yaml
 
 # outputs:
