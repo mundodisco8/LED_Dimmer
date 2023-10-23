@@ -36,3 +36,10 @@ hardware/**-backups/**
 *.xml
 *.csv
 hardware/Snowflake-backups/**
+
+## Silabs FW
+# Artifacts
+**/GNU*/
+
+# Test Artifacts
+**/test/build/
