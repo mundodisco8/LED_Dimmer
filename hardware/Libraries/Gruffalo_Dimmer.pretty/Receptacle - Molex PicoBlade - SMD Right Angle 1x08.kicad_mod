@@ -258,7 +258,7 @@
       ffc49caf-8d67-4292-8101-4824ab266d13
     )
   )
-  (model "${KIPRJMOD}/Libraries/Gruffalo_Dimmer.pretty/3D Models/Receptacle - Molex Picoblade - Connector + Housing - 1x08 v2.iges"
+  (model "${KIPRJMOD}/Libraries/Gruffalo_Dimmer.pretty/3D Models/Receptacle - Molex Picoblade - Connector + Housing - 1x08 v4.step"
     (offset (xyz 0 0 0))
     (scale (xyz 1 1 1))
     (rotate (xyz 0 0 180))

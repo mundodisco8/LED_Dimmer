@@ -19,7 +19,7 @@ global:
       regex: 'Missing KiCad main config file'
     # ... or user templates...
     - filter: "No user templates"
-      number: 9
+      number: 10
       regex: 'Unable to find KiCad user templates'
     # Even when passing a kicad_common.json, it has no environmental vars
     - filter: "No Environmental Vars in Kicad Config"
@@ -35,7 +35,7 @@ global:
       regex: '(?s)Polygon on B.Silkscreen'
   # solder_mask_color: white
   # silk_screen_color: black
-  resources_dir: "Resources"
+  resources_dir: "./Resources"
   pcb_finish: ENIG
 
 preflight:
