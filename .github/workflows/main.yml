@@ -26,6 +26,9 @@ jobs:
     steps:
       - name: Checkout Step
         uses: actions/checkout@v4
+      # In case we want to SSH into the machine
+      - name: Setup upterm session
+        uses: lhotari/action-upterm@v1
       - name: KiBot does its thing
         uses: INTI-CMNB/KiBot@v2_dk7
         with:
@@ -37,9 +40,6 @@ jobs:
           schema: 'hardware/LED_Dimmer.kicad_sch'
           # optional - PCB design file
           board: 'hardware/LED_Dimmer.kicad_pcb'
-      # In case we want to SSH into the machine
-      # - name: Setup upterm session
-      #   uses: lhotari/action-upterm@v1
       - name: upload results
         uses: actions/upload-artifact@v3
         with:
