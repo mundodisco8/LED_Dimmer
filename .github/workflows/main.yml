@@ -45,15 +45,14 @@ jobs:
         with:
           name: Artifacts
           path: Artifacts
-    # Leave this commented to update the Readme's images with the latest renders
-    #   - name: push changes to repo
-    #     if: ${{ github.ref == 'refs/heads/master'}}
-    #     run: |
-    #       mkdir -p support/img
-    #       cp Artifacts/Artifacts/BlenderRender/*.png support/img/
-    #       git config user.name github-actions
-    #       git config user.email github-actions@github.com
-    #       # so far only changes in the support folder need to be pushed back
-    #       git add support
-    #       git commit -m "${{ env.CI_COMMIT_MESSAGE }}"
-    #       git push
+      - name: push changes to repo
+        if: ${{ github.ref == 'refs/heads/master'}}
+        run: |
+          mkdir -p support/img
+          cp Artifacts/Artifacts/BlenderRender/*.png support/img/
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          # so far only changes in the support folder need to be pushed back
+          git add support
+          git commit -m "${{ env.CI_COMMIT_MESSAGE }}"
+          git push
