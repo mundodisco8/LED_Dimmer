@@ -35,7 +35,7 @@ global:
       regex: '(?s)Polygon on B.Silkscreen'
   # solder_mask_color: white
   # silk_screen_color: black
-  resources_dir: "./Resources"
+  resources_dir: "./resources"
   pcb_finish: ENIG
 
 preflight:
@@ -123,7 +123,7 @@ preflight:
   # To ensure our generated BoM is up to date.
   # Note that this isn't needed when using the internal BoM generator (`bom`).
   # You can compare the PCB and schematic netlists using it.
-  update_xml: false
+  update_xml: true
 
 import:
   - file: config/bom.kibot.yaml

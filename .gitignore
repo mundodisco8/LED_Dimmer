@@ -8,6 +8,8 @@ kibot_errors.filter
 *-drc.txt
 *.log
 *.ogv
+# My KiCost config file with Keys on it
+kicost_WITH_KEYS_DO_NOT_COMMIT.yaml
 
 # Temporary files
 *.000
