@@ -7,15 +7,19 @@ on:
       - Hardware
     paths:
     # Changes on kicad eeschema or board
-    - '**/**.kicad_@(sch|pcb)'
+    - '**/**.kicad_sch'
+    - '**/**.kicad_pcb'
     # changes on any yml file
-    - '**/**.y*(a)ml'
+    - '**/**.yml'
+    - '**/**.yaml'
   pull_request:
     paths:
-      # Changes on kicad eeschema or board
-    - '**/**.kicad_@(sch|pcb)'
-    # changes on any yml or yaml file
-    - '**/**.y*(a)ml'
+          # Changes on kicad eeschema or board
+    - '**/**.kicad_sch'
+    - '**/**.kicad_pcb'
+    # changes on any yml file
+    - '**/**.yml'
+    - '**/**.yaml'
 
 jobs:
   KiBotCICD:
