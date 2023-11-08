@@ -34,8 +34,6 @@ jobs:
         with:
           # Required - kibot config file
           config: ArtifactCreation.kibot.yaml
-          # optional - prefix to output defined in config
-          dir: Artifacts
           # optional - schematic file
           schema: 'hardware/LED_Dimmer.kicad_sch'
           # optional - PCB design file
@@ -49,7 +47,7 @@ jobs:
         if: ${{ github.ref == 'refs/heads/master'}}
         run: |
           mkdir -p support/img
-          cp Artifacts/Artifacts/BlenderRender/*.png support/img/
+          cp Artifacts/BlenderRender/*.png support/img/
           git config user.name github-actions
           git config user.email github-actions@github.com
           # so far only changes in the support folder need to be pushed back
