@@ -262,7 +262,7 @@ outputs:
       # [number=1] Number of boards to build (components multiplier)
       number: 10
       # [string='%f-%i%I%v.%x'] filename for the output (%i=bom). Affected by global options
-      output: '%f-%i%I%v.%x'
+      output: '%f-%i%I%v_KiCost.%x'
       # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
       # This option is for simple cases, consider using a full variant for complex cases
       pre_transform: '_none'

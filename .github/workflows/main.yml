@@ -51,7 +51,7 @@ jobs:
         if: ${{ github.ref == 'refs/heads/master'}}
         run: |
           mkdir -p support/img
-          cp Artifacts/BlenderRender/*.png support/img/
+          sudo cp Artifacts/BlenderRender/*.png support/img/
           git config user.name github-actions
           git config user.email github-actions@github.com
           # so far only changes in the support folder need to be pushed back
