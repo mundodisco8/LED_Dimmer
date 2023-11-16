@@ -1,3 +1,10 @@
+filters:
+  - name: "Pots_Out"
+    comment: "Filter to exclude the pots from a top render, to use as texture in fusion"
+    type: generic
+    exclude_bottom: true
+
+
 outputs:
 
   - name: 'blender_3d_common'
@@ -53,27 +60,27 @@ outputs:
       #     type: 'POINT'
       # [dict|list(dict)] Outputs to generate in the same run
       # outputs:
-        # [string='%f-%i%I%v.%x'] Name for the generated file (%i='3D_blender_$VIEW' %x=VARIABLE).
-        # The extension is selected from the type. Affected by global options
-        # - output: '%f-%I%vTop_Slanted.%x'
-        #   # [string='render'] [fbx,obj,x3d,gltf,stl,ply,blender,render] The format for the output.
-        #   # The `render` type will generate a PNG image of the render result.
-        #   # `fbx` is Kaydara's Filmbox, 'obj' is the Wavefront, 'x3d' is the new ISO/IEC standard
-        #   # that replaced VRML, `gltf` is the standardized GL format, `stl` is the 3D printing
-        #   # format, 'ply' is Polygon File Format (Stanford).
-        #   # Note that some formats includes the light and camera and others are just the 3D model
-        #   # (i.e. STL and PLY)
-        #   type: 'render'
-      # #   - output: '%f-%i%I%v.%x'
-      # #     type: 'blender'
-      # # [string|dict] Options to export the PCB to Blender.
-      # # You can also specify the name of the output that generates the PCB3D file.
-      # # See the `PCB2Blender_2_1` and  `PCB2Blender_2_1_haschtl` templates
-      #       pcb3d:
+      #   # [string='%f-%i%I%v.%x'] Name for the generated file (%i='3D_blender_$VIEW' %x=VARIABLE).
+      #   # The extension is selected from the type. Affected by global options
+      #   - output: '%f-%I%vTop_Slanted.%x'
+      #     # [string='render'] [fbx,obj,x3d,gltf,stl,ply,blender,render] The format for the output.
+      #     # The `render` type will generate a PNG image of the render result.
+      #     # `fbx` is Kaydara's Filmbox, 'obj' is the Wavefront, 'x3d' is the new ISO/IEC standard
+      #     # that replaced VRML, `gltf` is the standardized GL format, `stl` is the 3D printing
+      #     # format, 'ply' is Polygon File Format (Stanford).
+      #     # Note that some formats includes the light and camera and others are just the 3D model
+      #     # (i.e. STL and PLY)
+      #     type: 'render'
+      #   - output: '%f-%i%I%v.%x'
+      #     type: 'blender'
+      # [string|dict] Options to export the PCB to Blender.
+      # You can also specify the name of the output that generates the PCB3D file.
+      # See the `PCB2Blender_2_1` and  `PCB2Blender_2_1_haschtl` templates
+      # pcb3d:
       #   # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
       #   # A short-cut to use for simple cases where a variant is an overkill
-      #   dnf_filter: '_none'
-      #   # [boolean=true] Downloads missing 3D models from KiCad git.
+      #   dnf_filter: 'Pots_Out'
+      # [boolean=true] Downloads missing 3D models from KiCad git.
       #   # Only applies to models in KISYS3DMOD and KICAD6_3DMODEL_DIR.
       #   # They are downloaded to a temporal directory and discarded.
       #   # If you want to cache the downloaded files specify a directory using the
@@ -221,6 +228,43 @@ outputs:
         # 'blender_3d_top_flat'
         - file_id: 'Top'
           view: top
+
+  - name: 'blender_Render_Bottom_Texture'
+    comment: 'Renders the board from the Bottom, w/o pots'
+    type: 'blender_export'
+    dir: 'Artifacts/BlenderRender'
+    extends: 'blender_3d_common'
+    options:
+      outputs:
+        - output: '%f-%i%I%v_BottomTexture.%x'
+          type: 'render'
+      point_of_view:
+        # 'blender_3d_top_flat'
+        - file_id: 'Bottom'
+          view: bottom
+      pcb3d:
+      # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+      # A short-cut to use for simple cases where a variant is an overkill
+        dnf_filter: 'Pots_Out'
+      render_options:
+        # [boolean=false] When enabled the image will be post-processed to remove the empty space around the image.
+        # In this mode the `background2` is changed to be the same as `background1`
+        auto_crop: false
+        # [string='#66667F'] First color for the background gradient
+        background1: '#505050'
+        # [string='#CCCCE5'] Second color for the background gradient
+        background2: '#FFFFFF'
+        # `height` is an alias for `resolution_y`
+        # [number=1280] Width of the image
+        resolution_x: 1500
+        # [number=720] Height of the image
+        resolution_y: 1500
+        # [number=10] How many samples we create. Each sample is a raytracing render.
+        # Use 1 for a raw preview, 10 for a draft and 100 or more for the final render
+        samples: 20
+        # [boolean=false] Make the background transparent
+        transparent_background: true
+        # `width` is an alias for `resolution_x`
 
   - name: 'blender_Render_Bottom_Slanted'
     comment: 'Renders the board from the bottom, slightly slanted'
