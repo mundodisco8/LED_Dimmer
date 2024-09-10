@@ -1,0 +1,5 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "BGM220P_Breakout")(type "KiCad")(uri "${KIPRJMOD}/Libraries/BGM220P_Breakout.kicad_sym")(options "")(descr ""))
+  (lib (name "Gruffalo_Dimmer")(type "KiCad")(uri "${KIPRJMOD}/Libraries/Gruffalo_Dimmer.kicad_sym")(options "")(descr ""))
+)
