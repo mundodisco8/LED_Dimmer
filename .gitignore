@@ -40,6 +40,12 @@ hardware/**-backups/**
 hardware/Snowflake-backups/**
 
 ## Silabs FW
+# Rubbish - Not needed as indicated by SiLabs
+**/.trash
+**/.uceditor
+**/.projectlinkstore
+**/*.bak*
+
 # Artifacts
 **/GNU*/
 

@@ -45,6 +45,7 @@ btnError_t initButton(button_t* btnPtr, pinPort_t pinPort, uint8_t pinNo, action
     if ((btnPtr == NULL) || (debounceTimerPtr == NULL) || (samplingTimerPtr == NULL)) {
         return BTN_NULL_POINTER_PASSED;
     }
+    setPinMode(pinPort, pinNo, MODE_INPUT, false);
     btnPtr->btnPort          = pinPort;
     btnPtr->pinNo            = pinNo;
     btnPtr->integrator       = 0;
@@ -71,6 +72,8 @@ btnError_t initQuadEncoder(quad_encoder_t* quadPtr, pinPort_t pin0Port, uint8_t 
         // Not much we can do it the quad encoder pointer is NULL
         return BTN_NULL_POINTER_PASSED;
     }
+    setPinMode(pin0Port, pin0No, MODE_INPUT, false);
+    setPinMode(pin1Port, pin1No, MODE_INPUT, false);
     quadPtr->pin0No                 = pin0No;
     quadPtr->pin0Port               = pin0Port;
     quadPtr->pin1No                 = pin1No;

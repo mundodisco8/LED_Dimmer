@@ -26,10 +26,11 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  ******************************************************************************/
+
  MEMORY
  {
-   FLASH   (rx)  : ORIGIN = 0x12000, LENGTH = 0x44000
-   RAM     (rwx) : ORIGIN = 0x20000000, LENGTH = 0x8000
+   FLASH      (rx)  : ORIGIN = 0x0, LENGTH = 0x56000
+   RAM        (rwx) : ORIGIN = 0x20000000, LENGTH = 0x8000
  }
 
 ENTRY(Reset_Handler)
@@ -37,7 +38,7 @@ ENTRY(Reset_Handler)
 SECTIONS
 {
 
-  .text :
+  .vectors :
   {
     linker_vectors_begin = .;
     KEEP(*(.vectors))
@@ -45,9 +46,61 @@ SECTIONS
 
     __Vectors_End = .;
     __Vectors_Size = __Vectors_End - __Vectors;
+    __lma_ramfuncs_start__ = .;
+  } > FLASH
 
+  .stack (NOLOAD):
+  {
+    . = ALIGN(8);
+    __StackLimit = .;
+    KEEP(*(.stack*))
+    . = ALIGN(4);
+    __StackTop = .;
+    PROVIDE(__stack = __StackTop);
+  } > RAM
+
+
+  .noinit (NOLOAD):
+  {
+    *(.noinit*);
+  } > RAM
+
+  .bss :
+  {
+    . = ALIGN(4);
+    __bss_start__ = .;
+    *(SORT_BY_ALIGNMENT(.bss*))
+    *(COMMON)
+    . = ALIGN(4);
+    __bss_end__ = .;
+  } > RAM
+
+  text_application_ram :
+  {
+    . = ALIGN(4);
+    __vma_ramfuncs_start__ = .;
+    __text_application_ram_start__ = .;
+
+    *(text_application_ram)
+
+    . = ALIGN(4);
+    __vma_ramfuncs_end__ = .;
+    __text_application_ram_end__ = .;
+  } > RAM AT > FLASH
+
+  .rodata :
+  {
+    __lma_ramfuncs_end__ = .;
+    __rodata_start__ = .;
+    __rodata_end__ = .;
+  } > FLASH
+
+  .text :
+  {
     linker_code_begin = .;
-    *(.text*)
+    *(SORT_BY_ALIGNMENT(.text*))
+    *(SORT_BY_ALIGNMENT(text_*))
+    . = ALIGN(32);
     linker_code_end = .;
 
     KEEP(*(.init))
@@ -83,7 +136,7 @@ SECTIONS
   } > FLASH
   __exidx_end = .;
 
-    .copy.table :
+  .copy.table :
   {
     . = ALIGN(4);
     __copy_table_start__ = .;
@@ -93,57 +146,36 @@ SECTIONS
     LONG ((__data_end__ - __data_start__) / 4)
 
     /* Add each additional data section here */
-/*
+    /*
     LONG (__etext2)
     LONG (__data2_start__)
     LONG ((__data2_end__ - __data2_start__) / 4)
-*/
+    */
+
     __copy_table_end__ = .;
   } > FLASH
 
-    .zero.table :
+  .zero.table :
   {
     . = ALIGN(4);
     __zero_table_start__ = .;
     /* Add each additional bss section here */
-/*
+    /*
     LONG (__bss2_start__)
     LONG ((__bss2_end__ - __bss2_start__) / 4)
-*/
+    */
+
     __zero_table_end__ = .;
+    __etext = .;
   } > FLASH
 
-  __etext = .;
-
-  /* Start placing output sections which are loaded into RAM */
-  . = ORIGIN(RAM);
-
-  .stack ALIGN(8) (NOLOAD):
-  {
-    __StackLimit = .;
-    KEEP(*(.stack*))
-    . = ALIGN(4);
-    __StackTop = .;
-    PROVIDE(__stack = __StackTop);
-  } > RAM
-
-
-  .noinit . (NOLOAD):
-  {
-    *(.noinit*);
-  } > RAM
-
-  .data . : AT (__etext)
+  .data :
   {
     . = ALIGN(4);
     __data_start__ = .;
     *(vtable)
-    *(.data*)
-    . = ALIGN (4);
-
-    PROVIDE(__ram_func_section_start = .);
-    *(.ram)
-    PROVIDE(__ram_func_section_end = .);
+    *(SORT_BY_ALIGNMENT(.data*))
+    . = ALIGN(4);
 
     . = ALIGN(4);
     /* preinit data */
@@ -169,54 +201,43 @@ SECTIONS
     /* All data end */
     __data_end__ = .;
 
-  } > RAM
-
-  .bss . :
+  } > RAM AT > FLASH
+  .memory_manager_heap (NOLOAD):
   {
-    . = ALIGN(4);
-    __bss_start__ = .;
-    *(.bss*)
-    *(COMMON)
-    . = ALIGN(4);
-    __bss_end__ = .;
-  } > RAM
-
-  .heap (COPY):
-  {
+    . = ALIGN(8);
     __HeapBase = .;
     __end__ = .;
     end = __end__;
     _end = __end__;
-    KEEP(*(.heap*))
-    . = ORIGIN(RAM) + LENGTH(RAM);
-    __HeapLimit = .;
+    KEEP(*(.memory_manager_heap*))
+    __HeapLimit = ORIGIN(RAM) + LENGTH(RAM);
   } > RAM
 
   __heap_size = __HeapLimit - __HeapBase;
-  __main_flash_end__ = 0x12000 + 0x44000;
+  __ram_end__ = 0x20000000 + 0x8000;
+  __main_flash_end__ = 0x0 + 0x56000;
 
    /* This is where we handle flash storage blocks. We use dummy sections for finding the configured
    * block sizes and then "place" them at the end of flash when the size is known. */
   .internal_storage (DSECT) : {
     KEEP(*(.internal_storage*))
   } > FLASH
-  
+
 
   .nvm (DSECT) : {
     KEEP(*(.simee*))
   } > FLASH
 
+  __ramfuncs_start__ = __vma_ramfuncs_start__;
+  __ramfuncs_end__ = __vma_ramfuncs_end__;
+
   linker_nvm_end = __main_flash_end__;
   linker_nvm_begin = linker_nvm_end - SIZEOF(.nvm);
-  linker_nvm_size = SIZEOF(.nvm);
   linker_storage_end = linker_nvm_begin;
   __nvm3Base = linker_nvm_begin;
 
   linker_storage_begin = linker_storage_end - SIZEOF(.internal_storage);
-  linker_storage_size = SIZEOF(.internal_storage);
   ASSERT((linker_storage_begin >= (__etext + SIZEOF(.data))), "FLASH memory overflowed !")
 
 
-  app_flash_end = 0x12000 + 0x44000;
-  ASSERT( (linker_nvm_begin + SIZEOF(.nvm)) <= app_flash_end, "NVM3 is excessing the flash size !")
 }

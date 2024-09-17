@@ -37,16 +37,9 @@
 
 // <q SL_POWER_MANAGER_CUSTOM_HF_OSCILLATOR_IRQ_HANDLER> Enable custom IRQ handler for external HF oscillator.
 // <i> Enable if CMU_IRQHandler/HFXO0_IRQHandler is needed from your application.
-// <i> The function sl_power_manager_irq_handler() will have to be called from you custom handler if this is enabled.
+// <i> The function sl_power_manager_irq_handler() will have to be called from your custom handler if this is enabled.
 // <i> Default: 0
 #define SL_POWER_MANAGER_CUSTOM_HF_OSCILLATOR_IRQ_HANDLER  0
-
-// <o SL_POWER_MANAGER_LOWEST_EM_ALLOWED> Lowest Energy mode allowed
-// <1=> EM1
-// <2=> EM2
-// <3=> EM3
-// <i> Default: 2
-#define SL_POWER_MANAGER_LOWEST_EM_ALLOWED   2
 
 // <q SL_POWER_MANAGER_CONFIG_VOLTAGE_SCALING_FAST_WAKEUP> Enable fast wakeup (disable voltage scaling in EM2/3 mode)
 // <i> Enable or disable voltage scaling in EM2/3 modes (when available). This decreases wakeup time by about 30 us.
@@ -63,6 +56,33 @@
 // <i> Default: 10
 #define SL_POWER_MANAGER_DEBUG_POOL_SIZE  10
 // </e>
+
+// <o SL_POWER_MANAGER_INIT_EMU_EM4_PIN_RETENTION_MODE> Pin retention mode
+// <i>
+// <EMU_EM4CTRL_EM4IORETMODE_DISABLE=> No retention
+// <EMU_EM4CTRL_EM4IORETMODE_EM4EXIT=> Retention through EM4
+// <EMU_EM4CTRL_EM4IORETMODE_SWUNLATCH=> Retention through EM4 and wakeup
+// <d> power_manager_pin_retention_disable
+#define SL_POWER_MANAGER_INIT_EMU_EM4_PIN_RETENTION_MODE EMU_EM4CTRL_EM4IORETMODE_DISABLE
+
+// <e SL_POWER_MANAGER_INIT_EMU_EM2_DEBUG_ENABLE > Enable EM2 debugging feature
+// <i> Enable or disable debugging features.
+// <i> Default: 1
+#define SL_POWER_MANAGER_INIT_EMU_EM2_DEBUG_ENABLE 1
+// </e>
+
+// <e SL_POWER_MANAGER_RAMP_DVDD_EN> Enable dvdd ramp when entering em4
+// <i> Disabling will cause a current spike when entering em4, however the time to enter em4 will be reduced.
+// <i> Default: 1
+#define SL_POWER_MANAGER_RAMP_DVDD_EN 1
+// </e>
+
+// <o SL_POWER_MANAGER_RAMP_DVDD_TOLERANCE> The dvdd ramp algorithm tolerance.
+// <i> The tolerance of sample difference when determining if the dvdd voltage
+// reaches a plateau during the ramp algorithm. This value is in IADC steps.
+// With how the IADC is configured, each IADC step is approximately 1.2 mV.
+// <i> Default: 40
+#define SL_POWER_MANAGER_RAMP_DVDD_TOLERANCE 40
 
 // </h>
 

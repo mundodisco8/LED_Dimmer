@@ -59,9 +59,13 @@
 // [GPIO]$
 
 // $[TIMER0]
-// TIMER0 CC0 on PC03
+// TIMER0 CC0 on PC02
+#ifndef TIMER0_CC0_PORT                         
 #define TIMER0_CC0_PORT                          gpioPortC
-#define TIMER0_CC0_PIN                           3
+#endif
+#ifndef TIMER0_CC0_PIN                          
+#define TIMER0_CC0_PIN                           2
+#endif
 
 // [TIMER0]$
 
@@ -78,14 +82,6 @@
 // [TIMER4]$
 
 // $[USART0]
-// USART0 RX on PA06
-#define USART0_RX_PORT                           gpioPortA
-#define USART0_RX_PIN                            6
-
-// USART0 TX on PA05
-#define USART0_TX_PORT                           gpioPortA
-#define USART0_TX_PIN                            5
-
 // [USART0]$
 
 // $[USART1]
@@ -107,6 +103,22 @@
 // [I2C0]$
 
 // $[EUART0]
+// EUART0 RX on PB00
+#ifndef EUART0_RX_PORT                          
+#define EUART0_RX_PORT                           gpioPortB
+#endif
+#ifndef EUART0_RX_PIN                           
+#define EUART0_RX_PIN                            0
+#endif
+
+// EUART0 TX on PA00
+#ifndef EUART0_TX_PORT                          
+#define EUART0_TX_PORT                           gpioPortA
+#endif
+#ifndef EUART0_TX_PIN                           
+#define EUART0_TX_PIN                            0
+#endif
+
 // [EUART0]$
 
 // $[PTI]
@@ -116,17 +128,40 @@
 // [MODEM]$
 
 // $[CUSTOM_PIN_NAME]
+#ifndef _PORT                                   
+#define _PORT                                    gpioPortA
+#endif
+#ifndef _PIN                                    
+#define _PIN                                     0
+#endif
+
+#ifndef quad1_0_PORT                            
+#define quad1_0_PORT                             gpioPortA
+#endif
+#ifndef quad1_0_PIN                             
+#define quad1_0_PIN                              4
+#endif
+
+#ifndef quad1_1_PORT                            
+#define quad1_1_PORT                             gpioPortA
+#endif
+#ifndef quad1_1_PIN                             
+#define quad1_1_PIN                              5
+#endif
+
+#ifndef PWM0_Pin_PORT                           
 #define PWM0_Pin_PORT                            gpioPortC
-#define PWM0_Pin_PIN                             3
+#endif
+#ifndef PWM0_Pin_PIN                            
+#define PWM0_Pin_PIN                             2
+#endif
 
+#ifndef btn1_PORT                               
 #define btn1_PORT                                gpioPortC
-#define btn1_PIN                                 5
-
-#define quad1_1_PORT                             gpioPortC
-#define quad1_1_PIN                              6
-
-#define quad1_0_PORT                             gpioPortC
-#define quad1_0_PIN                              7
+#endif
+#ifndef btn1_PIN                                
+#define btn1_PIN                                 4
+#endif
 
 // [CUSTOM_PIN_NAME]$
 
