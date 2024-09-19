@@ -68,11 +68,6 @@ Use the Pin Tool to set:
   * PC1
   * PC0
 
-### Last few warnings - Disable the FEM
-
-Even after dealing with all the code warnings, you still get three more warnings: two about the FEM (front end module) and one about PTI. In this [comunity post](https://siliconlabs.my.site.com/community/s/question/0D58Y0000AERTwISQX/requirement-slfemutilrx-is-unsatisified-needs-prs-instance-from-slfemutilconfigh?language=en_US) the way they deal with the FEM ones is by directly commenting `sl_fem_util_init()` in `sl_event_handler.c`.
-
-
 ## Designing the GATT Database
 
 The SOC-empty example implements a basic GATT database. GATT definitions (services/characteristics) can be extended using the GATT Configurator, which can be found under Advanced Configurators in the Software Components tab of the Project Configurator. To open the Project Configurator, open the .slcp file of the project.

@@ -54,9 +54,7 @@ void sl_service_init(void)
 
 void sl_stack_init(void)
 {
-  // Modification: Remove warning about SL_FEM_UTIL_RX and _SLEEP requirements
-  // https://siliconlabs.my.site.com/community/s/question/0D58Y0000AERTwISQX/requirement-slfemutilrx-is-unsatisified-needs-prs-instance-from-slfemutilconfigh?language=en_US
-  //sl_fem_util_init();
+  sl_fem_util_init();
   sl_rail_util_pa_init();
   sl_rail_util_power_manager_init();
   sl_rail_util_pti_init();
