@@ -15,13 +15,21 @@
 
 #include "debounce.h"
 
-#include "inttypes.h"
-#include "stddef.h"
+// StdLib headers
+#include <inttypes.h>
+#include <stddef.h>
 
-#include "gpio_HW.h"
-
+// Silabs SDK headers
+// Ignore a cast-align warning in some cmsis header and a sign conversion in
+// sl_sleeptimer.h
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-align"
+#pragma GCC diagnostic ignored "-Wsign-conversion"
 #include "app_log.h"
+#pragma GCC diagnostic pop
 
+// Project headers
+#include "gpio_HW.h"
 #include "sleepyTimers_HW.h"
 /******************************************************************************
 written by Kenneth A. Kuhn
@@ -186,7 +194,7 @@ uint32_t startButtonTimer(button_t* btnPtr, timerType_t timerType) {
         }
     }
     if (retVal != SLPTIMER_OK) {
-        app_log_error("Error 0x%04X starting %s timer\r\n", retVal,
+        app_log_error("Error 0x%04"PRIX32" starting %s timer\r\n", retVal,
                       (timerType == TIMER_SAMPLE ? "sampling" : "debouncing"));
     }
     return retVal;
@@ -200,14 +208,14 @@ static uint32_t stopButtonTimers(button_t* btnPtr) {
     if (SLP_isTimerRunning(btnPtr->samplingTimerPtr)) {
         retVal = SLP_stopTimer(btnPtr->samplingTimerPtr);
         if (retVal != SLPTIMER_OK) {
-            app_log_error("Error 0x%04X stopping sampling timer\r\n", retVal);
+            app_log_error("Error 0x%04"PRIX32" stopping sampling timer\r\n", retVal);
             return retVal;
         }
     }
     if (SLP_isTimerRunning(btnPtr->debounceTimerPtr)) {
         retVal = SLP_stopTimer(btnPtr->debounceTimerPtr);
         if (retVal != SLPTIMER_OK) {
-            app_log_error("Error 0x%04X stopping debounce timer\r\n", retVal);
+            app_log_error("Error 0x%04"PRIX32" stopping debounce timer\r\n", retVal);
         return retVal;
         }
     }

@@ -9,9 +9,9 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/inc",
-                "${workspaceFolder}/src/autogen",
-                "${workspaceFolder}/src/config",
-                "${workspaceFolder}/src/config/btconf",
+                "${workspaceFolder}/autogen",
+                "${workspaceFolder}/config",
+                "${workspaceFolder}/config/btconf",
                 "${workspaceFolder}/simplicity_sdk_2024.6.1/platform/Device/SiliconLabs/BGM22/Include",
                 "${workspaceFolder}/simplicity_sdk_2024.6.1/app/common/util/app_assert",
                 "${workspaceFolder}/simplicity_sdk_2024.6.1/app/common/util/app_log",
@@ -64,8 +64,7 @@
                 "${workspaceFolder}/simplicity_sdk_2024.6.1/platform/service/system/inc",
                 "${workspaceFolder}/simplicity_sdk_2024.6.1/platform/service/sleeptimer/inc",
                 "${workspaceFolder}/simplicity_sdk_2024.6.1/platform/security/sl_component/sl_protocol_crypto/src",
-                "${workspaceFolder}/simplicity_sdk_2024.6.1/platform/service/udelay/inc",
-                "${workspaceFolder}/simplicity_sdk_2024.6.1/platform/security/sl_component/sl_mbedtls_support/config/preset",
+                "${workspaceFolder}/simplicity_sdk_2024.6.1/platform/service/udelay/inc"
             ],
             "browse": {
                 "path": [

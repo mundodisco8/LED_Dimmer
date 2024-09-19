@@ -233,6 +233,10 @@ uint8_t app_log_filter_mask_get(void);
         app_log_append(APP_LOG_LEVEL_CRITICAL_BACKGROUND_COLOR \
                        APP_LOG_LEVEL_CRITICAL_COLOR);          \
         break;                                                 \
+      /* Default case added by me to silence warning */        \
+      default:                                                 \
+        break;                                                 \
+      /* End of modification */                                \
     }                                                          \
   } while (0)
 
@@ -274,6 +278,10 @@ uint8_t app_log_filter_mask_get(void);
         app_log_append(APP_LOG_LEVEL_CRITICAL_PREFIX \
                        APP_LOG_SEPARATOR);           \
         break;                                       \
+      /* Default case added by me to silence warning */\
+      default:                                         \
+        break;                                         \
+      /* End of modification */                        \
     }                                                \
   } while (0)
 

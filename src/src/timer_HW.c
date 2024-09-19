@@ -12,12 +12,21 @@
 
 #include <stddef.h>
 
+// Other SiLabs headers
+// Ignore a cast-align warning in some cmsis header
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-align"
 #include "em_cmu.h"
+#pragma GCC diagnostic pop
 #include "em_timer.h"
 #include "em_gpio.h"
-
+// Ignore a sign conversion in sl_sleeptimer.h
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-conversion"
 #include "app_log.h"
+#pragma GCC diagnostic pop
 
+// Project headers
 #include "gpio_HW.h"
 
 ////

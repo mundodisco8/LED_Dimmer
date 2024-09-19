@@ -1,7 +1,14 @@
 #include "interrupt_HW.h"
 
+// Silabs SDK headers
+// Ignore a cast-align warning in some cmsis header
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-align"
 #include "gpiointerrupt.h"
+// Ignore a sign conversion in sl_sleeptimer.h
+#pragma GCC diagnostic ignored "-Wsign-conversion"
 #include "app_log.h"
+#pragma GCC diagnostic pop
 
 // Wrapper for GPIOINT_Init()
 // Initialises the GPIO Odd and Even interrupts.
@@ -34,7 +41,7 @@ void setInterruptCallback(uint8_t pinNo, callbackPtr_t callbackPtr) {
 uint32_t setInterruptCallbackWCtx(uint8_t pinNo, callbackCtxPtr_t cbCtxPtr, void* ctxPtr) {
     uint32_t retVal = GPIOINT_CallbackRegisterExt(pinNo, cbCtxPtr, ctxPtr);
     if (retVal == INTERRUPT_UNAVAILABLE) {
-        app_log_error("Error 0x%04X registering interrupt callback with Ctx\r\n", retVal);
+        app_log_error("Error 0x%04"PRIX32" registering interrupt callback with Ctx\r\n", retVal);
     }
     return retVal;
 }

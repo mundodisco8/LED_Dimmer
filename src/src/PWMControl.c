@@ -12,9 +12,21 @@
 
 #include "PWMControl.h"
 
+// C Standard libs
+#include <math.h>
+
+// SDK includes
+// Ignore a cast-align warning in some cmsis header and a sign conversion in
+// sl_sleeptimer.h
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-align"
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+#include "app_log.h"
+#pragma GCC diagnostic pop
+
+// My includes
 #include "timer_HW.h"
 
-#include "math.h"
 
 // Gamma correction
 // To correct the intensity of the LEDs to match the perception of our eyes, we need to do some maths™
@@ -89,7 +101,7 @@ static void buildGammaLookUpTable(void) {
     }
     // DEBUG: print the table to check the values
     // for (uint32_t i = 0; i < gammaLuTSize; i++) {
-    //     app_log_info("%d% -> %d\r\n", i, gammaLookUp[i]);
+    //     app_log_info("%"PRIu32"% -> %"PRIu32"\r\n", i, gammaLookUp[i]);
     // }
 }
 
@@ -104,7 +116,8 @@ void setDutyCycle(CCChannel_t channel, uint8_t percent) {
         percent = 100;
     }
     // DEBUG: print set value
-    // app_log_debug("Setting %d%: %d/%d", percent, compareValue, TIMER_TopGet(TIMER0));
+    // TODO: This doesn't work, review!
+    // app_log_debug("Setting %"PRIu8"%: %"PRIu32"/%"PRIu32, percent, compareValue, TIMER_TopGet(TIMER0));
     TIMHW_setChannelBufferedOutputCompare(channel, (top * percent) / 100);
 }
 
@@ -120,7 +133,7 @@ void setBrightness(CCChannel_t channel, uint8_t percent) {
     } else {
         compareValue = gammaLookUp[percent];
     }
-    // app_log_debug("Setting %d%: %d/%d", percent, compareValue, getTimer0TopValue());
+    // app_log_debug("Setting %"PRIu8"%: %"PRIu32"/%"PRIu32, percent, compareValue, getTimer0TopValue());
     // Set compare value using gamma correction lookup table
     TIMHW_setChannelBufferedOutputCompare(channel, compareValue);
 }

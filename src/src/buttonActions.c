@@ -7,7 +7,13 @@
 #include "buttonActions.h"
 
 // Other SiLabs headers
+// Ignore a cast-align warning in some cmsis header and a sign conversion in
+// sl_sleeptimer.h
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-align"
+#pragma GCC diagnostic ignored "-Wsign-conversion"
 #include "app_log.h"
+#pragma GCC diagnostic pop
 
 // Project Libraries
 #include "PWMControl.h"
@@ -50,7 +56,7 @@ void button1Pressed(void) {
     if (currPercent > 100) {
         currPercent = 0;
     }
-    app_log_info("Set PWM to %d%\r\n", currPercent);
+    app_log_info("Set PWM to %"PRIu8"\r\n", currPercent);
     setDutyCycle(CC_CHANNEL_0, currPercent);
 }
 
@@ -61,7 +67,7 @@ void button1Released(void) {
 void quad1ClockWise(void) {
     if (currPercent < 100) {
         currPercent++;
-        app_log_debug("%d\r\n", currPercent);
+        app_log_debug("%"PRIu8"\r\n", currPercent);
         setDutyCycle(CC_CHANNEL_0, currPercent);
     }
 }
@@ -69,7 +75,7 @@ void quad1ClockWise(void) {
 void quad1CounterClockWise(void) {
     if (currPercent > 0) {
         currPercent--;
-        app_log_debug("%d\r\n", currPercent);
+        app_log_debug("%"PRIu8"\r\n", currPercent);
         setDutyCycle(CC_CHANNEL_0, currPercent);
     }
 }

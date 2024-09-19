@@ -1,6 +1,11 @@
 #include "gpio_HW.h"
 
+// Silabs SDK headers
+// Ignore a cast-align warning in some cmsis header
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-align"
 #include "em_gpio.h"
+#pragma GCC diagnostic pop
 #include "em_cmu.h"
 
 // NOTE: If a module clock is disabled, the registers of that module are not accessible and accessing such registers

@@ -41,15 +41,27 @@
  ******************************************************************************/
 #include "stdbool.h"
 
+// Ignore a cast-align warning in some cmsis header
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-align"
 #include "em_common.h"
+#pragma GCC diagnostic pop
+
 #include "em_gpio.h"
 
+// Ignore a sign conversion warning in sl_sleeptimer.h
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+#pragma GCC diagnostic ignored "-Wpedantic"
 #include "sl_bluetooth.h"
+#pragma GCC diagnostic pop
+
 #include "sl_sleeptimer.h"
 
 #include "app.h"
 #include "app_assert.h"
 #include "app_log.h"
+
 #include "gatt_db.h"
 #include "pin_config.h"
 
@@ -125,14 +137,14 @@ SL_WEAK void app_process_action(void) {
     static uint32_t oldRotary = 4000;
     uint32_t rotary           = getRotary();
     if (rotary != oldRotary) {
-        app_log_warning("Rotary %d\r\n", rotary);
+        app_log_warning("Rotary %"PRIu32"\r\n", rotary);
         oldRotary = rotary;
     }
 
     static uint32_t oldButton = 0;
     uint32_t button           = getButton();
     if (button != oldButton) {
-        app_log_info("Button %d\r\n", button);
+        app_log_info("Button %"PRIu32"\r\n", button);
         oldButton = button;
     }
 

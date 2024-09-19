@@ -16,6 +16,8 @@ One of the SDK was triggering 70+ Code Analysis warnings (different than GCC war
 
 The best way to import the project is
 
+## Changes to the Empty Project
+
 ### Software Components:
 
 #### Clock Manager
@@ -65,6 +67,10 @@ Use the Pin Tool to set:
   * PC2 as `TIMER0_CC0` with `PWM0` as `Custom Pin Name`
   * PC1
   * PC0
+
+### Last few warnings - Disable the FEM
+
+Even after dealing with all the code warnings, you still get three more warnings: two about the FEM (front end module) and one about PTI. In this [comunity post](https://siliconlabs.my.site.com/community/s/question/0D58Y0000AERTwISQX/requirement-slfemutilrx-is-unsatisified-needs-prs-instance-from-slfemutilconfigh?language=en_US) the way they deal with the FEM ones is by directly commenting `sl_fem_util_init()` in `sl_event_handler.c`.
 
 
 ## Designing the GATT Database
