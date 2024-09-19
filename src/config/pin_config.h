@@ -59,14 +59,6 @@
 // [GPIO]$
 
 // $[TIMER0]
-// TIMER0 CC0 on PC02
-#ifndef TIMER0_CC0_PORT                         
-#define TIMER0_CC0_PORT                          gpioPortC
-#endif
-#ifndef TIMER0_CC0_PIN                          
-#define TIMER0_CC0_PIN                           2
-#endif
-
 // [TIMER0]$
 
 // $[TIMER1]
@@ -133,34 +125,6 @@
 #endif
 #ifndef _PIN                                    
 #define _PIN                                     0
-#endif
-
-#ifndef quad1_0_PORT                            
-#define quad1_0_PORT                             gpioPortA
-#endif
-#ifndef quad1_0_PIN                             
-#define quad1_0_PIN                              4
-#endif
-
-#ifndef quad1_1_PORT                            
-#define quad1_1_PORT                             gpioPortA
-#endif
-#ifndef quad1_1_PIN                             
-#define quad1_1_PIN                              5
-#endif
-
-#ifndef PWM0_Pin_PORT                           
-#define PWM0_Pin_PORT                            gpioPortC
-#endif
-#ifndef PWM0_Pin_PIN                            
-#define PWM0_Pin_PIN                             2
-#endif
-
-#ifndef btn1_PORT                               
-#define btn1_PORT                                gpioPortC
-#endif
-#ifndef btn1_PIN                                
-#define btn1_PIN                                 4
 #endif
 
 // [CUSTOM_PIN_NAME]$
