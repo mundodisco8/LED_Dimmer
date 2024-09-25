@@ -1,6 +1,0 @@
----
-label: "bt_soc_empty"
-project:
-- id: "main"
-  path: "Gruffalo_Dimmer.slcp"
-  output: "."

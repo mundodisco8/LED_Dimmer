@@ -29,11 +29,4 @@
 		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>simplicity_sdk_2024.6.1/protocol/bluetooth/src/sl_bt_stack_init.c</name>
-			<type>1</type>
-			<locationURI>STUDIO_SDK_LOC/protocol/bluetooth/src/sl_bt_stack_init.c</locationURI>
-		</link>
-	</linkedResources>
 </projectDescription>

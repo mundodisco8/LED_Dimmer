@@ -71,19 +71,19 @@ SECTIONS
     __bss_start__ = .;
     *(SORT_BY_ALIGNMENT(.bss*))
     *(COMMON)
-    . = ALIGN(4);
+    . = ALIGN(32);
     __bss_end__ = .;
   } > RAM
 
   text_application_ram :
   {
-    . = ALIGN(4);
+    . = ALIGN(32);
     __vma_ramfuncs_start__ = .;
     __text_application_ram_start__ = .;
 
     *(text_application_ram)
 
-    . = ALIGN(4);
+    . = ALIGN(32);
     __vma_ramfuncs_end__ = .;
     __text_application_ram_end__ = .;
   } > RAM AT > FLASH

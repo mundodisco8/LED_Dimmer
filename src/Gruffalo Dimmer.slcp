@@ -24,7 +24,7 @@ include:
 - path: .
   file_list:
   - {path: app.h}
-sdk: {id: simplicity_sdk, version: 2024.6.1}
+sdk: {id: simplicity_sdk, version: 2024.6.2}
 toolchain_settings: []
 component:
 - {id: BGM220PC22WGA}
