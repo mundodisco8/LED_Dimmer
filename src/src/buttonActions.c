@@ -21,6 +21,9 @@
 #include "debounce.h"
 #include "gpio_HW.h"
 
+// TODO: Maybe we can store errors in some variables, and then check for interrutp
+// errors in the main loop?
+
 // TODO: Quick and dirty test to see that everything is wired
 // A button press will increase the counter of button presses and a button release will print a message
 // A quad rotating will increase a count starting on 4000 if turned CW and decrease it if turned CCW.
@@ -32,7 +35,7 @@ volatile uint32_t rotaryCount = 4000;
 void gpioCallbackButton1(uint8_t intNo, void* ctx) {
     (void)intNo;
     // set debounce timer
-    startButtonTimer((button_t*)ctx, TIMER_DEBOUNCE);
+    //startButtonTimer((button_t*)ctx, TIMER_DEBOUNCE);
     // set sampling timer
     startButtonTimer((button_t*)ctx, TIMER_SAMPLE);
 }
@@ -57,18 +60,18 @@ void button1Pressed(void) {
         currPercent = 0;
     }
     app_log_info("Set PWM to %"PRIu8"\r\n", currPercent);
-    setDutyCycle(CC_CHANNEL_0, currPercent);
+    //setDutyCycle(CC_CHANNEL_0, currPercent);
 }
 
 void button1Released(void) {
-    // app_log_info("Btn1 Released\r\n");
+    app_log_info("Btn1 Released\r\n");
 }
 
 void quad1ClockWise(void) {
     if (currPercent < 100) {
         currPercent++;
         app_log_debug("%"PRIu8"\r\n", currPercent);
-        setDutyCycle(CC_CHANNEL_0, currPercent);
+        //setDutyCycle(CC_CHANNEL_0, currPercent);
     }
 }
 
@@ -76,7 +79,7 @@ void quad1CounterClockWise(void) {
     if (currPercent > 0) {
         currPercent--;
         app_log_debug("%"PRIu8"\r\n", currPercent);
-        setDutyCycle(CC_CHANNEL_0, currPercent);
+        //setDutyCycle(CC_CHANNEL_0, currPercent);
     }
 }
 

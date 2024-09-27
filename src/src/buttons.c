@@ -33,6 +33,7 @@
 //static uint32_t setSamplingTimer(button_t* btnPtr);
 
 // Initialises the button_t struct with the default values and associates the pressed and released actions.
+// NOTE: Each button uses two sleeptimers, so make sure you have enough!
 // Parameters: btnPtr: a pointer to a button_t object which will be initialised
 //             pinPort: the port of the GPIO Pin of the button
 //             pinNo: the pin number of the button
@@ -40,9 +41,8 @@
 //             releasedAction: a buttonCallback_t pointer to the callback to call when the button is released
 // Returns: true on sucess, false if the button_t pointer passed is null
 btnError_t initButton(button_t* btnPtr, pinPort_t pinPort, uint8_t pinNo, actionCallback_t pressedAction,
-                      actionCallback_t releasedAction, timerHandle_t* debounceTimerPtr,
-                      timerHandle_t* samplingTimerPtr) {
-    if ((btnPtr == NULL) || (debounceTimerPtr == NULL) || (samplingTimerPtr == NULL)) {
+                      actionCallback_t releasedAction) {
+    if (btnPtr == NULL) {
         return BTN_NULL_POINTER_PASSED;
     }
     setPinMode(pinPort, pinNo, MODE_INPUT, false);
@@ -52,7 +52,9 @@ btnError_t initButton(button_t* btnPtr, pinPort_t pinPort, uint8_t pinNo, action
     btnPtr->state            = BUTTON_RELEASED;  // buttons are released by default
     btnPtr->pressedAction    = pressedAction;
     btnPtr->releasedAction   = releasedAction;
+    // TODO: request a timer here
     btnPtr->debounceTimerPtr = debounceTimerPtr;
+    // TODO: request a timer here
     btnPtr->samplingTimerPtr = samplingTimerPtr;
 
     return BTN_OK;
@@ -103,7 +105,7 @@ btnError_t configureButtonInterrupts(button_t* btnPtr, callbackCtxPtr_t callback
         // No ints available
         return BTN_NO_INTS_AVAILABLE;
     }  // Else, an int was correctly configured, and returned in intPin
-    // We call configurePinInterrupt with whatever pin numnber setInterruptCallbackWCtx retunrs, not with
+    // We call configurePinInterrupt with whatever pin numnber setInterruptCallbackWCtx returns, not with
     // pinNo, as one would expect, just in case they are not the same number
     configurePinInterrupt(btnPtr->btnPort, btnPtr->pinNo, *intNoPtr, true, true, true);
     enablePinInterrupts(1 << *intNoPtr);

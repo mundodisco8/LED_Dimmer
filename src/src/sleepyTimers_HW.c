@@ -10,6 +10,7 @@
 #pragma GCC diagnostic ignored "-Wsign-conversion"
 #include "sl_sleeptimer.h"
 #pragma GCC diagnostic pop
+#include "sl_bluetooth_config.h"
 #include "app_log.h"
 
 ////
@@ -17,6 +18,22 @@
 ////
 
 // static bool isTimerRunning(timer_handle_t* handlePtr);
+
+static sl_sleeptimer_timer_handle_t timerArray[SL_BT_CONFIG_MAX_SOFTWARE_TIMERS] = {0};
+static uint8_t timersUsed = 0;
+
+slpTimerStatus_t SLP_reserveTimer(timerHandle_t* handlePtr) {
+    // Check current number of given timers
+    if (timersUsed >= SL_BT_CONFIG_MAX_SOFTWARE_TIMERS) {
+        return SLPTIMER_ERROR;
+    }
+    // Else, we can still give a timer. Make handlePtr point to the next available timer.
+    *(sl_sleeptimer_timer_handle_t*)handlePtr = timerArray[timersUsed];
+    timersUsed++;
+    // if still available, retunr pointer to it
+    return SLPTIMER_ERROR;
+}
+
 
 // Starts a one-shot timer
 // Parameters: handlePtr, a pointer to a timerHandle_t object

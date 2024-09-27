@@ -7,7 +7,7 @@ typedef enum {
 } slpTimerStatus_t;
 
 // Forward declaration
-typedef struct timerHandle timerHandle_t;
+typedef struct sl_spleeptimer_timer_handle timerHandle_t;
 
 typedef void (*timerCallback_t)(timerHandle_t *handle, void *data);
 

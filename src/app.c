@@ -78,11 +78,6 @@ static uint8_t advertising_set_handle = 0xff;
 // Our buttons
 button_t button0 = {0};
 button_t button1 = {0};
-// and their timers
-timerHandle_t samplingTimerBtn0 = {0};
-timerHandle_t samplingTimerBtn1 = {0};
-timerHandle_t debounceTimerBtn0 = {0};
-timerHandle_t debounceTimerBtn1 = {0};
 
 // And our quad encoders
 quad_encoder_t quad0 = {0};
@@ -98,17 +93,19 @@ SL_WEAK void app_init(void) {
     /////////////////////////////////////////////////////////////////////////////
     app_log_error("Booted up!\r\n");
 
+    // TODO: there's no need, that I can see, of keeping the interrupt number, and I'm certainly not using it anywhere
+    // If anything, it could be stored internally in the button_t struct
     // Init GPIOs for buttons and quads
     uint32_t button1GPIOIntNo = 0;
-    uint32_t quad1GPIOIntNo = 0;
-    initButton(&button1, (pinPort_t)btn1_PORT, btn1_PIN, button1Pressed, button1Released, &debounceTimerBtn1, &samplingTimerBtn1);
-    initQuadEncoder(&quad1, (pinPort_t)quad1_0_PORT, quad1_0_PIN, (pinPort_t)quad1_1_PORT, quad1_1_PIN, quad1ClockWise, quad1CounterClockWise);
+    // uint32_t quad1GPIOIntNo = 0;
+    initButton(&button1, (pinPort_t)btn1_PORT, btn1_PIN, button1Pressed, button1Released);
+    // initQuadEncoder(&quad1, (pinPort_t)quad1_0_PORT, quad1_0_PIN, (pinPort_t)quad1_1_PORT, quad1_1_PIN, quad1ClockWise, quad1CounterClockWise);
     configureButtonInterrupts(&button1, gpioCallbackButton1, &button1GPIOIntNo);
-    configureQuadratureInterrupts(&quad1, gpioCallbackQuad1, &quad1GPIOIntNo);
+    // configureQuadratureInterrupts(&quad1, gpioCallbackQuad1, &quad1GPIOIntNo);
 
     // Init PWM on TIMER0
-    initTimer0HW();
-    initTimer0CCChannel(CC_CHANNEL_0, portC, 3, 250, PWM_ACTIVE_HIGH);
+    // initTimer0HW();
+    // initTimer0CCChannel(CC_CHANNEL_0, portC, 3, 250, PWM_ACTIVE_HIGH);
 }
 
 /******************************************************************************
