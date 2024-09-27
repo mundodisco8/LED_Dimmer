@@ -14,15 +14,21 @@
     <property object="PA07" propertyId="pin.reserve" value="Reserved"/>
     <property object="PA08" propertyId="pin.name" value="quad0_1"/>
     <property object="PA08" propertyId="pin.reserve" value="Reserved"/>
-    <property object="PC00" propertyId="pin.name" value=""/>
-    <property object="PC02" propertyId="pin.name" value="pwm0"/>
+    <property object="PC00" propertyId="pin.name" value="pwm0"/>
+    <property object="PC01" propertyId="pin.name" value="pwm1"/>
+    <property object="PC02" propertyId="pin.name" value="pwm2"/>
     <property object="PC04" propertyId="pin.name" value="btn1"/>
     <property object="PC04" propertyId="pin.reserve" value="Reserved"/>
     <property object="PORTIO" propertyId="portio.euart0.enable.rx" value="Enabled"/>
     <property object="PORTIO" propertyId="portio.euart0.enable.tx" value="Enabled"/>
     <property object="PORTIO" propertyId="portio.euart0.location.rx" value="16"/>
     <property object="PORTIO" propertyId="portio.timer0.enable.cc0" value="Enabled"/>
-    <property object="PORTIO" propertyId="portio.timer0.location.cc0" value="34"/>
+    <property object="PORTIO" propertyId="portio.timer0.enable.cc1" value="Enabled"/>
+    <property object="PORTIO" propertyId="portio.timer0.enable.cc2" value="Enabled"/>
+    <property object="PORTIO" propertyId="portio.timer0.location.cc0" value="32"/>
+    <property object="PORTIO" propertyId="portio.timer0.location.cc1" value="33"/>
+    <property object="PORTIO" propertyId="portio.timer0.location.cc2" value="34"/>
+    <property object="PTI" propertyId="ABPeripheral.included" value="true"/>
   </mode>
   <modeTransition>
     <property object="RESET &#x2192; DefaultMode" propertyId="modeTransition.source" value="RESET"/>

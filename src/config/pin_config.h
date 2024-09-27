@@ -59,12 +59,28 @@
 // [GPIO]$
 
 // $[TIMER0]
-// TIMER0 CC0 on PC02
+// TIMER0 CC0 on PC00
 #ifndef TIMER0_CC0_PORT                         
 #define TIMER0_CC0_PORT                          gpioPortC
 #endif
 #ifndef TIMER0_CC0_PIN                          
-#define TIMER0_CC0_PIN                           2
+#define TIMER0_CC0_PIN                           0
+#endif
+
+// TIMER0 CC1 on PC01
+#ifndef TIMER0_CC1_PORT                         
+#define TIMER0_CC1_PORT                          gpioPortC
+#endif
+#ifndef TIMER0_CC1_PIN                          
+#define TIMER0_CC1_PIN                           1
+#endif
+
+// TIMER0 CC2 on PC02
+#ifndef TIMER0_CC2_PORT                         
+#define TIMER0_CC2_PORT                          gpioPortC
+#endif
+#ifndef TIMER0_CC2_PIN                          
+#define TIMER0_CC2_PIN                           2
 #endif
 
 // [TIMER0]$
@@ -174,7 +190,21 @@
 #define pwm0_PORT                                gpioPortC
 #endif
 #ifndef pwm0_PIN                                
-#define pwm0_PIN                                 2
+#define pwm0_PIN                                 0
+#endif
+
+#ifndef pwm1_PORT                               
+#define pwm1_PORT                                gpioPortC
+#endif
+#ifndef pwm1_PIN                                
+#define pwm1_PIN                                 1
+#endif
+
+#ifndef pwm2_PORT                               
+#define pwm2_PORT                                gpioPortC
+#endif
+#ifndef pwm2_PIN                                
+#define pwm2_PIN                                 2
 #endif
 
 #ifndef btn1_PORT                               

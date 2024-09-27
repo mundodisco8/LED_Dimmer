@@ -7,11 +7,10 @@
     <informativeText>Abstract: The generic_access service contains generic information about the device. All available Characteristics are readonly. </informativeText>
 
     <!--Device Name-->
-    <characteristic const="false" id="device_name" name="Device Name" sourceId="org.bluetooth.characteristic.gap.device_name" uuid="2A00">
-      <value length="12" type="utf-8" variable_length="true">Fairy Lights</value>
+    <characteristic const="true" id="device_name" name="Device Name" sourceId="org.bluetooth.characteristic.gap.device_name" uuid="2A00">
+      <value length="15" type="utf-8" variable_length="false">Gruffalo Dimmer</value>
       <properties>
         <read authenticated="false" bonded="false" encrypted="false"/>
-        <write authenticated="false" bonded="false" encrypted="false"/>
       </properties>
     </characteristic>
 
@@ -32,7 +31,7 @@
     <!--Manufacturer Name String-->
     <characteristic const="true" id="manufacturer_name_string" name="Manufacturer Name String" sourceId="org.bluetooth.characteristic.manufacturer_name_string" uuid="2A29">
       <informativeText>Abstract: The value of this characteristic is a UTF-8 string representing the name of the manufacturer of the device.</informativeText>
-      <value length="12" type="utf-8" variable_length="false">Joel</value>
+      <value length="12" type="utf-8" variable_length="false">Silicon Labs</value>
       <properties>
         <read authenticated="false" bonded="false" encrypted="false"/>
       </properties>
@@ -41,7 +40,7 @@
     <!--Model Number String-->
     <characteristic const="false" id="model_number_string" name="Model Number String" sourceId="org.bluetooth.characteristic.model_number_string" uuid="2A24">
       <informativeText>Abstract: The value of this characteristic is a UTF-8 string representing the model number assigned by the device vendor.</informativeText>
-      <value length="8" type="utf-8" variable_length="false">00000001</value>
+      <value length="8" type="utf-8" variable_length="false">00000000</value>
       <properties>
         <read authenticated="false" bonded="false" encrypted="false"/>
       </properties>
@@ -50,7 +49,7 @@
     <!--Hardware Revision String-->
     <characteristic const="false" id="hardware_revision_string" name="Hardware Revision String" sourceId="org.bluetooth.characteristic.hardware_revision_string" uuid="2A27">
       <informativeText>Summary: The value of this characteristic is a UTF-8 string representing the hardware revision for the hardware within the device.</informativeText>
-      <value length="3" type="utf-8" variable_length="false">001</value>
+      <value length="3" type="utf-8" variable_length="false">000</value>
       <properties>
         <read authenticated="false" bonded="false" encrypted="false"/>
       </properties>
@@ -59,7 +58,7 @@
     <!--Firmware Revision String-->
     <characteristic const="false" id="firmware_revision_string" name="Firmware Revision String" sourceId="org.bluetooth.characteristic.firmware_revision_string" uuid="2A26">
       <informativeText>Summary: The value of this characteristic is a UTF-8 string representing the firmware revision for the firmware within the device.</informativeText>
-      <value length="5" type="utf-8" variable_length="false">0.1.0</value>
+      <value length="5" type="utf-8" variable_length="false">0.0.0</value>
       <properties>
         <read authenticated="false" bonded="false" encrypted="false"/>
       </properties>

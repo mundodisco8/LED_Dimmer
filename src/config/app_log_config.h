@@ -254,7 +254,7 @@
 
 // <e APP_LOG_COLOR_ENABLE> Colors for terminal logging
 // <i> Enables color prefixing for logging to terminal.
-#define APP_LOG_COLOR_ENABLE                    0
+#define APP_LOG_COLOR_ENABLE                    1
 
 // <h> Text color
 
@@ -275,7 +275,7 @@
 // <APP_LOG_COLOR_BRIGHT_CYAN=> BRIGHT_CYAN
 // <APP_LOG_COLOR_BRIGHT_WHITE=> BRIGHT_WHITE
 // <i> Default: BRIGHT_WHITE
-#define APP_LOG_LEVEL_DEBUG_COLOR              APP_LOG_COLOR_BRIGHT_CYAN
+#define APP_LOG_LEVEL_DEBUG_COLOR              APP_LOG_COLOR_BRIGHT_BLUE
 
 // <o APP_LOG_LEVEL_INFO_COLOR> Color for INFO
 // <APP_LOG_COLOR_BLACK=> BLACK
