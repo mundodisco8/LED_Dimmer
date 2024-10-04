@@ -13,30 +13,28 @@
 #include "sl_bluetooth_config.h"
 #include "app_log.h"
 
-////
-// Forward declarations
-////
+// timerHandlePtr_t will be exposed as an incomplete type, so we can't de-reference it and
+// access the members of sl_sleeptimer_timer_handle_t through it
+typedef struct sl_sleeptimer_timer_handle_t timerHandle_t;
 
 // static bool isTimerRunning(timer_handle_t* handlePtr);
 
 static sl_sleeptimer_timer_handle_t timerArray[SL_BT_CONFIG_MAX_SOFTWARE_TIMERS] = {0};
 static uint8_t timersUsed = 0;
 
-slpTimerStatus_t SLP_reserveTimer(timerHandle_t* handlePtr) {
+slpTimerStatus_t SLP_reserveTimer(timerHandlePtr_t handlePtr) {
     // Check current number of given timers
     if (timersUsed >= SL_BT_CONFIG_MAX_SOFTWARE_TIMERS) {
-        return SLPTIMER_ERROR;
+        return SLPTIMER_NO_TIMERS_AVAILABLE;
     }
     // Else, we can still give a timer. Make handlePtr point to the next available timer.
     *(sl_sleeptimer_timer_handle_t*)handlePtr = timerArray[timersUsed];
     timersUsed++;
-    // if still available, retunr pointer to it
-    return SLPTIMER_ERROR;
+    return SLPTIMER_OK;
 }
 
-
 // Starts a one-shot timer
-// Parameters: handlePtr, a pointer to a timerHandle_t object
+// Parameters: handlePtr, a pointer to a timer object
 //             timeoutMs, the duration of the timer in ms
 //             callback, (optional) a callback funtion of type timerCallback_t to be called on timer expiry
 //             ctxPtr, (optional) a context to pass to the callback function
@@ -44,7 +42,7 @@ slpTimerStatus_t SLP_reserveTimer(timerHandle_t* handlePtr) {
 //          SL_STATUS_INVALID_PARAMETER if timeoutMs > 131071999mssion = .
 //          SL_STATUS_NULL_POINTER if the timer handler is null
 //          SL_STATUS_NOT_READY if the timer is already running (can be treated as a warning)
-slpTimerStatus_t SLP_startTimer(timerHandle_t* handlePtr, uint32_t timeoutMs, timerCallback_t callback, void* ctxPtr) {
+slpTimerStatus_t SLP_startTimer(timerHandlePtr_t handlePtr, uint32_t timeoutMs, timerCallback_t callback, void* ctxPtr) {
     // sl_sleeptimer_start_periodic_timer_ms() returns SL_STATUS_OK on success and
     // 1) 0x21 - SL_STATUS_INVALID_PARAMETER if time is out of bounds:
     //    max_millisecond_conversion = (uint32_t)(((uint64_t)UINT32_MAX * (uint64_t)1000u) / timer_frequency);
@@ -65,7 +63,7 @@ slpTimerStatus_t SLP_startTimer(timerHandle_t* handlePtr, uint32_t timeoutMs, ti
 }
 
 // Starts a periodic timer
-// Parameters: handlePtr, a pointer to a timerHandle_t object
+// Parameters: handlePtr, a pointer to a timer object
 //             timeoutMs, the duration of the timer in ms
 //             callback, (optional) a callback funtion of type timerCallback_t to be called on timer expiry
 //             ctxPtr, (optional) a context to pass to the callback function
@@ -74,7 +72,7 @@ slpTimerStatus_t SLP_startTimer(timerHandle_t* handlePtr, uint32_t timeoutMs, ti
 //          SL_STATUS_NULL_POINTER if the timer handler is null
 //          SL_STATUS_INVALID_STATE id the timer is already running (can be treated as a warning)
 // NOTE: that if the timer is running, periodic returns INVALID_STATE and one-shot returns NOT_READY!
-slpTimerStatus_t SLP_startPeriodicTimer(timerHandle_t* handlePtr, uint32_t timeoutMs, timerCallback_t callback, void* ctxPtr){
+slpTimerStatus_t SLP_startPeriodicTimer(timerHandlePtr_t handlePtr, uint32_t timeoutMs, timerCallback_t callback, void* ctxPtr){
     // sl_sleeptimer_start_periodic_timer_ms() returns SL_STATUS_OK on success and
     // 1) SL_STATUS_INVALID_PARAMETER if time is out of bounds:
     //    max_millisecond_conversion = (uint32_t)(((uint64_t)UINT32_MAX * (uint64_t)1000u) / timer_frequency);
@@ -95,7 +93,7 @@ slpTimerStatus_t SLP_startPeriodicTimer(timerHandle_t* handlePtr, uint32_t timeo
     return SLPTIMER_OK;
 }
 
-slpTimerStatus_t SLP_stopTimer(timerHandle_t* handlePtr) {
+slpTimerStatus_t SLP_stopTimer(timerHandlePtr_t handlePtr) {
     uint32_t retVal = sl_sleeptimer_stop_timer((sl_sleeptimer_timer_handle_t*)handlePtr);
     if (retVal != SL_STATUS_OK) {
         // sl_sleeptimer_stop_timer() fails if the handle passed is null or if the list of timers is in the wrong state
@@ -107,9 +105,9 @@ slpTimerStatus_t SLP_stopTimer(timerHandle_t* handlePtr) {
 }
 
 // Tells if a timer is currently running or not
-// Parameters: handlePtr: pointer to the handle for the timer to check.
+// Parameters: handlePtr, a pointer to the timer to check
 // Returns: true if the timer is running, and false if it isn't or there was a problem checking it
-bool SLP_isTimerRunning(timerHandle_t* handlePtr) {
+bool SLP_isTimerRunning(timerHandlePtr_t handlePtr) {
     bool timerRunning = false;
     // sl_sleeptimer_is_timer_running returns SL_STATUS_OK on success or SL_STATUS_NULL_POINTER if any of the
     // passed parameters are null pointers

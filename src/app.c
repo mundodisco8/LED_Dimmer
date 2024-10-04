@@ -119,7 +119,7 @@ SL_WEAK void app_process_action(void) {
     /////////////////////////////////////////////////////////////////////////////
 
     // NOTE: Prints "../app.c:105 :app_process_action: Status: 40 = 0x0028 (?) Assertion failed"
-    // app_assert_status(40);
+//     app_assert_status(40);
     // NOTE: Prints "../app.c:107 :app_process_action: Status: 40 = 0x0028 (?) Assertion failed: Hey 60"
     // app_assert_status_f(40, "Hey %d\r\n", 60);
     // NOTE: Prints "../app.c:111 :app_process_action: Assertion 'a == b' failed: 1 is not 2"

@@ -34,8 +34,8 @@ typedef struct {
     int32_t integrator;               // The value of the integrator for this button
     actionCallback_t pressedAction;   // action to perform when the state changes to BUTTON_PRESSED
     actionCallback_t releasedAction;  // action to perform when the state changes to BUTTON_RELEASED
-    timerHandle_t* debounceTimerPtr;  // a handler to the timer that checks the debouncing
-    timerHandle_t* samplingTimerPtr;  // a handler to the timer that checks the button state sampling
+    timerHandlePtr_t debounceTimerPtr;  // a handler to the timer that checks the debouncing
+    timerHandlePtr_t samplingTimerPtr;  // a handler to the timer that checks the button state sampling
 } button_t;
 
 typedef struct {
@@ -49,8 +49,7 @@ typedef struct {
 
 // Initialises the button_t struct with the default values and associates the pressed and released actions.
 btnError_t initButton(button_t* btnPtr, pinPort_t pinPort, uint8_t pinNo, actionCallback_t pressedAction,
-                      actionCallback_t releasedAction, timerHandle_t* debounceTimerPtr,
-                      timerHandle_t* samplingTimerPtr);
+                      actionCallback_t releasedAction);
 btnError_t initQuadEncoder(quad_encoder_t* quadPtr, pinPort_t pin0Port, uint8_t pin0No, pinPort_t pin1Port,
                            uint8_t pin1No, actionCallback_t CWAction, actionCallback_t CCWAction);
 

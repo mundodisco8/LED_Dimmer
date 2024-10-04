@@ -19,6 +19,15 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+// SiLabs
+// Ignore a cast-align warning in some cmsis header and a sign conversion in
+// sl_sleeptimer.h
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-align"
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+#include "app_assert.h"
+#pragma GCC diagnostic pop
+
 // Project's Libraries
 #include "gpio_HW.h"
 #include "interrupt_HW.h"
@@ -52,10 +61,10 @@ btnError_t initButton(button_t* btnPtr, pinPort_t pinPort, uint8_t pinNo, action
     btnPtr->state            = BUTTON_RELEASED;  // buttons are released by default
     btnPtr->pressedAction    = pressedAction;
     btnPtr->releasedAction   = releasedAction;
-    // TODO: request a timer here
-    btnPtr->debounceTimerPtr = debounceTimerPtr;
-    // TODO: request a timer here
-    btnPtr->samplingTimerPtr = samplingTimerPtr;
+    slpTimerStatus_t retVal = SLP_reserveTimer(btnPtr->debounceTimerPtr);
+    app_assert_status_f((retVal == SLPTIMER_NO_TIMERS_AVAILABLE), "No timer available. Increase the number of timers\r\n");
+    retVal = SLP_reserveTimer(btnPtr->samplingTimerPtr);
+    app_assert_status_f((retVal == SLPTIMER_NO_TIMERS_AVAILABLE), "No timer available. Increase the number of timers\r\n");
 
     return BTN_OK;
 }
