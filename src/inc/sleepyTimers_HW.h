@@ -17,7 +17,12 @@
 // there. I think it can work. I return the pointers to sl_sleeptimer_timer_handle's as mypointer_t, work with the
 // pointers, and then if I need to touch something from it, provide a getter from this module
 
-slpTimerStatus_t SLP_reserveTimer(timerHandlePtr_t handlePtr);
+/// @brief Resets the number of timers used to 0
+/// NOTE: this doesn't get used in the code, as there's no need to dynamically change the
+/// timer assignment, but it's needed in testing, or we would quickly run out of timers :D
+void SLP_resetTimersUsed(void);
+
+slpTimerStatus_t SLP_reserveTimer(timerHandlePtr_t* handlePtr);
 
 slpTimerStatus_t SLP_startTimer(timerHandlePtr_t handlePtr, uint32_t timeoutMs, timerCallback_t callback, void* ctxPtr);
 slpTimerStatus_t SLP_startPeriodicTimer(timerHandlePtr_t handlePtr, uint32_t timeoutMs, timerCallback_t callback, void* ctxPtr);

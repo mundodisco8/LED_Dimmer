@@ -100,8 +100,8 @@ is in Hertz */
 // DEBOUNCE_SAMPLING_PERIOD_MS is the period of the sampling events.
 // INTEGRATOR_TARGET is the number of sampling events the pin has to remain in the new position to consider it a valid
 // press. A button press won't be valid until is pressed at least for INTEGRATOR_TARGET * DEBOUNCE_SAMPLING_PERIOD_MS
-const uint32_t DEBOUNCE_TIME_MS            = 500U;  // Max time for the button to settle in the new state
-const uint32_t DEBOUNCE_SAMPLING_PERIOD_MS = 1000U;   // read the button every this ms
+const uint32_t DEBOUNCE_TIME_MS            = 75U;  // Max time for the button to settle in the new state
+const uint32_t DEBOUNCE_SAMPLING_PERIOD_MS = 5U;   // read the button every this ms
 const int32_t INTEGRATOR_TARGET            = 5U;    // Button is stable after SAMPLING * TARGET ms
 
 ////
@@ -146,32 +146,32 @@ void samplingTimerCallback(button_t* btnPtr) {
             btnPtr->integrator--;
         }
     }
-    app_log_debug("%"PRIu32"\r\n", btnPtr->integrator);
+    // app_log_debug("%"PRIu32"\r\n", btnPtr->integrator);
     /* Step 2: Update the output state based on the integrator.  Note that the
        output will only change states if the integrator has reached a limit, either
        0 or MAXIMUM. */
 
-//    // corruption guard
-//    if (btnPtr->integrator > INTEGRATOR_TARGET) {
-//        btnPtr->integrator = INTEGRATOR_TARGET;
-//    } else if (btnPtr->integrator < 0) {
-//        btnPtr->integrator = 0;
-//    }  // else 0 < integrator < INTEGRATOR_TARGET, do nothing
-//
-//    if ((btnPtr->state == BUTTON_RELEASED) && (btnPtr->integrator == INTEGRATOR_TARGET)) {
-//        btnPtr->state = BUTTON_PRESSED;
-//        stopButtonTimers(btnPtr);
-//        if (btnPtr->pressedAction != NULL) {
-//            btnPtr->pressedAction();
-//        }  // else, action was NULL, assert, I guess?
-//    } else if ((btnPtr->state == BUTTON_PRESSED) && (btnPtr->integrator == 0)) {
-//        btnPtr->state = BUTTON_RELEASED;
-//        stopButtonTimers(btnPtr);
-//        if (btnPtr->releasedAction != NULL) {
-//            btnPtr->releasedAction();
-//        }  // else, action was NULL, assert, I guess?
-//    }  // else, or integrator is 0 but button is released or integrator is INTEGRATOR_TARGET but button is pressed, do
-//       // nothing
+   // corruption guard
+   if (btnPtr->integrator > INTEGRATOR_TARGET) {
+       btnPtr->integrator = INTEGRATOR_TARGET;
+   } else if (btnPtr->integrator < 0) {
+       btnPtr->integrator = 0;
+   }  // else 0 < integrator < INTEGRATOR_TARGET, do nothing
+
+   if ((btnPtr->state == BUTTON_RELEASED) && (btnPtr->integrator == INTEGRATOR_TARGET)) {
+       btnPtr->state = BUTTON_PRESSED;
+       stopButtonTimers(btnPtr);
+       if (btnPtr->pressedAction != NULL) {
+           btnPtr->pressedAction();
+       }  // else, action was NULL, assert, I guess?
+   } else if ((btnPtr->state == BUTTON_PRESSED) && (btnPtr->integrator == 0)) {
+       btnPtr->state = BUTTON_RELEASED;
+       stopButtonTimers(btnPtr);
+       if (btnPtr->releasedAction != NULL) {
+           btnPtr->releasedAction();
+       }  // else, action was NULL, assert, I guess?
+   }  // else, or integrator is 0 but button is released or integrator is INTEGRATOR_TARGET but button is pressed, do
+      // nothing
 }
 
 ////

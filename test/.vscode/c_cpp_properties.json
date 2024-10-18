@@ -1,36 +1,31 @@
 {
-    "env": {
-        "UnityPath": "C:/Ruby30-x64/lib/ruby/gems/3.0.0/gems/ceedling-0.31.1/vendor/unity/src",
-        "CompilerPath": "C:/msys64/mingw64/bin"
-    },
     "configurations": [
         {
-            "name": "GCC",
+            "name": "UnityTesting",
             "includePath": [
-                "${workspaceFolder:Gruffalo_Dimmer}/**",
-                "${workspaceFolder:Gruffalo_Dimmer}/inc",
-                "${UnityPath}",
-                "${workspaceFolder:Gruffalo_Dimmer}/build/test/mocks",
-                "${workspaceFolder:Gruffalo_Dimmer}/config",
-                "${workspaceFolder:test}/build/test/mocks",
-                "${workspaceFolder:test}/test/support"
+                "${workspaceFolder:Test}/**",
+                "${workspaceFolder:Test}/build/**",
+                "${workspaceFolder:Test}/src",
+                "${workspaceFolder:Test}/test",
+                "${workspaceFolder:Test}/test/support",
+                "${workspaceFolder:Source}/inc",
+                "${workspaceFolder}/build/test/mocks/test_sleepyTimers_HW",
+                "C:/Users/mundo/Desktop/LED_Dimmer/src/simplicity_sdk_2024.6.2/platform/common/inc"
             ],
-            "browse": {
-                "path": [
-                    "${workspaceFolder:Gruffalo_Dimmer}/**",
-                    "${workspaceFolder:test}/**"
-                ]
-            },
             "defines": [
                 "TEST",
-                "BGM220PC22WGA=1"
+                "BGM220PC22WGA=1",
+                "GNU_COMPILER"
             ],
-            "compilerPath": "${CompilerPath}/gcc.exe",
+            "compilerPath": "C:\\msys64\\ucrt64\\bin\\gcc.exe",
             "compilerArgs": [
-                "-std=c11"
+                "-g3",
+                "-O0",
+                "-g"
             ],
-            "cStandard": "c11",
-            "intelliSenseMode": "gcc-x64"
+            "cStandard": "c17",
+            "cppStandard": "gnu++17",
+            "intelliSenseMode": "windows-gcc-x64"
         }
     ],
     "version": 4

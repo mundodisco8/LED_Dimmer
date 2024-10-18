@@ -117,7 +117,7 @@ void setDutyCycle(CCChannel_t channel, uint8_t percent) {
     }
     // DEBUG: print set value
     // TODO: This doesn't work, review!
-    // app_log_debug("Setting %"PRIu8"%: %"PRIu32"/%"PRIu32, percent, compareValue, TIMER_TopGet(TIMER0));
+    // app_log_debug("Setting %d%: %"PRIu32"/%"PRIu32, percent, compareValue, TIMER_TopGet(TIMER0));
     TIMHW_setChannelBufferedOutputCompare(channel, (top * percent) / 100);
 }
 
@@ -133,7 +133,7 @@ void setBrightness(CCChannel_t channel, uint8_t percent) {
     } else {
         compareValue = gammaLookUp[percent];
     }
-    // app_log_debug("Setting %"PRIu8"%: %"PRIu32"/%"PRIu32, percent, compareValue, getTimer0TopValue());
+    // app_log_debug("Setting %d%: %"PRIu32"/%"PRIu32, percent, compareValue, getTimer0TopValue());
     // Set compare value using gamma correction lookup table
     TIMHW_setChannelBufferedOutputCompare(channel, compareValue);
 }

@@ -61,9 +61,10 @@ btnError_t initButton(button_t* btnPtr, pinPort_t pinPort, uint8_t pinNo, action
     btnPtr->state            = BUTTON_RELEASED;  // buttons are released by default
     btnPtr->pressedAction    = pressedAction;
     btnPtr->releasedAction   = releasedAction;
-    slpTimerStatus_t retVal = SLP_reserveTimer(btnPtr->debounceTimerPtr);
+    slpTimerStatus_t retVal = SLP_reserveTimer(&(btnPtr->debounceTimerPtr));
+    //TODO: Test Asserts on error
     app_assert_status_f((retVal == SLPTIMER_NO_TIMERS_AVAILABLE), "No timer available. Increase the number of timers\r\n");
-    retVal = SLP_reserveTimer(btnPtr->samplingTimerPtr);
+    retVal = SLP_reserveTimer(&(btnPtr->samplingTimerPtr));
     app_assert_status_f((retVal == SLPTIMER_NO_TIMERS_AVAILABLE), "No timer available. Increase the number of timers\r\n");
 
     return BTN_OK;

@@ -5,16 +5,9 @@
 #include <string.h>
 #include "inttypes.h"
 
-#include "pin_config.h"
-
 #include "mock_gpio_HW.h"
 #include "mock_interrupt_HW.h"
 #include "mock_sleepyTimers_HW.h"
-#include "mock_app_log.h"
-
-// Fake timers: we just need the memory, but we won't use it in this unit testing
-timerHandle_t debounceTimer;
-timerHandle_t samplingtimer;
 
 void setUp() {
 }
@@ -32,34 +25,45 @@ void fakeReleasedAction(void) {}
 
 void test_initButtonsDoesItsJob(void) {
     button_t testBtn = {0};
+    pinPort_t expectedPort = portA;
+    uint8_t expectedPin = 1;
+    pinMode_t expectedMode = MODE_INPUT;
+    bool expectedDout = false;
+    // Set Expectations
+    setPinMode_Expect(expectedPort, expectedPin, expectedMode, expectedDout);
+    SLP_reserveTimer_ExpectAndReturn(testBtn.debounceTimerPtr, SLPTIMER_OK);
+    SLP_reserveTimer_ReturnThruPtr_handlePtr(0x123);
+    SLP_reserveTimer_ExpectAndReturn(testBtn.samplingTimerPtr, SLPTIMER_OK);
+    SLP_reserveTimer_ReturnThruPtr_handlePtr(0x124);
 
-    uint32_t retVal = initButton(&testBtn, portA, 1, fakePressedAction, fakeReleasedAction, &debounceTimer, &samplingtimer);
+    uint32_t retVal = initButton(&testBtn, expectedPort, expectedPin, fakePressedAction, fakeReleasedAction);
     // Check retVal is true
     TEST_ASSERT_EQUAL_UINT32(BTN_OK, retVal);
-    TEST_ASSERT_EQUAL_UINT32(portA, testBtn.btnPort);
-    TEST_ASSERT_EQUAL_UINT32(1, testBtn.pinNo);
+    TEST_ASSERT_EQUAL_UINT32(expectedPort, testBtn.btnPort);
+    TEST_ASSERT_EQUAL_UINT32(expectedPin, testBtn.pinNo);
     TEST_ASSERT_EQUAL_UINT32(BUTTON_RELEASED, testBtn.state);
     TEST_ASSERT_EQUAL_INT32(0, testBtn.integrator);
     TEST_ASSERT_EQUAL_PTR(fakePressedAction, testBtn.pressedAction);
     TEST_ASSERT_EQUAL_PTR(fakeReleasedAction, testBtn.releasedAction);
-    TEST_ASSERT_EQUAL_PTR(&debounceTimer, testBtn.debounceTimerPtr);
-    TEST_ASSERT_EQUAL_PTR(&samplingtimer, testBtn.samplingTimerPtr);
+    TEST_ASSERT_NOT_NULL(testBtn.debounceTimerPtr);
+    TEST_ASSERT_NOT_NULL(testBtn.samplingTimerPtr);
 }
 
 // Protection against null pointers: because of shortcircuiting in OR comparisons, there's only need to test the three
 // checks individually, and that will cover all the cases of the if statement
 void test_initButtons_ButtonIsNullPointer(void) {
     button_t* testPtr = NULL;
-    uint32_t retVal = initButton(testPtr, portA, 1, fakePressedAction, fakeReleasedAction, &debounceTimer, &samplingtimer);
+    uint32_t retVal = initButton(testPtr, portA, 1, fakePressedAction, fakeReleasedAction);
     TEST_ASSERT_EQUAL_INT32(BTN_NULL_POINTER_PASSED, retVal);
 }
 
+// TODO: is needed?
 void test_initButtons_TimersAreNullPtrs(void) {
     button_t* testPtr = {0};
-    uint32_t retVal = initButton(testPtr, portA, 1, fakePressedAction, fakeReleasedAction, NULL, &samplingtimer);
+    uint32_t retVal = initButton(testPtr, portA, 1, fakePressedAction, fakeReleasedAction);
     TEST_ASSERT_EQUAL_INT32(BTN_NULL_POINTER_PASSED, retVal);
 
-    retVal = initButton(testPtr, portA, 1, fakePressedAction, fakeReleasedAction, &debounceTimer, NULL);
+    retVal = initButton(testPtr, portA, 1, fakePressedAction, fakeReleasedAction);
     TEST_ASSERT_EQUAL_INT32(BTN_NULL_POINTER_PASSED, retVal);
 
 }
@@ -72,17 +76,24 @@ void fakeCWAction(void) {}
 void fakeCCWAction(void) {}
 
 void test_initQuadratureDoesItsJob(void) {
-    uint8_t pin0No = 1;
-    pinPort_t port0 = portB;
-    uint8_t pin1No = 2;
-    pinPort_t port1 = portC;
+    uint8_t expectedPin0No = 1;
+    pinPort_t expectedPortPin0 = portB;
+    uint8_t expectedPin1No = 2;
+    pinPort_t expectedPortPin1 = portC;
+    pinMode_t expectedPinMode = MODE_INPUT;
+    bool expectedDout = false;
     quad_encoder_t testQuad = {0};
-    uint32_t retVal = initQuadEncoder(&testQuad, port0, pin0No, port1, pin1No, fakeCWAction, fakeCCWAction);
+
+    // Set Expectations
+    setPinMode_Expect(expectedPortPin0, expectedPin0No, expectedPinMode, expectedDout);
+    setPinMode_Expect(expectedPortPin1, expectedPin1No, expectedPinMode, expectedDout);
+
+    uint32_t retVal = initQuadEncoder(&testQuad, expectedPortPin0, expectedPin0No, expectedPortPin1, expectedPin1No, fakeCWAction, fakeCCWAction);
     TEST_ASSERT_EQUAL_UINT32(BTN_OK, retVal);
-    TEST_ASSERT_EQUAL_UINT32(pin0No, testQuad.pin0No);
-    TEST_ASSERT_EQUAL_UINT32(port0, testQuad.pin0Port);
-    TEST_ASSERT_EQUAL_UINT32(pin1No, testQuad.pin1No);
-    TEST_ASSERT_EQUAL_UINT32(port1, testQuad.pin1Port);
+    TEST_ASSERT_EQUAL_UINT32(expectedPin0No, testQuad.pin0No);
+    TEST_ASSERT_EQUAL_UINT32(expectedPortPin0, testQuad.pin0Port);
+    TEST_ASSERT_EQUAL_UINT32(expectedPin1No, testQuad.pin1No);
+    TEST_ASSERT_EQUAL_UINT32(expectedPortPin1, testQuad.pin1Port);
     TEST_ASSERT_EQUAL_PTR(fakeCWAction, testQuad.clockWiseAction);
     TEST_ASSERT_EQUAL_PTR(fakeCCWAction, testQuad.counterClockWiseAction);
 }

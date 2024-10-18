@@ -97,11 +97,13 @@ SL_WEAK void app_init(void) {
     // If anything, it could be stored internally in the button_t struct
     // Init GPIOs for buttons and quads
     uint32_t button1GPIOIntNo = 0;
-    // uint32_t quad1GPIOIntNo = 0;
+    uint32_t quad1GPIOIntNo = 0;
     initButton(&button1, (pinPort_t)btn1_PORT, btn1_PIN, button1Pressed, button1Released);
-    // initQuadEncoder(&quad1, (pinPort_t)quad1_0_PORT, quad1_0_PIN, (pinPort_t)quad1_1_PORT, quad1_1_PIN, quad1ClockWise, quad1CounterClockWise);
-    configureButtonInterrupts(&button1, gpioCallbackButton1, &button1GPIOIntNo);
-    // configureQuadratureInterrupts(&quad1, gpioCallbackQuad1, &quad1GPIOIntNo);
+    initQuadEncoder(&quad1, (pinPort_t)quad1_0_PORT, quad1_0_PIN, (pinPort_t)quad1_1_PORT, quad1_1_PIN, quad1ClockWise, quad1CounterClockWise);
+    btnError_t retVal = configureButtonInterrupts(&button1, gpioCallbackButton1, &button1GPIOIntNo);
+    app_assert_status_f((retVal != BTN_OK), "Error configuring Btn 1 interrupts\r\n");
+    retVal = configureQuadratureInterrupts(&quad1, gpioCallbackQuad1, &quad1GPIOIntNo);
+    app_assert_status_f((retVal != BTN_OK), "Error configuring Quad 1 interrupts\r\n");
 
     // Init PWM on TIMER0
     // initTimer0HW();
@@ -131,21 +133,7 @@ SL_WEAK void app_process_action(void) {
     // uint32_t b = 2;
     // app_assert_s(a == b);
 
-    static uint32_t oldRotary = 4000;
-    uint32_t rotary           = getRotary();
-    if (rotary != oldRotary) {
-        app_log_warning("Rotary %"PRIu32"\r\n", rotary);
-        oldRotary = rotary;
-    }
-
-    static uint32_t oldButton = 0;
-    uint32_t button           = getButton();
-    if (button != oldButton) {
-        app_log_info("Button %"PRIu32"\r\n", button);
-        oldButton = button;
-    }
-
-    //    app_log_debug("%d\r\n", GPIO_PinInGet(btn1_PORT, btn1_PIN));
+    // app_log_debug("%d %d\r\n", GPIO_PinInGet(quad0_0_PORT, quad0_0_PIN), GPIO_PinInGet(quad0_1_PORT, quad0_1_PIN));
 }
 
 /******************************************************************************

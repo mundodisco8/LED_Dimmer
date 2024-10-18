@@ -1,23 +1,18 @@
 {
-	"folders": [
+    "folders": [
         {
-            "path": "src/"
+            "name": "Source",
+            "path": "src"
         },
         {
+            "name": "Test",
             "path": "test"
-        },
-        {
-            "path": "testStaticInlines"
         }
     ],
     "settings": {
-            "search.exclude": {
-                "**/.vscode": true
-            },
-            "files.associations": {
-                "*.h": "c",
-                "typeinfo": "cpp",
-                "xutility": "c"
-            }
+        "files.associations": {
+            "*.h": "c",
+            "cstdio": "c"
+        }
     }
 }

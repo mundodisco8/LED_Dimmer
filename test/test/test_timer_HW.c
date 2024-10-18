@@ -1,18 +1,18 @@
 #include "timer_HW.h"
 
+#include <stdbool.h>
 #include <string.h>
-#include <unity.h>
 
-#include "testable_micro_registers.h"
+#include <unity.h>
 
 #include "mock_em_cmu.h"
 #include "mock_em_timer.h"
 #include "mock_gpio_HW.h"
 
+#include "testable_micro_registers.h"
 /*
  * Unit tests for "timer_HW.h"
  */
-
 TIMER_TypeDef TIMER0_meat = {0};  // where the meat of TIMER0 is.
 GPIO_TypeDef GPIO_meat = {0};
 

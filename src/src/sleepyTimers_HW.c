@@ -1,7 +1,5 @@
 #include "sleepyTimers_HW.h"
 
-#include <stdbool.h>
-
 // Silabs SDK headers
 // Ignore a cast-align warning in some cmsis header and a sign conversion in
 // sl_sleeptimer.h
@@ -10,25 +8,35 @@
 #pragma GCC diagnostic ignored "-Wsign-conversion"
 #include "sl_sleeptimer.h"
 #pragma GCC diagnostic pop
-#include "sl_bluetooth_config.h"
+#include "sl_bluetooth_config.h" // This is only needed to get the max number of timers
 #include "app_log.h"
 
 // timerHandlePtr_t will be exposed as an incomplete type, so we can't de-reference it and
 // access the members of sl_sleeptimer_timer_handle_t through it
-typedef struct sl_sleeptimer_timer_handle_t timerHandle_t;
+typedef sl_sleeptimer_timer_handle_t timerHandle_t;
 
 // static bool isTimerRunning(timer_handle_t* handlePtr);
 
 static sl_sleeptimer_timer_handle_t timerArray[SL_BT_CONFIG_MAX_SOFTWARE_TIMERS] = {0};
 static uint8_t timersUsed = 0;
 
-slpTimerStatus_t SLP_reserveTimer(timerHandlePtr_t handlePtr) {
+size_t a = sizeof(timerArray);
+
+/// @brief Resets the number of timers used to 0
+/// NOTE: this doesn't get used in the code, as there's no need to dynamically change the
+/// timer assignment, but it's needed in testing, or we would quickly run out of timers :D
+void SLP_resetTimersUsed(void) {
+    timersUsed = 0;
+}
+
+slpTimerStatus_t SLP_reserveTimer(timerHandlePtr_t* handlePtr) {
     // Check current number of given timers
     if (timersUsed >= SL_BT_CONFIG_MAX_SOFTWARE_TIMERS) {
+        *handlePtr = NULL;
         return SLPTIMER_NO_TIMERS_AVAILABLE;
     }
     // Else, we can still give a timer. Make handlePtr point to the next available timer.
-    *(sl_sleeptimer_timer_handle_t*)handlePtr = timerArray[timersUsed];
+    *handlePtr = (timerHandlePtr_t)&(timerArray[timersUsed]);
     timersUsed++;
     return SLPTIMER_OK;
 }
@@ -81,7 +89,7 @@ slpTimerStatus_t SLP_startPeriodicTimer(timerHandlePtr_t handlePtr, uint32_t tim
     // 3) SL_STATUS_INVALID_STATE id the timer is already running
     // Surprisingly, the callback can be NULL: it won't get called and it won't cause an error
     uint32_t retVal = sl_sleeptimer_start_periodic_timer_ms((sl_sleeptimer_timer_handle_t*) handlePtr, timeoutMs, (sl_sleeptimer_timer_callback_t)callback, ctxPtr, 0, 0);
-    app_log_debug("Starting periodic returns 0x%04"PRIX32"\r\n", retVal);
+    // app_log_debug("Starting periodic returns 0x%04"PRIX32"\r\n", retVal);
     if (retVal == SL_STATUS_INVALID_STATE) {
         app_log_warning("Timer already running\r\n");
         // no need to return, the timer was already running, all is good
@@ -109,6 +117,7 @@ slpTimerStatus_t SLP_stopTimer(timerHandlePtr_t handlePtr) {
 // Returns: true if the timer is running, and false if it isn't or there was a problem checking it
 bool SLP_isTimerRunning(timerHandlePtr_t handlePtr) {
     bool timerRunning = false;
+    // TODO: Check null pointer
     // sl_sleeptimer_is_timer_running returns SL_STATUS_OK on success or SL_STATUS_NULL_POINTER if any of the
     // passed parameters are null pointers
     uint32_t retVal = sl_sleeptimer_is_timer_running((sl_sleeptimer_timer_handle_t*) handlePtr, &timerRunning);
