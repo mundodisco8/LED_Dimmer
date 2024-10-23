@@ -24,7 +24,7 @@
 // TODO: Maybe we can store errors in some variables, and then check for interrutp
 // errors in the main loop?
 
-void gpioCallbackButton1(uint8_t intNo, void* ctx) {
+void gpioCallbackButton(uint8_t intNo, void* ctx) {
     (void)intNo;
     // set debounce timer
     //startButtonTimer((button_t*)ctx, TIMER_DEBOUNCE);
@@ -32,7 +32,7 @@ void gpioCallbackButton1(uint8_t intNo, void* ctx) {
     startButtonTimer((button_t*)ctx, TIMER_SAMPLE);
 }
 
-void gpioCallbackQuad1(uint8_t intNo, void* ctx) {
+void gpioCallbackQuad(uint8_t intNo, void* ctx) {
     (void)intNo;
     // Trivial, but makes it easier to read
     quad_encoder_t* quadPtr = (quad_encoder_t*)ctx;

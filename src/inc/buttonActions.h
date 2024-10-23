@@ -3,8 +3,8 @@
 
 #include "inttypes.h"
 
-void gpioCallbackButton1(uint8_t intNo, void* ctx);
-void gpioCallbackQuad1(uint8_t intNo, void* ctx);
+void gpioCallbackButton(uint8_t intNo, void* ctx);
+void gpioCallbackQuad(uint8_t intNo, void* ctx);
 
 void button1Pressed(void);
 void button1Released(void);
