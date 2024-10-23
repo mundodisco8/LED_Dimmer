@@ -56,18 +56,15 @@
 #include "sl_bluetooth.h"
 #pragma GCC diagnostic pop
 
-#include "sl_sleeptimer.h"
-
+#include "PWMControl.h"
 #include "app.h"
 #include "app_assert.h"
 #include "app_log.h"
-
-#include "gatt_db.h"
-#include "pin_config.h"
-
 #include "buttonActions.h"
 #include "buttons.h"
-#include "PWMControl.h"
+#include "gatt_db.h"
+#include "pin_config.h"
+#include "sl_sleeptimer.h"
 
 #define DEBUG_EFM_USER
 #include "sl_assert.h"
@@ -96,14 +93,14 @@ SL_WEAK void app_init(void) {
     // TODO: there's no need, that I can see, of keeping the interrupt number, and I'm certainly not using it anywhere
     // If anything, it could be stored internally in the button_t struct
     // Init GPIOs for buttons and quads
-    uint32_t button1GPIOIntNo = 0;
-    uint32_t quad1GPIOIntNo = 0;
-    initButton(&button1, (pinPort_t)btn1_PORT, btn1_PIN, button1Pressed, button1Released);
-    initQuadEncoder(&quad1, (pinPort_t)quad1_0_PORT, quad1_0_PIN, (pinPort_t)quad1_1_PORT, quad1_1_PIN, quad1ClockWise, quad1CounterClockWise);
-    btnError_t retVal = configureButtonInterrupts(&button1, gpioCallbackButton1, &button1GPIOIntNo);
-    app_assert_status_f((retVal != BTN_OK), "Error configuring Btn 1 interrupts\r\n");
-    retVal = configureQuadratureInterrupts(&quad1, gpioCallbackQuad1, &quad1GPIOIntNo);
-    app_assert_status_f((retVal != BTN_OK), "Error configuring Quad 1 interrupts\r\n");
+    uint32_t button0GPIOIntNo = 0;
+    uint32_t quad0GPIOIntNo = 0;
+    initButton(&button0, (pinPort_t)btn0_PORT, btn0_PIN, button0Pressed, button0Released);
+    initQuadEncoder(&quad0, (pinPort_t)quad0_0_PORT, quad0_0_PIN, (pinPort_t)quad0_1_PORT, quad0_1_PIN, quad0ClockWise, quad0CounterClockWise);
+    btnError_t retVal = configureButtonInterrupts(&button0, gpioCallbackButton, &button0GPIOIntNo);
+    app_assert_status_f((retVal != BTN_OK), "Error configuring Btn 0 interrupts\r\n");
+    retVal = configureQuadratureInterrupts(&quad0, gpioCallbackQuad, &quad0GPIOIntNo);
+    app_assert_status_f((retVal != BTN_OK), "Error configuring Quad 0 interrupts\r\n");
 
     // Init PWM on TIMER0
     // initTimer0HW();
@@ -121,7 +118,7 @@ SL_WEAK void app_process_action(void) {
     /////////////////////////////////////////////////////////////////////////////
 
     // NOTE: Prints "../app.c:105 :app_process_action: Status: 40 = 0x0028 (?) Assertion failed"
-//     app_assert_status(40);
+    //     app_assert_status(40);
     // NOTE: Prints "../app.c:107 :app_process_action: Status: 40 = 0x0028 (?) Assertion failed: Hey 60"
     // app_assert_status_f(40, "Hey %d\r\n", 60);
     // NOTE: Prints "../app.c:111 :app_process_action: Assertion 'a == b' failed: 1 is not 2"
@@ -133,7 +130,18 @@ SL_WEAK void app_process_action(void) {
     // uint32_t b = 2;
     // app_assert_s(a == b);
 
-    // app_log_debug("%d %d\r\n", GPIO_PinInGet(quad0_0_PORT, quad0_0_PIN), GPIO_PinInGet(quad0_1_PORT, quad0_1_PIN));
+    // static bool pin0status = false;
+    // static bool pin1status = false;
+    // bool newPin0status = GPIO_PinInGet(quad0_0_PORT, quad0_0_PIN);
+    // bool newPin1status = GPIO_PinInGet(quad0_1_PORT, quad0_1_PIN);
+    // if (newPin0status != pin0status) {
+    //     app_log_debug("Pin 0 %d\r\n", newPin0status);
+    //     pin0status = newPin0status;
+    // }
+    // if (newPin1status != pin1status) {
+    //     app_log_debug("Pin 1 %d\r\n", newPin1status);
+    //     pin1status = newPin1status;
+    // }
 }
 
 /******************************************************************************

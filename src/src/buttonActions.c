@@ -27,7 +27,7 @@
 void gpioCallbackButton(uint8_t intNo, void* ctx) {
     (void)intNo;
     // set debounce timer
-    //startButtonTimer((button_t*)ctx, TIMER_DEBOUNCE);
+    startButtonTimer((button_t*)ctx, TIMER_DEBOUNCE);
     // set sampling timer
     startButtonTimer((button_t*)ctx, TIMER_SAMPLE);
 }
@@ -46,7 +46,7 @@ void gpioCallbackQuad(uint8_t intNo, void* ctx) {
 
 static int8_t currPercent = 0;
 
-void button1Pressed(void) {
+void button0Pressed(void) {
     currPercent += 10;
     if (currPercent > 100) {
         currPercent = 0;
@@ -55,11 +55,11 @@ void button1Pressed(void) {
     //setDutyCycle(CC_CHANNEL_0, currPercent);
 }
 
-void button1Released(void) {
+void button0Released(void) {
     // app_log_debug("Btn1 Released\r\n");
 }
 
-void quad1ClockWise(void) {
+void quad0ClockWise(void) {
     if (currPercent < 100) {
         currPercent++;
         app_log_debug("%d\r\n", currPercent);
@@ -67,7 +67,7 @@ void quad1ClockWise(void) {
     }
 }
 
-void quad1CounterClockWise(void) {
+void quad0CounterClockWise(void) {
     if (currPercent > 0) {
         currPercent--;
         app_log_debug("%d\r\n", currPercent);

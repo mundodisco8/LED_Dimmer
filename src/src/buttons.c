@@ -84,8 +84,11 @@ btnError_t initQuadEncoder(quad_encoder_t* quadPtr, pinPort_t pin0Port, uint8_t 
         // Not much we can do it the quad encoder pointer is NULL
         return BTN_NULL_POINTER_PASSED;
     }
-    setPinMode(pin0Port, pin0No, MODE_INPUT, false);
-    setPinMode(pin1Port, pin1No, MODE_INPUT, false);
+    // TODO: If I set the pins as input with no pulls, the encoder signal doesn't go low enough to trigger the interrupt
+    // This is really odd, as it measures 1.something volts, as if the pin had an internal pull-up!.
+    // I only managed to get it working by actively pulling it dowm, but it should not be neccessary. Do more reasearch!
+    setPinMode(pin0Port, pin0No, MODE_INPUT_PULL, false);
+    setPinMode(pin1Port, pin1No, MODE_INPUT_PULL, false);
     quadPtr->pin0No                 = pin0No;
     quadPtr->pin0Port               = pin0Port;
     quadPtr->pin1No                 = pin1No;
