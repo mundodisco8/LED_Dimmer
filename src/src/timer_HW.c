@@ -18,8 +18,8 @@
 #pragma GCC diagnostic ignored "-Wcast-align"
 #include "em_cmu.h"
 #pragma GCC diagnostic pop
-#include "em_timer.h"
 #include "em_gpio.h"
+#include "em_timer.h"
 // Ignore a sign conversion in sl_sleeptimer.h
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wsign-conversion"
@@ -34,17 +34,13 @@
 ////
 
 // Mark as unused. I don't want to delete them in case they are useful at some point later.
-static void TIMHW_timerModuleEnable(void) __attribute__ ((unused));
-static void TIMHW_timerModuleDisable(void)__attribute__ ((unused));
+static void TIMHW_timerModuleEnable(void) __attribute__((unused));
+static void TIMHW_timerModuleDisable(void) __attribute__((unused));
 
 // GCOVR_EXCL_START
-static void TIMHW_timerModuleEnable(void) {
-    TIMER0->EN_SET = TIMER_EN_EN;
-}
+static void TIMHW_timerModuleEnable(void) { TIMER0->EN_SET = TIMER_EN_EN; }
 
-static void TIMHW_timerModuleDisable(void) {
-    TIMER0->EN_CLR = TIMER_EN_EN;
-}
+static void TIMHW_timerModuleDisable(void) { TIMER0->EN_CLR = TIMER_EN_EN; }
 // GCOVR_EXCL_STOP
 
 // Sets the value of the Compare Register (unbuffered)
@@ -55,11 +51,11 @@ static void TIMHW_timerModuleDisable(void) {
 //          before calling this function
 timerStatus_t TIMHW_setChannelOutputCompare(CCChannel_t channel, uint32_t compareValue) {
     // TIMER_CompareSet writes to TIMER_CC0_OC -> RWH Sync -> module needs to be enabled
-    if (TIMER0->EN == 0) { // Timer module is disabled!
+    if (TIMER0->EN == 0) {  // Timer module is disabled!
         app_log_error("Enable TIMER0 module before calling setChannelOutputCompare()!\r\n");
         return TIMER_DISBLED_BEFORE_WRITING_SYNC;
-    } // else, timer module is enabled, we can proceed
-    TIMER_CompareSet(TIMER0, channel, compareValue); // GCOV_EXCL_LINE
+    }  // else, timer module is enabled, we can proceed
+    TIMER_CompareSet(TIMER0, channel, compareValue);  // GCOV_EXCL_LINE
     return TIMER_OK;
 }
 
@@ -71,10 +67,10 @@ timerStatus_t TIMHW_setChannelOutputCompare(CCChannel_t channel, uint32_t compar
 // Returns: TIMER_OK on success, TIMER_DISABLED_BEFORE_WRITING_SYNC if the timer0 module was disabled
 timerStatus_t TIMHW_setChannelBufferedOutputCompare(CCChannel_t channel, uint32_t compareValue) {
     // TIMER_CompareSet writes to TIMER_CC0_OCB -> RWH Sync -> module needs to be enabled
-    if (TIMER0->EN == 0) { // Timer module is disabled!
+    if (TIMER0->EN == 0) {  // Timer module is disabled!
         app_log_error("Enable TIMER0 module before calling setChannelBufferedOutputCompare()!\r\n");
         return TIMER_DISBLED_BEFORE_WRITING_SYNC;
-    } // else, timer module is enabled, we can proceed
+    }  // else, timer module is enabled, we can proceed
     TIMER_CompareBufSet(TIMER0, channel, compareValue);
     return TIMER_OK;
 }
@@ -85,25 +81,21 @@ timerStatus_t TIMHW_setChannelBufferedOutputCompare(CCChannel_t channel, uint32_
 //          before calling this function
 timerStatus_t TIMHW_setTimer0TopValue(uint32_t top) {
     // TIMER_CompareSet writes to TIMER_TOP -> RWH Sync -> module needs to be enabled
-    if (TIMER0->EN == 0) { // Timer module is disabled!
+    if (TIMER0->EN == 0) {  // Timer module is disabled!
         app_log_error("Enable TIMER0 module before calling setTimer0TopValue()!\r\n");
         return TIMER_DISBLED_BEFORE_WRITING_SYNC;
-    } // else, timer module is enabled, we can proceed
+    }  // else, timer module is enabled, we can proceed
     TIMER_TopSet(TIMER0, top);
     return TIMER_OK;
 }
 
 // Gets the value of the TOP register on TIMER0
 // Returns: the value of the TOP register in TIMER0
-uint32_t TIMHW_getTimer0TopValue(void) {
-    return TIMER_TopGet(TIMER0);
-}
+uint32_t TIMHW_getTimer0TopValue(void) { return TIMER_TopGet(TIMER0); }
 
 // Returns the clock frequency of TIMER0
 // Returns: the frequency of TIMER0 in Hz
-uint32_t TIMHW_getTimerFrequency(void) {
-    return CMU_ClockFreqGet(cmuClock_TIMER0);
-}
+uint32_t TIMHW_getTimerFrequency(void) { return CMU_ClockFreqGet(cmuClock_TIMER0); }
 
 ////
 // Init functions
@@ -112,9 +104,7 @@ uint32_t TIMHW_getTimerFrequency(void) {
 // Initalises the HW clock of TIMER0
 // NOTE: If a module clock is disabled, the registers of that module are not accessible and accessing such registers
 // will hardfault the Cortex core.
-void TIMHW_initTimer0Clock(void) {
-    CMU_ClockEnable(cmuClock_TIMER0, true);
-}
+void TIMHW_initTimer0Clock(void) { CMU_ClockEnable(cmuClock_TIMER0, true); }
 
 // Sets a pin as output and associates a GPIO pin with one of the Compare/Capture channels of TIMER0
 // Parameters: pinPort: the pin port
@@ -122,28 +112,28 @@ void TIMHW_initTimer0Clock(void) {
 //             channel: the channel to associate the pin with
 timerStatus_t TIMHW_setCCChannelPin(pinPort_t pinPort, uint8_t pinNo, CCChannel_t channel) {
     volatile uint32_t* routeRegister = NULL;
-    uint32_t portShift               = 0;
-    uint8_t pinShift                = 0;
+    uint32_t portShift = 0;
+    uint8_t pinShift = 0;
 
     // Associate the pin with the correct channel's CC pin
     // Select the right register and bit displacements for that register
     switch (channel) {
         case CC_CHANNEL_0: {
             routeRegister = &GPIO->TIMERROUTE[TIMER_NUM(TIMER0)].CC0ROUTE;
-            portShift     = _GPIO_TIMER_CC0ROUTE_PORT_SHIFT;
-            pinShift      = _GPIO_TIMER_CC0ROUTE_PIN_SHIFT;
+            portShift = _GPIO_TIMER_CC0ROUTE_PORT_SHIFT;
+            pinShift = _GPIO_TIMER_CC0ROUTE_PIN_SHIFT;
             break;
         }
         case CC_CHANNEL_1: {
             routeRegister = &GPIO->TIMERROUTE[TIMER_NUM(TIMER0)].CC1ROUTE;
-            portShift     = _GPIO_TIMER_CC1ROUTE_PORT_SHIFT;
-            pinShift      = _GPIO_TIMER_CC1ROUTE_PIN_SHIFT;
+            portShift = _GPIO_TIMER_CC1ROUTE_PORT_SHIFT;
+            pinShift = _GPIO_TIMER_CC1ROUTE_PIN_SHIFT;
             break;
         }
         case CC_CHANNEL_2: {
             routeRegister = &GPIO->TIMERROUTE[TIMER_NUM(TIMER0)].CC2ROUTE;
-            portShift     = _GPIO_TIMER_CC2ROUTE_PORT_SHIFT;
-            pinShift      = _GPIO_TIMER_CC2ROUTE_PIN_SHIFT;
+            portShift = _GPIO_TIMER_CC2ROUTE_PORT_SHIFT;
+            pinShift = _GPIO_TIMER_CC2ROUTE_PIN_SHIFT;
             break;
         }
         default: {
@@ -250,7 +240,6 @@ void TIMHW_startTimer0(void) {
         /** Timer start/stop/reload by other timers. */
         .sync = false /* Not started/stopped/reloaded by other timers. */
     };
-
 
     // NOTE: for joel, regarding writing to CONFIG and SYNC registers (see 19.3.1)
     // TIMER_Init() writes to these regs in this order. Because it enables and disables accordingly
