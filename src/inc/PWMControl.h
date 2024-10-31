@@ -15,8 +15,8 @@ void initTimer0CCChannel(CCChannel_t channel, pinPort_t port, uint8_t pinNo, uin
 void configureTimerPWMFrequency(uint32_t frequencyHz);
 
 // Sets the Duty Cycle of the PWM signal on one of TIMER0's channels
-void setDutyCycle(CCChannel_t channel, uint8_t percent);
+void setDutyCycle(CCChannel_t channel, int8_t percent);
 // Sets the brightness level for one of TIMER0's channels. The brighness is adjusted using gamma correction
-void setBrightness(CCChannel_t channel, uint8_t percent);
+void setBrightness(CCChannel_t channel, int8_t percent);
 
 #endif // _PWMCONTROL_H_

@@ -109,7 +109,7 @@ static void buildGammaLookUpTable(void) {
 // NOTE: expects TIMER- to be enabled when called
 // Parameters: channel: the channel to set the PWM duty cycle
 //             percent: the value for the duty cycle
-void setDutyCycle(CCChannel_t channel, uint8_t percent) {
+void setDutyCycle(CCChannel_t channel, int8_t percent) {
     uint32_t top = TIMHW_getTimer0TopValue();
     // Guard for percent being an stupid number
     if (percent > 100) {
@@ -118,13 +118,13 @@ void setDutyCycle(CCChannel_t channel, uint8_t percent) {
     // DEBUG: print set value
     // TODO: This doesn't work, review!
     // app_log_debug("Setting %d%: %"PRIu32"/%"PRIu32, percent, compareValue, TIMER_TopGet(TIMER0));
-    TIMHW_setChannelBufferedOutputCompare(channel, (top * percent) / 100);
+    TIMHW_setChannelBufferedOutputCompare(channel, (top * (uint32_t)percent) / 100);
 }
 
 // Sets the brightness level for one of TIMER0's channels. The brighness is adjusted using gamma correction
 // Parameters: channel: the channel to set the PWM duty cycle
 //             percent: the relative brightness level, from 0 to 100
-void setBrightness(CCChannel_t channel, uint8_t percent) {
+void setBrightness(CCChannel_t channel, int8_t percent) {
     uint32_t compareValue = 0;
     // Guard for percent being an stupid number
     if (percent >= 100) {
