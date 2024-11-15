@@ -21,6 +21,10 @@
 #include "debounce.h"
 #include "gpio_HW.h"
 
+
+// DEBUG:
+#include "timer_HW.h"
+
 // TODO: Maybe we can store errors in some variables, and then check for interrutp
 // errors in the main loop?
 
@@ -44,15 +48,16 @@ void gpioCallbackQuad(uint8_t intNo, void* ctx) {
     }
 }
 
-static int8_t currPercent = 0;
+static int8_t currPercent[3] = {0, 0, 0};
+static CCChannel_t currChannel[3] = {CC_CHANNEL_0, CC_CHANNEL_1, CC_CHANNEL_2};
+static uint8_t channelIdx = 0;
 
 void button0Pressed(void) {
-    currPercent += 10;
-    if (currPercent > 100) {
-        currPercent = 0;
+    channelIdx++;
+    if (channelIdx > 2) {
+        channelIdx = 0;
     }
-    app_log_info("Set PWM to %d\r\n", currPercent);
-    //setDutyCycle(CC_CHANNEL_0, currPercent);
+    app_log_info("Set Ch%d\r\n", channelIdx);
 }
 
 void button0Released(void) {
@@ -60,17 +65,19 @@ void button0Released(void) {
 }
 
 void quad0ClockWise(void) {
-    if (currPercent < 100) {
-        currPercent++;
-        app_log_debug("%d\r\n", currPercent);
-        //setDutyCycle(CC_CHANNEL_0, currPercent);
-    }
+  currPercent[channelIdx] += 5;
+  if (currPercent[channelIdx] > 100) {
+      currPercent[channelIdx] = 100;
+  }
+  app_log_info("Set Ch%d PWM to %d\r\n", channelIdx, currPercent[channelIdx]);
+  setDutyCycle(currChannel[channelIdx], currPercent[channelIdx]);
 }
 
 void quad0CounterClockWise(void) {
-    if (currPercent > 0) {
-        currPercent--;
-        app_log_debug("%d\r\n", currPercent);
-        //setDutyCycle(CC_CHANNEL_0, currPercent);
-    }
+  currPercent[channelIdx] -= 5;
+  if (currPercent[channelIdx] < 0) {
+      currPercent[channelIdx] = 0;
+  }
+  app_log_info("Set Ch%d PWM to %d\r\n", channelIdx, currPercent[channelIdx]);
+  setDutyCycle(currChannel[channelIdx], currPercent[channelIdx]);
 }

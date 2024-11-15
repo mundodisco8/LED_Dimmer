@@ -1,15 +1,15 @@
 #ifndef _PWMCONTROL_H_
 #define _PWMCONTROL_H_
 
-#include "inttypes.h"
+#include <inttypes.h>
 
 #include "gpio_HW_types.h"
 #include "timer_HW_types.h"
 
 // Start TIMER0's HW
-void initTimer0HW(void);
+void initTimer0PWM(uint32_t PWMFreqHz);
 // Starts the CC module of a channel of TIMER0 as PWM mode.
-void initTimer0CCChannel(CCChannel_t channel, pinPort_t port, uint8_t pinNo, uint32_t PWMFreqHz, polarity_t polarity);
+void initTimer0CCChannel(CCChannel_t channel, pinPort_t port, uint8_t pinNo, polarity_t polarity);
 
 // Sets the PWM signal frequency by adjusting the TOP value of the counter
 void configureTimerPWMFrequency(uint32_t frequencyHz);
