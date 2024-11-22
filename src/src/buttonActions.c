@@ -21,15 +21,14 @@
 #include "debounce.h"
 #include "gpio_HW.h"
 
-// TODO: Quick and dirty test to see that everything is wired
-// A button press will increase the counter of button presses and a button release will print a message
-// A quad rotating will increase a count starting on 4000 if turned CW and decrease it if turned CCW.
-// This all will be replaced, so I won't comment it further.
 
-volatile uint32_t buttonCount = 0;
-volatile uint32_t rotaryCount = 4000;
+// DEBUG:
+#include "timer_HW.h"
 
-void gpioCallbackButton1(uint8_t intNo, void* ctx) {
+// TODO: Maybe we can store errors in some variables, and then check for interrutp
+// errors in the main loop?
+
+void gpioCallbackButton(uint8_t intNo, void* ctx) {
     (void)intNo;
     // set debounce timer
     startButtonTimer((button_t*)ctx, TIMER_DEBOUNCE);
@@ -37,7 +36,7 @@ void gpioCallbackButton1(uint8_t intNo, void* ctx) {
     startButtonTimer((button_t*)ctx, TIMER_SAMPLE);
 }
 
-void gpioCallbackQuad1(uint8_t intNo, void* ctx) {
+void gpioCallbackQuad(uint8_t intNo, void* ctx) {
     (void)intNo;
     // Trivial, but makes it easier to read
     quad_encoder_t* quadPtr = (quad_encoder_t*)ctx;
@@ -49,41 +48,36 @@ void gpioCallbackQuad1(uint8_t intNo, void* ctx) {
     }
 }
 
-static uint8_t currPercent = 0;
+static int8_t currPercent[3] = {0, 0, 0};
+static CCChannel_t currChannel[3] = {CC_CHANNEL_0, CC_CHANNEL_1, CC_CHANNEL_2};
+static uint8_t channelIdx = 0;
 
-void button1Pressed(void) {
-    currPercent += 10;
-    if (currPercent > 100) {
-        currPercent = 0;
+void button0Pressed(void) {
+    channelIdx++;
+    if (channelIdx > 2) {
+        channelIdx = 0;
     }
-    app_log_info("Set PWM to %"PRIu8"\r\n", currPercent);
-    setDutyCycle(CC_CHANNEL_0, currPercent);
+    app_log_info("Set Ch%d\r\n", channelIdx);
 }
 
-void button1Released(void) {
-    // app_log_info("Btn1 Released\r\n");
+void button0Released(void) {
+    // app_log_debug("Btn1 Released\r\n");
 }
 
-void quad1ClockWise(void) {
-    if (currPercent < 100) {
-        currPercent++;
-        app_log_debug("%"PRIu8"\r\n", currPercent);
-        setDutyCycle(CC_CHANNEL_0, currPercent);
-    }
+void quad0ClockWise(void) {
+  currPercent[channelIdx] += 5;
+  if (currPercent[channelIdx] > 100) {
+      currPercent[channelIdx] = 100;
+  }
+  app_log_info("Set Ch%d PWM to %d\r\n", channelIdx, currPercent[channelIdx]);
+  setDutyCycle(currChannel[channelIdx], currPercent[channelIdx]);
 }
 
-void quad1CounterClockWise(void) {
-    if (currPercent > 0) {
-        currPercent--;
-        app_log_debug("%"PRIu8"\r\n", currPercent);
-        setDutyCycle(CC_CHANNEL_0, currPercent);
-    }
-}
-
-uint32_t getRotary(void) {
-    return rotaryCount;
-}
-
-uint32_t getButton(void) {
-    return buttonCount;
+void quad0CounterClockWise(void) {
+  currPercent[channelIdx] -= 5;
+  if (currPercent[channelIdx] < 0) {
+      currPercent[channelIdx] = 0;
+  }
+  app_log_info("Set Ch%d PWM to %d\r\n", channelIdx, currPercent[channelIdx]);
+  setDutyCycle(currChannel[channelIdx], currPercent[channelIdx]);
 }

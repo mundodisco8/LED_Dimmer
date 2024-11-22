@@ -19,6 +19,15 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+// SiLabs
+// Ignore a cast-align warning in some cmsis header and a sign conversion in
+// sl_sleeptimer.h
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-align"
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+#include "app_assert.h"
+#pragma GCC diagnostic pop
+
 // Project's Libraries
 #include "gpio_HW.h"
 #include "interrupt_HW.h"
@@ -33,6 +42,7 @@
 //static uint32_t setSamplingTimer(button_t* btnPtr);
 
 // Initialises the button_t struct with the default values and associates the pressed and released actions.
+// NOTE: Each button uses two sleeptimers, so make sure you have enough!
 // Parameters: btnPtr: a pointer to a button_t object which will be initialised
 //             pinPort: the port of the GPIO Pin of the button
 //             pinNo: the pin number of the button
@@ -40,9 +50,8 @@
 //             releasedAction: a buttonCallback_t pointer to the callback to call when the button is released
 // Returns: true on sucess, false if the button_t pointer passed is null
 btnError_t initButton(button_t* btnPtr, pinPort_t pinPort, uint8_t pinNo, actionCallback_t pressedAction,
-                      actionCallback_t releasedAction, timerHandle_t* debounceTimerPtr,
-                      timerHandle_t* samplingTimerPtr) {
-    if ((btnPtr == NULL) || (debounceTimerPtr == NULL) || (samplingTimerPtr == NULL)) {
+                      actionCallback_t releasedAction) {
+    if (btnPtr == NULL) {
         return BTN_NULL_POINTER_PASSED;
     }
     setPinMode(pinPort, pinNo, MODE_INPUT, false);
@@ -52,8 +61,11 @@ btnError_t initButton(button_t* btnPtr, pinPort_t pinPort, uint8_t pinNo, action
     btnPtr->state            = BUTTON_RELEASED;  // buttons are released by default
     btnPtr->pressedAction    = pressedAction;
     btnPtr->releasedAction   = releasedAction;
-    btnPtr->debounceTimerPtr = debounceTimerPtr;
-    btnPtr->samplingTimerPtr = samplingTimerPtr;
+    slpTimerStatus_t retVal = SLP_reserveTimer(&(btnPtr->debounceTimerPtr));
+    //TODO: Test Asserts on error
+    app_assert_status_f((retVal == SLPTIMER_NO_TIMERS_AVAILABLE), "No timer available. Increase the number of timers\r\n");
+    retVal = SLP_reserveTimer(&(btnPtr->samplingTimerPtr));
+    app_assert_status_f((retVal == SLPTIMER_NO_TIMERS_AVAILABLE), "No timer available. Increase the number of timers\r\n");
 
     return BTN_OK;
 }
@@ -72,8 +84,11 @@ btnError_t initQuadEncoder(quad_encoder_t* quadPtr, pinPort_t pin0Port, uint8_t 
         // Not much we can do it the quad encoder pointer is NULL
         return BTN_NULL_POINTER_PASSED;
     }
-    setPinMode(pin0Port, pin0No, MODE_INPUT, false);
-    setPinMode(pin1Port, pin1No, MODE_INPUT, false);
+    // TODO: If I set the pins as input with no pulls, the encoder signal doesn't go low enough to trigger the interrupt
+    // This is really odd, as it measures 1.something volts, as if the pin had an internal pull-up!.
+    // I only managed to get it working by actively pulling it dowm, but it should not be neccessary. Do more reasearch!
+    setPinMode(pin0Port, pin0No, MODE_INPUT_PULL, false);
+    setPinMode(pin1Port, pin1No, MODE_INPUT_PULL, false);
     quadPtr->pin0No                 = pin0No;
     quadPtr->pin0Port               = pin0Port;
     quadPtr->pin1No                 = pin1No;
@@ -103,7 +118,7 @@ btnError_t configureButtonInterrupts(button_t* btnPtr, callbackCtxPtr_t callback
         // No ints available
         return BTN_NO_INTS_AVAILABLE;
     }  // Else, an int was correctly configured, and returned in intPin
-    // We call configurePinInterrupt with whatever pin numnber setInterruptCallbackWCtx retunrs, not with
+    // We call configurePinInterrupt with whatever pin numnber setInterruptCallbackWCtx returns, not with
     // pinNo, as one would expect, just in case they are not the same number
     configurePinInterrupt(btnPtr->btnPort, btnPtr->pinNo, *intNoPtr, true, true, true);
     enablePinInterrupts(1 << *intNoPtr);

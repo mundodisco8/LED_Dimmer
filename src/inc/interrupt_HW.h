@@ -19,4 +19,7 @@ void setInterruptCallback(uint8_t pinNo, callbackPtr_t cbPtr);
 // free interrupt number.
 uint32_t setInterruptCallbackWCtx(uint8_t pinNo, callbackCtxPtr_t cbCtxPtr, void* ctxPtr);
 
+// Enable TIMER0 interrupts
+void enableTIMER0Int(void);
+
 #endif // INTERRUPT_HW_H

@@ -1,24 +1,36 @@
+# =========================================================================
+#   Ceedling - Test-Centered Build System for C
+#   ThrowTheSwitch.org
+#   Copyright (c) 2010-24 Mike Karlesky, Mark VanderVoord, & Greg Williams
+#   SPDX-License-Identifier: MIT
+# =========================================================================
+
 ---
-
-# Notes:
-# Sample project C code is not presently written to produce a release artifact.
-# As such, release build options are disabled.
-# This sample, therefore, only demonstrates running a collection of unit tests.
-
 :project:
-  :use_exceptions: FALSE
-  :use_test_preprocessor: TRUE
-  :use_auxiliary_dependencies: TRUE
-  :build_root: build
-#  :release_build: TRUE
-  :test_file_prefix: test_
+  # how to use ceedling. If you're not sure, leave this as `gem` and `?`
   :which_ceedling: gem
-  :ceedling_version: 0.31.1
+  :ceedling_version: '?'
+
+  # optional features. If you don't need them, keep them turned off for performance
+  :use_mocks: TRUE
+  :use_test_preprocessor: :all
+  :use_backtrace: :none
+
+  # tweak the way ceedling handles automatic tasks
+  :build_root: build
+  :test_file_prefix: test_
   :default_tasks:
     - test:all
-  :options_paths:
-    - ../test/
+  # performance options. If your tools start giving mysterious errors, consider
+  # dropping this to 1 to force single-tasking
+  :test_threads: 4
+  :compile_threads: 4
+ # enable release build (more details in release_build section below)
+  :release_build: FALSE
 
+# further details to configure the way Ceedling handles test code
+:test_build:
+  :use_assembly: FALSE
 #:test_build:
 #  :use_assembly: TRUE
 
@@ -28,35 +40,61 @@
 
 :environment:
 
+# override the default extensions for your system and toolchain
 :extension:
+  #:header: .h
+  #:source: .c
+  #:assembly: .s
+  #:dependencies: .d
+  #:object: .o
   :executable: .out
+  #:testpass: .pass
+  #:testfail: .fail
+  #:subprojects: .a
 
+# This is where Ceedling should look for your source and test files.
+# see documentation for the many options for specifying this.
 :paths:
   :test:
     - +:test/**
     - -:test/support
   :source:
-    - ../src/**
-    - ../src/inc/**
+    - ../src/src/**
   :support:
     - test/support
   :libraries: []
   :include:
-     - ../test/**
+    - ../src/inc/**
+    - ../test/**
+    - ../src/config/**
 
+# You can even specify specific files to add or remove from your test
+# and release collections. Usually it's better to use paths and let
+# Ceedling do the work for you!
+:files:
+  :test: []
+  :source: []
+
+# Compilation symbols to be injected into builds
+# See documentation for advanced options:
+#  - Test name matchers for different symbols per test executable build
+#  - Referencing symbols in multiple lists using advanced YAML
+#  - Specifiying symbols used during test preprocessing
 :defines:
   # in order to add common defines:
   #  1) remove the trailing [] from the :common: section
   #  2) add entries to the :common: section (e.g. :test: has TEST defined)
-  :common: &common_defines []
   :test:
-    - *common_defines
     - TEST
     - BGM220PC22WGA=1
   :test_preprocess:
-    - *common_defines
     - TEST
+    - BGM220PC22WGA=1
 
+  # Enable to inject name of a test as a unique compilation symbol into its respective executable build.
+  :use_test_definition: FALSE
+
+# Configuration Options specific to CMock. See CMock docs for details
 :cmock:
   :mock_prefix: mock_
   :when_no_prototypes: :warn
@@ -75,77 +113,33 @@
     int8:     INT8
     bool:     UINT8
 
-# Add -gcov to the plugins list to make sure of the gcov plugin
-# You will need to have gcov and gcovr both installed to make it work.
-# For more information on these options, see docs in plugins/gcov
-:gcov:
-  :utilities:
-    - gcovr           # Use gcovr to create the specified reports (default).
-    - ReportGenerator # Use ReportGenerator to create the specified reports.
-  :reports:
-    - HtmlDetailed
-  :gcovr:
-    :html_medium_threshold: 75
-    :html_high_threshold: 90
-    :print_summary: true
-    :report_include: "../src/Gruffalo_Dimmer/src/.*"
-  :report_generator:
-    # Optional plugin files for custom reports or custom history storage (separated by semicolon).
-    # :plugins: CustomReports.dll
-
-    # Optional list of assemblies that should be included or excluded in the report (separated by semicolon)..
-    # Exclusion filters take precedence over inclusion filters.
-    # Wildcards are allowed, but not regular expressions.
-    # :assembly_filters: "+Included;-Excluded"
-
-    # Optional list of classes that should be included or excluded in the report (separated by semicolon)..
-    # Exclusion filters take precedence over inclusion filters.
-    # Wildcards are allowed, but not regular expressions.
-    # :class_filters: "+Included;-Excluded"
-
-    # Optional list of files that should be included or excluded in the report (separated by semicolon)..
-    # Exclusion filters take precedence over inclusion filters.
-    # Wildcards are allowed, but not regular expressions.
-    # :file_filters: "-./vendor/*;-./build/*;-./test/*;-./lib/*;+./src/*"
-    :file_filters: "-gecko;-../src/Gruffalo_Dimmer/gecko_sdk_4.1.3/*"
-
-    # The verbosity level of the log messages.
-    # Values: Verbose, Info, Warning, Error, Off
-    # :verbosity: Verbose
-
-    # Optional tag or build version.
-    # :tag: <tag>
-
-    # Optional list of one or more regular expressions to exclude gcov notes files that match these filters.
-    # :gcov_exclude:
-    #   - <exclude_regex1>
-    #   - <exclude_regex2>
-
-    # Optionally use a particular gcov executable. Defaults to gcov.
-    # :gcov_executable: <gcov_cmd>
-
-    # Optionally set the number of threads to use in parallel. Defaults to 1.
-    :num_parallel_threads: 12
-
-    # Optional list of one or more command line arguments to pass to Report Generator.
-    # Useful for configuring Risk Hotspots and Other Settings.
-    # https://github.com/danielpalme/ReportGenerator/wiki/Settings
-    # :custom_args:
-    #   - <custom_arg1>
-    #   - <custom_arg2>
+# You can optionally have ceedling create environment variables for you before
+# performing the rest of its tasks.
+:environment: []
+# :environment:
+#   # List enforces order allowing later to reference earlier with inline Ruby substitution
+#   - :var1: value
+#   - :var2: another value
+#   - :path:            # Special PATH handling with platform-specific path separators
+#     - #{ENV['PATH']}  # Environment variables can use inline Ruby substitution
+#     - /another/path/to/include
 
 #:tools:
 # Ceedling defaults to using gcc for compiling, linking, etc.
 # As [:tools] is blank, gcc will be used (so long as it's in your system path)
 # See documentation to configure a given toolchain for use
 
-# Add debugging info to the tests
+# Configure additional command line flags provided to tools used in each build step
 :flags:
   :test:
     :compile:
       :*: # use :*: for all sources.
         - -g3
         - -O0
+        - -Wall
+        - -Wextra
+        - -pedantic
+        # - -Werror
 
 # LIBRARIES
 # These libraries are automatically injected into the build process. Those specified as
@@ -155,16 +149,226 @@
   :placement: :end
   :flag: "-l${1}"
   :path_flag: "-L ${1}"
-  :system: []    # for example, you might list 'm' to grab the math library
+  :system:
+    - m
   :test: []
   :release: []
 
+# Plugins are optional Ceedling features which can be enabled. Ceedling supports
+# a variety of plugins which may effect the way things are compiled, reported,
+# or may provide new command options. Refer to the readme in each plugin for
+# details on how to use it.
 :plugins:
-  :load_paths:
-    - "#{Ceedling.load_path}"
+  :load_paths: []
   :enabled:
-    - stdout_pretty_tests_report
-    - module_generator
-    - xml_tests_report
-    - gcov
+    # - beep                           # beeps when finished, so you don't waste time waiting for ceedling
+    - module_generator               # handy for quickly creating source, header, and test templates
+    - gcov                           # test coverage using gcov. Requires gcc, gcov, and a coverage analyzer like gcovr
+    #- bullseye                       # test coverage using bullseye. Requires bullseye for your platform
+    #- command_hooks                  # write custom actions to be called at different points during the build process
+    #- compile_commands_json_db          # generate a compile_commands.json file
+    #- dependencies                   # automatically fetch 3rd party libraries, etc.
+    #- subprojects                    # managing builds and test for static libraries
+    #- fake_function_framework        # use FFF instead of CMock
+
+    # Report options (You'll want to choose one stdout option, but may choose multiple stored options if desired)
+    #- report_build_warnings_log
+    #- report_tests_gtestlike_stdout
+    #- report_tests_ide_stdout
+    #- report_tests_log_factory
+    - report_tests_pretty_stdout
+    #- report_tests_raw_output_log
+    #- report_tests_teamcity_stdout
+
+# Specify which reports you'd like from the log factory
+:report_tests_log_factory:
+  :reports:
+    - json
+    - junit
+    - cppunit
+    - html
+
+################################################################
+# PLUGIN CONFIGURATION
+################################################################
+
+# Add -gcov to the plugins list to make sure of the gcov plugin
+# You will need to have gcov and gcovr both installed to make it work.
+# For more information on these options, see docs in plugins/gcov
+:gcov:
+  :utilities:
+    - gcovr           # Use gcovr to create the specified reports (default).
+    - ReportGenerator # Use ReportGenerator to create the specified reports.
+  :reports: # Specify one or more reports to generate.
+    # Make an HTML summary report.
+    # - HtmlBasic
+    - HtmlDetailed
+    # - Text
+    # - Cobertura
+    # - SonarQube
+    # - JSON
+    # - HtmlInline
+    # - HtmlInlineAzure
+    # - HtmlInlineAzureDark
+    - HtmlChart
+    # - MHtml
+    # - Badges
+    # - CsvSummary
+    # - Latex
+    # - LatexSummary
+    - PngChart
+    # - TeamCitySummary
+    # - lcov
+    # - Xml
+    # - XmlSummary
+  :gcovr:
+    # Keep only source files that match this filter. (gcovr --filter).
+    :report_include: "../src/src"
+    :html_artifact_filename: TestCoverageReport.html
+    :html_title: Test Coverage Report
+    :html_medium_threshold: 75
+    :html_high_threshold: 90
+    # :html_absolute_paths: TRUE
+    # :html_encoding: UTF-8
+# :module_generator:
+#   :project_root: ./
+#   :source_root: source/
+#   :inc_root: includes/
+#   :test_root: tests/
+#   :naming: :snake #options: :bumpy, :camel, :caps, or :snake
+#   :includes:
+#     :tst: []
+#     :src: []:module_generator:
+#   :boilerplates:
+#     :src: ""
+#     :inc: ""
+#     :tst: ""
+
+# :dependencies:
+#   :libraries:
+#     - :name: WolfSSL
+#       :source_path:   third_party/wolfssl/source
+#       :build_path:    third_party/wolfssl/build
+#       :artifact_path: third_party/wolfssl/install
+#       :fetch:
+#         :method: :zip
+#         :source: \\shared_drive\third_party_libs\wolfssl\wolfssl-4.2.0.zip
+#       :environment:
+#         - CFLAGS+=-DWOLFSSL_DTLS_ALLOW_FUTURE
+#       :build:
+#         - "autoreconf -i"
+#         - "./configure --enable-tls13 --enable-singlethreaded"
+#         - make
+#         - make install
+#       :artifacts:
+#         :static_libraries:
+#           - lib/wolfssl.a
+#         :dynamic_libraries:
+#           - lib/wolfssl.so
+#         :includes:
+#           - include/**
+
+# :subprojects:
+#   :paths:
+#    - :name: libprojectA
+#      :source:
+#        - ./subprojectA/source
+#      :include:
+#        - ./subprojectA/include
+#      :build_root: ./subprojectA/build
+#      :defines: []
+
+# :command_hooks:
+#   :pre_mock_preprocess:
+#   :post_mock_preprocess:
+#   :pre_test_preprocess:
+#   :post_test_preprocess:
+#   :pre_mock_generate:
+#   :post_mock_generate:
+#   :pre_runner_generate:
+#   :post_runner_generate:
+#   :pre_compile_execute:
+#   :post_compile_execute:
+#   :pre_link_execute:
+#   :post_link_execute:
+#   :pre_test_fixture_execute:
+#   :post_test_fixture_execute:
+#   :pre_test:
+#   :post_test:
+#   :pre_release:
+#   :post_release:
+#   :pre_build:
+#   :post_build:
+#   :post_error:
+
+################################################################
+# TOOLCHAIN CONFIGURATION
+################################################################
+
+
+#:tools:
+# Ceedling defaults to using gcc for compiling, linking, etc.
+# As [:tools] is blank, gcc will be used (so long as it's in your system path)
+# See documentation to configure a given toolchain for use
+# :tools:
+#   :test_compiler:
+#     :executable:
+#     :arguments: []
+#     :name:
+#     :optional: FALSE
+#   :test_linker:
+#     :executable:
+#     :arguments: []
+#     :name:
+#     :optional: FALSE
+#   :test_assembler:
+#     :executable:
+#     :arguments: []
+#     :name:
+#     :optional: FALSE
+#   :test_fixture:
+#     :executable:
+#     :arguments: []
+#     :name:
+#     :optional: FALSE
+#   :test_includes_preprocessor:
+#     :executable:
+#     :arguments: []
+#     :name:
+#     :optional: FALSE
+#   :test_file_preprocessor:
+#     :executable:
+#     :arguments: []
+#     :name:
+#     :optional: FALSE
+#   :test_file_preprocessor_directives:
+#     :executable:
+#     :arguments: []
+#     :name:
+#     :optional: FALSE
+#   :test_dependencies_generator:
+#     :executable:
+#     :arguments: []
+#     :name:
+#     :optional: FALSE
+#   :release_compiler:
+#     :executable:
+#     :arguments: []
+#     :name:
+#     :optional: FALSE
+#   :release_linker:
+#     :executable:
+#     :arguments: []
+#     :name:
+#     :optional: FALSE
+#   :release_assembler:
+#     :executable:
+#     :arguments: []
+#     :name:
+#     :optional: FALSE
+#   :release_dependencies_generator:
+#     :executable:
+#     :arguments: []
+#     :name:
+#     :optional: FALSE
 ...

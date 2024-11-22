@@ -56,18 +56,15 @@
 #include "sl_bluetooth.h"
 #pragma GCC diagnostic pop
 
-#include "sl_sleeptimer.h"
-
+#include "PWMControl.h"
 #include "app.h"
 #include "app_assert.h"
 #include "app_log.h"
-
-#include "gatt_db.h"
-#include "pin_config.h"
-
 #include "buttonActions.h"
 #include "buttons.h"
-#include "PWMControl.h"
+#include "gatt_db.h"
+#include "pin_config.h"
+#include "sl_sleeptimer.h"
 
 #define DEBUG_EFM_USER
 #include "sl_assert.h"
@@ -78,15 +75,28 @@ static uint8_t advertising_set_handle = 0xff;
 // Our buttons
 button_t button0 = {0};
 button_t button1 = {0};
-// and their timers
-timerHandle_t samplingTimerBtn0 = {0};
-timerHandle_t samplingTimerBtn1 = {0};
-timerHandle_t debounceTimerBtn0 = {0};
-timerHandle_t debounceTimerBtn1 = {0};
 
 // And our quad encoders
 quad_encoder_t quad0 = {0};
 quad_encoder_t quad1 = {0};
+
+
+#include "timer_HW.h"
+#include "em_timer.h"
+#include "gpio_HW.h"
+void TIMER0_IRQHandler(void)
+{
+  // Acknowledge the interrupt
+  uint32_t flags = TIMER_IntGet(TIMER0);
+  TIMER_IntClear(TIMER0, flags);
+
+  // TODO: only buffer the count for the int that triggered
+
+  // Write OCB to update the duty cycle of the next waveform period
+  TIMER_CompareBufSet(TIMER0, 0, dutyCycle0);
+  TIMER_CompareBufSet(TIMER0, 1, dutyCycle1);
+  TIMER_CompareBufSet(TIMER0, 2, dutyCycle2);
+}
 
 /******************************************************************************
  * Application Init.
@@ -98,17 +108,39 @@ SL_WEAK void app_init(void) {
     /////////////////////////////////////////////////////////////////////////////
     app_log_error("Booted up!\r\n");
 
+    enableGPIOClock();
+    // setPinMode(portC, pwm0_PIN, MODE_PUSHPULL, 0);
+    // setPinMode(portC, pwm1_PIN, MODE_PUSHPULL, 0);
+    // setPinMode(portC, pwm2_PIN, MODE_PUSHPULL, 0);
+    // TODO: there's no need, that I can see, of keeping the interrupt number, and I'm certainly not using it anywhere
+    // If anything, it could be stored internally in the button_t struct
     // Init GPIOs for buttons and quads
+    uint32_t button0GPIOIntNo = 0;
+    uint32_t quad0GPIOIntNo = 0;
     uint32_t button1GPIOIntNo = 0;
     uint32_t quad1GPIOIntNo = 0;
-    initButton(&button1, (pinPort_t)btn1_PORT, btn1_PIN, button1Pressed, button1Released, &debounceTimerBtn1, &samplingTimerBtn1);
-    initQuadEncoder(&quad1, (pinPort_t)quad1_0_PORT, quad1_0_PIN, (pinPort_t)quad1_1_PORT, quad1_1_PIN, quad1ClockWise, quad1CounterClockWise);
-    configureButtonInterrupts(&button1, gpioCallbackButton1, &button1GPIOIntNo);
-    configureQuadratureInterrupts(&quad1, gpioCallbackQuad1, &quad1GPIOIntNo);
+    initButton(&button0, (pinPort_t)btn0_PORT, btn0_PIN, button0Pressed, button0Released);
+    initQuadEncoder(&quad0, (pinPort_t)quad0_0_PORT, quad0_0_PIN, (pinPort_t)quad0_1_PORT, quad0_1_PIN, quad0ClockWise, quad0CounterClockWise);
+    initButton(&button1, (pinPort_t)btn1_PORT, btn1_PIN, button0Pressed, button0Released);
+    initQuadEncoder(&quad1, (pinPort_t)quad1_0_PORT, quad1_0_PIN, (pinPort_t)quad1_1_PORT, quad1_1_PIN, quad0ClockWise, quad0CounterClockWise);
+    btnError_t retVal = configureButtonInterrupts(&button0, gpioCallbackButton, &button0GPIOIntNo);
+    app_assert_status_f((retVal != BTN_OK), "Error configuring Btn 0 interrupts\r\n");
+    retVal = configureQuadratureInterrupts(&quad0, gpioCallbackQuad, &quad0GPIOIntNo);
+    app_assert_status_f((retVal != BTN_OK), "Error configuring Quad 0 interrupts\r\n");
+    retVal = configureButtonInterrupts(&button1, gpioCallbackButton, &button1GPIOIntNo);
+    app_assert_status_f((retVal != BTN_OK), "Error configuring Btn 1 interrupts\r\n");
+    retVal = configureQuadratureInterrupts(&quad1, gpioCallbackQuad, &quad1GPIOIntNo);
+    app_assert_status_f((retVal != BTN_OK), "Error configuring Quad 1 interrupts\r\n");
 
     // Init PWM on TIMER0
-    initTimer0HW();
-    initTimer0CCChannel(CC_CHANNEL_0, portC, 3, 250, PWM_ACTIVE_HIGH);
+    initTimer0PWM(250);
+    initTimer0CCChannel(CC_CHANNEL_0, (pinPort_t)pwm0_PORT, pwm0_PIN, PWM_ACTIVE_HIGH);
+    initTimer0CCChannel(CC_CHANNEL_1, (pinPort_t)pwm1_PORT, pwm1_PIN, PWM_ACTIVE_HIGH);
+    initTimer0CCChannel(CC_CHANNEL_2, (pinPort_t)pwm2_PORT, pwm2_PIN, PWM_ACTIVE_HIGH);
+
+    setDutyCycle(CC_CHANNEL_0, 80);
+    setDutyCycle(CC_CHANNEL_1, 80);
+    setDutyCycle(CC_CHANNEL_2, 80);
 }
 
 /******************************************************************************
@@ -122,7 +154,7 @@ SL_WEAK void app_process_action(void) {
     /////////////////////////////////////////////////////////////////////////////
 
     // NOTE: Prints "../app.c:105 :app_process_action: Status: 40 = 0x0028 (?) Assertion failed"
-    // app_assert_status(40);
+    //     app_assert_status(40);
     // NOTE: Prints "../app.c:107 :app_process_action: Status: 40 = 0x0028 (?) Assertion failed: Hey 60"
     // app_assert_status_f(40, "Hey %d\r\n", 60);
     // NOTE: Prints "../app.c:111 :app_process_action: Assertion 'a == b' failed: 1 is not 2"
@@ -134,21 +166,18 @@ SL_WEAK void app_process_action(void) {
     // uint32_t b = 2;
     // app_assert_s(a == b);
 
-    static uint32_t oldRotary = 4000;
-    uint32_t rotary           = getRotary();
-    if (rotary != oldRotary) {
-        app_log_warning("Rotary %"PRIu32"\r\n", rotary);
-        oldRotary = rotary;
-    }
-
-    static uint32_t oldButton = 0;
-    uint32_t button           = getButton();
-    if (button != oldButton) {
-        app_log_info("Button %"PRIu32"\r\n", button);
-        oldButton = button;
-    }
-
-    //    app_log_debug("%d\r\n", GPIO_PinInGet(btn1_PORT, btn1_PIN));
+    // static bool pin0status = false;
+    // static bool pin1status = false;
+    // bool newPin0status = GPIO_PinInGet(quad0_0_PORT, quad0_0_PIN);
+    // bool newPin1status = GPIO_PinInGet(quad0_1_PORT, quad0_1_PIN);
+    // if (newPin0status != pin0status) {
+    //     app_log_debug("Pin 0 %d\r\n", newPin0status);
+    //     pin0status = newPin0status;
+    // }
+    // if (newPin1status != pin1status) {
+    //     app_log_debug("Pin 1 %d\r\n", newPin1status);
+    //     pin1status = newPin1status;
+    // }
 }
 
 /******************************************************************************

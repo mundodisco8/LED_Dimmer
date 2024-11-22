@@ -53,9 +53,10 @@ const uint32_t MIN_PWM_FREQ = 250;
 static void buildGammaLookUpTable(void);
 
 // Start TIMER0's HW
-void initTimer0HW(void) {
-  TIMHW_initTimer0Clock();
-  TIMHW_startTimer0();
+void initTimer0PWM(uint32_t PWMFreqHz) {
+    TIMHW_initTimer0Clock();
+    TIMHW_initTimer0(false);
+    configureTimerPWMFrequency(PWMFreqHz);
 }
 
 // Starts the CC module of a channel of TIMER0 as PWM mode.
@@ -63,13 +64,14 @@ void initTimer0HW(void) {
 //             port: the port of the GPIO pin to set as output
 //             pinNo: the number of the GPIO pin to set as output
 //             polarity: the polarity of the PWM signal (active low or active high)
-void initTimer0CCChannel(CCChannel_t channel, pinPort_t port, uint8_t pinNo, uint32_t PWMFreqHz, polarity_t polarity) {
-    TIMHW_configCCChannelPWM(channel, polarity);
-    // TODO: add assert here for the case of bad channel
+void initTimer0CCChannel(CCChannel_t channel, pinPort_t port, uint8_t pinNo, polarity_t polarity) {
+    // Enable the CC Channel
+    TIMHW_enableChannelCompCapUnit(channel);
+    // Initialise the CC pin for the channel
     TIMHW_setCCChannelPin(port, pinNo, channel);
     // TODO: add assert here for the case of bad freq
-    configureTimerPWMFrequency(PWMFreqHz);
-    TIMHW_startChannelPWM(channel);
+    TIMHW_configCCChannelPWM(channel, polarity);
+    TIMHW_startTimer0();
 }
 
 // Sets the PWM signal frequency by adjusting the TOP value of the counter
@@ -77,17 +79,17 @@ void initTimer0CCChannel(CCChannel_t channel, pinPort_t port, uint8_t pinNo, uin
 // Parameters: frequencyHz: the requested frequency in Hz
 void configureTimerPWMFrequency(uint32_t frequencyHz) {
     // Check the input parameter
-    uint32_t clockFreq = TIMHW_getTimerFrequency();
+    uint32_t timerFreq = TIMHW_getTimer0Frequency();
     // Check that frequency is not too low for LEDs
     if (frequencyHz < MIN_PWM_FREQ) {
         // Set freq to the minimum, MIN_PWM_FREQ
         frequencyHz = MIN_PWM_FREQ;
-    } else if (frequencyHz > (clockFreq / MIN_PWM_LEVELS)) {
+    } else if (frequencyHz > (timerFreq / MIN_PWM_LEVELS)) {
         // Freq is so high we are losing resolution
-        frequencyHz = clockFreq / MIN_PWM_LEVELS;
+        frequencyHz = timerFreq / MIN_PWM_LEVELS;
     }  // Else, frequencyHz is within range (>4096 quantization levels AND >250Hz)
     // Configure TIMER frequency
-    uint32_t top = (clockFreq / (frequencyHz)) - 1U;
+    uint32_t top = (timerFreq / (frequencyHz)) - 1U;
     TIMHW_setTimer0TopValue(top);
     // A change in the frequency will require a rebuild of the lookup tables
     buildGammaLookUpTable();
@@ -109,7 +111,7 @@ static void buildGammaLookUpTable(void) {
 // NOTE: expects TIMER- to be enabled when called
 // Parameters: channel: the channel to set the PWM duty cycle
 //             percent: the value for the duty cycle
-void setDutyCycle(CCChannel_t channel, uint8_t percent) {
+void setDutyCycle(CCChannel_t channel, int8_t percent) {
     uint32_t top = TIMHW_getTimer0TopValue();
     // Guard for percent being an stupid number
     if (percent > 100) {
@@ -117,14 +119,22 @@ void setDutyCycle(CCChannel_t channel, uint8_t percent) {
     }
     // DEBUG: print set value
     // TODO: This doesn't work, review!
-    // app_log_debug("Setting %"PRIu8"%: %"PRIu32"/%"PRIu32, percent, compareValue, TIMER_TopGet(TIMER0));
-    TIMHW_setChannelBufferedOutputCompare(channel, (top * percent) / 100);
+    // app_log_debug("Setting %d%: %"PRIu32"/%"PRIu32, percent, compareValue, TIMER_TopGet(TIMER0));
+    TIMHW_setT0ChannelBufferedOutputCompare(channel, ((top * (uint32_t)percent)) / 100UL);
+    // HACK: while we work with interrupts
+    if (channel == CC_CHANNEL_0) {
+        dutyCycle0 = (top * (uint32_t)percent) / 100UL;
+    } else if (channel == CC_CHANNEL_1) {
+        dutyCycle1 = (top * (uint32_t)percent) / 100UL;
+    } else {
+        dutyCycle2 = (top * (uint32_t)percent) / 100UL;
+    }
 }
 
 // Sets the brightness level for one of TIMER0's channels. The brighness is adjusted using gamma correction
 // Parameters: channel: the channel to set the PWM duty cycle
 //             percent: the relative brightness level, from 0 to 100
-void setBrightness(CCChannel_t channel, uint8_t percent) {
+void setBrightness(CCChannel_t channel, int8_t percent) {
     uint32_t compareValue = 0;
     // Guard for percent being an stupid number
     if (percent >= 100) {
@@ -133,7 +143,7 @@ void setBrightness(CCChannel_t channel, uint8_t percent) {
     } else {
         compareValue = gammaLookUp[percent];
     }
-    // app_log_debug("Setting %"PRIu8"%: %"PRIu32"/%"PRIu32, percent, compareValue, getTimer0TopValue());
+    // app_log_debug("Setting %d%: %"PRIu32"/%"PRIu32, percent, compareValue, getTimer0TopValue());
     // Set compare value using gamma correction lookup table
-    TIMHW_setChannelBufferedOutputCompare(channel, compareValue);
+    TIMHW_setT0ChannelBufferedOutputCompare(channel, compareValue);
 }

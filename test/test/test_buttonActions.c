@@ -6,10 +6,10 @@
 #include "mock_PWMControl.h"
 #include "mock_debounce.h"
 #include "mock_gpio_HW.h"
-#include "mock_sleeptimer_HW.h"
+#include "mock_sleepyTimers_HW.h"
 
 /*
- * Unit tests for "buttonActions.h"
+ * Unit tests for "buttoyActions.h"
  */
 
 void setUp(void) {

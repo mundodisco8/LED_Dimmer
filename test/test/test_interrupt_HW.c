@@ -3,6 +3,7 @@
 #include <unity.h>
 
 #include "mock_gpiointerrupt.h"
+#include "mock_cmsis_nvic_virtual.h"
 
 /***
  * Unit tests for "interrupt_HW.h"

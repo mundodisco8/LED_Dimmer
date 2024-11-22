@@ -7,6 +7,11 @@
  * Unit tests for "PWMControl.h"
  */
 
+// Need these, as they are externed to a module that is n
+volatile float dutyCycle0;
+volatile float dutyCycle1;
+volatile float dutyCycle2;
+
 void setUp(void) {
 }
 
@@ -19,11 +24,17 @@ void tearDown(void) {
 
 // This is just a choreography, check functions are named in the right order
 
-void test_initTimer0HW(void) {
+void test_initTimer0PWM_Success(void) {
+    uint32_t testClockFreq = 32000000;
+    uint32_t testFreq = 250;
+    uint32_t ExpectedTimerTopValue = (testClockFreq / testFreq) - 1;
     TIMHW_initTimer0Clock_Expect();
-    TIMHW_startTimer0_Expect();
+    TIMHW_initTimer0_Expect(false);
+    TIMHW_getTimer0Frequency_ExpectAndReturn(testClockFreq);
+    TIMHW_setTimer0TopValue_ExpectAndReturn(ExpectedTimerTopValue, TIMER_OK);
+    TIMHW_getTimer0TopValue_ExpectAndReturn(ExpectedTimerTopValue);
 
-    initTimer0HW();
+    initTimer0PWM(testFreq);
 }
 
 void test_initTimer0CCChannel(void) {
@@ -31,19 +42,14 @@ void test_initTimer0CCChannel(void) {
     polarity_t testPol = PWM_ACTIVE_HIGH;
     pinPort_t testPort = portB;
     uint32_t testPinNo = 3;
-    uint32_t testFreq = 250;
 
-    TIMHW_configCCChannelPWM_Expect(testChannel, testPol);
+    // Set Expectations
+    TIMHW_enableChannelCompCapUnit_Expect(testChannel);
     TIMHW_setCCChannelPin_ExpectAndReturn(testPort, testPinNo, testChannel, TIMER_OK);
+    TIMHW_configCCChannelPWM_Expect(testChannel, testPol);
+    TIMHW_startTimer0_Expect();
 
-    // Expectations for configureTimerPWMFrequency(), I Ignore parameters because I'm not testing it here
-    TIMHW_getTimerFrequency_IgnoreAndReturn(10000000);
-    TIMHW_setTimer0TopValue_IgnoreAndReturn(TIMER_OK);
-    TIMHW_getTimer0TopValue_IgnoreAndReturn(1000);
-
-    TIMHW_startChannelPWM_Expect(testChannel);
-
-    initTimer0CCChannel(testChannel, testPort, testPinNo, testFreq, testPol);
+    initTimer0CCChannel(testChannel, testPort, testPinNo, testPol);
 }
 
 ////
@@ -61,7 +67,7 @@ void test_configureTimerPWMFrequency_TopValueIsSet(void) {
 
     uint32_t clockFreq = 38400000;
     uint32_t testFreq = 6249;
-    TIMHW_getTimerFrequency_ExpectAndReturn(clockFreq);
+    TIMHW_getTimer0Frequency_ExpectAndReturn(clockFreq);
     // There's no way to test the freq was correct, except checking that TOP is set to the right value
     uint32_t expectedTop = (clockFreq / (testFreq)) - 1U;
     TIMHW_setTimer0TopValue_ExpectAndReturn(expectedTop, TIMER_OK);
@@ -73,7 +79,7 @@ void test_configureTimerPWMFrequency_TopValueIsSet(void) {
 void test_configureTimerPWMFrequency_Freq_is_less_than_MIN_PWM_FREQ(void) {
     uint32_t clockFreq = 38400000;
     uint32_t testFreq = 0;
-    TIMHW_getTimerFrequency_ExpectAndReturn(clockFreq);
+    TIMHW_getTimer0Frequency_ExpectAndReturn(clockFreq);
     // Requested freq is too low, set TOP to get the minimum freq of 250Hz
     uint32_t expectedTop = (clockFreq / (MIN_PWM_FREQ)) - 1U;
     TIMHW_setTimer0TopValue_ExpectAndReturn(expectedTop, TIMER_OK);
@@ -85,7 +91,7 @@ void test_configureTimerPWMFrequency_Freq_is_less_than_MIN_PWM_FREQ(void) {
 void test_configureTimerPWMFrequency_Freq_is_too_high(void) {
     uint32_t clockFreq = 38400000;
     uint32_t testFreq = 38400000; // would give 1 level of quantization: 0 or 100%
-    TIMHW_getTimerFrequency_ExpectAndReturn(clockFreq);
+    TIMHW_getTimer0Frequency_ExpectAndReturn(clockFreq);
     // requested freq is too hihg, Set the TOP value for the fastest signal achievable with 4096 levels
     uint32_t expectedTop = MIN_PWM_LEVELS - 1;
     TIMHW_setTimer0TopValue_ExpectAndReturn(expectedTop, TIMER_OK);
@@ -115,7 +121,7 @@ void test_buildGammaLookUpTable_checkTable(void){
     }
 
     // Expectations for configurePWMFrequency
-    TIMHW_getTimerFrequency_ExpectAndReturn(clockFreq);
+    TIMHW_getTimer0Frequency_ExpectAndReturn(clockFreq);
     // Requested freq is too low, set TOP to get the minimum freq of 250Hz
     uint32_t expectedTop = (clockFreq / (MIN_PWM_FREQ)) - 1U;
     TIMHW_setTimer0TopValue_ExpectAndReturn(expectedTop, TIMER_OK);
@@ -135,19 +141,20 @@ void test_setDutyCycle_DoesItsThing(void) {
     uint32_t expectedCompareValue = topValue * percent / 100;
 
     TIMHW_getTimer0TopValue_ExpectAndReturn(topValue);
-    TIMHW_setChannelBufferedOutputCompare_ExpectAndReturn(CC_CHANNEL_0, expectedCompareValue, TIMER_OK);
+    TIMHW_setT0ChannelBufferedOutputCompare_ExpectAndReturn(testChannel, expectedCompareValue, TIMER_OK);
 
     setDutyCycle(testChannel, percent);
 }
 
 void test_setDutyCycle_PercentIsOver100(void) {
     CCChannel_t testChannel = CC_CHANNEL_0;
-    uint8_t percent = 150;
-    uint32_t topValue = 4096;
+    int8_t percent = 120;
+    uint32_t topValue = 4096UL;
     uint32_t expectedCompareValue = topValue;
 
     TIMHW_getTimer0TopValue_ExpectAndReturn(topValue);
-    TIMHW_setChannelBufferedOutputCompare_ExpectAndReturn(CC_CHANNEL_0, expectedCompareValue, TIMER_OK);
+    // TODO: review
+    TIMHW_setT0ChannelBufferedOutputCompare_ExpectAndReturn(testChannel, expectedCompareValue, TIMER_OK);
 
     setDutyCycle(testChannel, percent);
 }
@@ -157,19 +164,19 @@ void test_setBrightness_DoesItsThing(void) {
     uint8_t percent = 80;
     uint32_t expectedCompareValue = gammaLookUp[percent];
 
-    TIMHW_setChannelBufferedOutputCompare_ExpectAndReturn(CC_CHANNEL_0, expectedCompareValue, TIMER_OK);
+    TIMHW_setT0ChannelBufferedOutputCompare_ExpectAndReturn(testChannel, expectedCompareValue, TIMER_OK);
 
     setBrightness(testChannel, percent);
 }
 
 void test_setBrightness_PercentIsOver100(void) {
     CCChannel_t testChannel = CC_CHANNEL_0;
-    uint8_t percent = 150;
-    uint32_t topValue = 4096;
+    uint8_t percent = 120;
+    uint32_t topValue = 4097;
     uint32_t expectedCompareValue = topValue;
 
     TIMHW_getTimer0TopValue_ExpectAndReturn(topValue);
-    TIMHW_setChannelBufferedOutputCompare_ExpectAndReturn(CC_CHANNEL_0, expectedCompareValue, TIMER_OK);
+    TIMHW_setT0ChannelBufferedOutputCompare_ExpectAndReturn(testChannel, expectedCompareValue, TIMER_OK);
 
     setBrightness(testChannel, percent);
 }
