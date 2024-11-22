@@ -9,6 +9,8 @@
 #pragma GCC diagnostic ignored "-Wsign-conversion"
 #include "app_log.h"
 #pragma GCC diagnostic pop
+#include "em_timer.h"
+#include "cmsis_nvic_virtual.h"
 
 // Wrapper for GPIOINT_Init()
 // Initialises the GPIO Odd and Even interrupts.
@@ -44,4 +46,8 @@ uint32_t setInterruptCallbackWCtx(uint8_t pinNo, callbackCtxPtr_t cbCtxPtr, void
         app_log_error("Error 0x%04"PRIX32" registering interrupt callback with Ctx\r\n", retVal);
     }
     return retVal;
+}
+
+void enableTIMER0Int(void) {
+    NVIC_EnableIRQ(TIMER0_IRQn);
 }

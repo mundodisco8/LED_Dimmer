@@ -29,6 +29,7 @@
 
 // Project headers
 #include "gpio_HW.h"
+#include "interrupt_HW.h"
 
 volatile float dutyCycle0;
 volatile float dutyCycle1;
@@ -69,15 +70,9 @@ static TIMER_Init_TypeDef timerInit = {
 // Set Register Values
 ////
 
-// Mark as unused. I don't want to delete them in case they are useful at some point later.
-static void TIMHW_timerModuleEnable(void) __attribute__((unused));
-static void TIMHW_timerModuleDisable(void) __attribute__((unused));
-
-// GCOVR_EXCL_START
 static void TIMHW_timerModuleEnable(void) { TIMER0->EN_SET = TIMER_EN_EN; }
 
 static void TIMHW_timerModuleDisable(void) { TIMER0->EN_CLR = TIMER_EN_EN; }
-// GCOVR_EXCL_STOP
 
 // Sets the value of the Compare Register (unbuffered)
 // NOTE: WRITES TO A SYNC type register, requires TIMER0 module to be ENABLED
@@ -280,29 +275,32 @@ void TIMHW_configCCChannelPWM(CCChannel_t channel, polarity_t polarity) {
     // Enable CC interrupts for the channel
     switch (channel) {
         case CC_CHANNEL_0: {
+            // TODO: this should be a TIMER_HW
             TIMER_IntEnable(TIMER0, TIMER_IEN_CC0);
             break;
         }
         case CC_CHANNEL_1: {
+            // TODO: this should be a TIMER_HW
             TIMER_IntEnable(TIMER0, TIMER_IEN_CC1);
             break;
         }
         case CC_CHANNEL_2: {
+            // TODO: this should be a TIMER_HW
             TIMER_IntEnable(TIMER0, TIMER_IEN_CC2);
             break;
         }
         default:
             break;
     }
-    NVIC_EnableIRQ(TIMER0_IRQn);
+    enableTIMER0Int();
 }
 
 // Starts TIMER0
 void TIMHW_startTimer0(void) {
-    TIMER_Enable(TIMER0, true);
+    TIMHW_timerModuleEnable();
 }
 
 // Stops TIMER0
 void TIMHW_stopTimer0(void) {
-    TIMER_Enable(TIMER0, false);
+    TIMHW_timerModuleDisable();
 }

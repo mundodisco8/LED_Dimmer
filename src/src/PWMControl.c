@@ -120,14 +120,14 @@ void setDutyCycle(CCChannel_t channel, int8_t percent) {
     // DEBUG: print set value
     // TODO: This doesn't work, review!
     // app_log_debug("Setting %d%: %"PRIu32"/%"PRIu32, percent, compareValue, TIMER_TopGet(TIMER0));
-    TIMHW_setT0ChannelBufferedOutputCompare(channel, (top * (uint32_t)percent) / 100);
+    TIMHW_setT0ChannelBufferedOutputCompare(channel, ((top * (uint32_t)percent)) / 100UL);
     // HACK: while we work with interrupts
     if (channel == CC_CHANNEL_0) {
-        dutyCycle0 = (top * (uint32_t)percent) / 100;
+        dutyCycle0 = (top * (uint32_t)percent) / 100UL;
     } else if (channel == CC_CHANNEL_1) {
-        dutyCycle1 = (top * (uint32_t)percent) / 100;
+        dutyCycle1 = (top * (uint32_t)percent) / 100UL;
     } else {
-        dutyCycle2 = (top * (uint32_t)percent) / 100;
+        dutyCycle2 = (top * (uint32_t)percent) / 100UL;
     }
 }
 
