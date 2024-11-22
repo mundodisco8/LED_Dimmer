@@ -59,23 +59,9 @@
  */
 
 #ifdef TEST
-#ifndef EXTERN
-#define EXTERN extern
+#    ifndef EXTERN
+#       define EXTERN extern
+#    endif
 #endif
-#endif
-
-#include <inttypes.h>
-#include "registerTypes.h"
-
-
-// NOTE: This is the definition of TIMER0, which uses a particular address. This won't work when testing, as we don't
-// know what's stored in that address in the computer...
-// #define TIMER0_NS_BASE               (0x50048000UL) /* TIMER0_NS base address */
-// #define TIMER0_BASE               (TIMER0_NS_BASE)           /* TIMER0 base address */
-// #define TIMER0                  ((TIMER_TypeDef *) TIMER0_BASE)                           /**< TIMER0 base pointer */
-EXTERN TIMER_TypeDef* TIMER0;
-
-// MAGIC line that makes registers testable!
-EXTERN GPIO_TypeDef* GPIO;
 
 #endif  // _MICRO_REGISTERS_H_

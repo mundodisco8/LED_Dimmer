@@ -1,0 +1,12 @@
+#ifndef _REGISTERS_H_
+#define _REGISTERS_H_
+
+
+
+// MAGIC line(s) that makes registers testable! This is normally stored in `bgm220pc22wga.h`, but we include it in our
+// fake `em_gepio` for convenience. Also. note the EXTERN keyword
+
+EXTERN GPIO_TypeDef* GPIO;
+
+
+#endif // _REGISTERS_H_

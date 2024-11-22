@@ -4,7 +4,7 @@
 
 /*****************************************************************************************
  *
- * FAKE EM_GPIO.H USED IN TESTS. CONTAINS THE MINIMUM AMOUNT OF IT TO RUN
+ * FAKE sl_bluetooth_config.H USED IN TESTS. CONTAINS THE MINIMUM AMOUNT OF IT TO RUN
  *
  ****************************************************************************************/
 

@@ -29,12 +29,20 @@ void test_initButtonsDoesItsJob(void) {
     uint8_t expectedPin = 1;
     pinMode_t expectedMode = MODE_INPUT;
     bool expectedDout = false;
+    // Test Magic: I need to return a pointer to valid memory. The "right" thing to do would be to define two timerHandler
+    // structs, and get pointers to them, but buttons.c does not know anything about the structs (we are using an
+    // incomplete) type. The code is not going to use the memory, so we can just define two variables, and use their
+    // memory as if it was a timerhHandler.
+
+    uint8_t dummy1 = 0;
+    uint8_t dummy2 = 0;
+
     // Set Expectations
     setPinMode_Expect(expectedPort, expectedPin, expectedMode, expectedDout);
-    SLP_reserveTimer_ExpectAndReturn(testBtn.debounceTimerPtr, SLPTIMER_OK);
-    SLP_reserveTimer_ReturnThruPtr_handlePtr(0x123);
-    SLP_reserveTimer_ExpectAndReturn(testBtn.samplingTimerPtr, SLPTIMER_OK);
-    SLP_reserveTimer_ReturnThruPtr_handlePtr(0x124);
+    SLP_reserveTimer_ExpectAndReturn(&(testBtn.debounceTimerPtr), SLPTIMER_OK);
+    SLP_reserveTimer_ReturnThruPtr_handlePtr(&dummy1);
+    SLP_reserveTimer_ExpectAndReturn(&(testBtn.samplingTimerPtr), SLPTIMER_OK);
+    SLP_reserveTimer_ReturnThruPtr_handlePtr(&dummy2);
 
     uint32_t retVal = initButton(&testBtn, expectedPort, expectedPin, fakePressedAction, fakeReleasedAction);
     // Check retVal is true
@@ -80,7 +88,7 @@ void test_initQuadratureDoesItsJob(void) {
     pinPort_t expectedPortPin0 = portB;
     uint8_t expectedPin1No = 2;
     pinPort_t expectedPortPin1 = portC;
-    pinMode_t expectedPinMode = MODE_INPUT;
+    pinMode_t expectedPinMode = MODE_INPUT_PULL;
     bool expectedDout = false;
     quad_encoder_t testQuad = {0};
 

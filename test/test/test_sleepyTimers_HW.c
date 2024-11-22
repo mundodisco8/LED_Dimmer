@@ -2,13 +2,14 @@
 
 #include <unity.h>
 
+#include "sl_status.h"
 #include "app_log.h"
 #include "sl_bluetooth_config.h"
 
 // We can mock the real sl_sleeptimers! YAY!
-TEST_INCLUDE_PATH("../src/simplicity_sdk_2024.6.2/platform/service/sleeptimer/inc/")
-TEST_INCLUDE_PATH("../src/simplicity_sdk_2024.6.2/platform/common/inc/")
 #include "mock_sl_sleeptimer.h"
+// TEST_INCLUDE_PATH("../src/simplicity_sdk_2024.6.2/platform/common/inc/")
+// #include "../src/simplicity_sdk_2024.6.2/platform/common/inc/sl_status.h"
 
 /*
  * Unit tests for "sleepyTimers_HW.c"
@@ -20,6 +21,8 @@ void setUp(void) {
 
 void tearDown(void) {
 }
+
+
 
 void test_reserveTimer_success(void) {
     slpTimerStatus_t expectedRetVal = SLPTIMER_OK;

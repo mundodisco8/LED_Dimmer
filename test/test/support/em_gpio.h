@@ -10,8 +10,33 @@
 #include <inttypes.h>
 #include <stdbool.h>
 
-// Needed to define the register type, insted of adding `micro_registers.h`
+// MAGIC line(s) that makes registers testable! This is normally stored in `bgm220pc22wga.h`, but we include it in our
+// fake `em_gepio` for convenience. Also. note the EXTERN keyword
 #include "micro_registers.h"
+
+
+/* IO definitions (access restrictions to peripheral registers) */
+#define __IOM volatile /*! Defines 'read / write' structure member permissions */
+
+typedef struct {
+    __IOM uint32_t ROUTEEN;    /**< TIMER0 pin enable                                  */
+    __IOM uint32_t CC0ROUTE;   /**< CC0 port/pin select                                */
+    __IOM uint32_t CC1ROUTE;   /**< CC1 port/pin select                                */
+    __IOM uint32_t CC2ROUTE;   /**< CC2 port/pin select                                */
+    __IOM uint32_t CDTI0ROUTE; /**< CDTI0 port/pin select                              */
+    __IOM uint32_t CDTI1ROUTE; /**< CDTI1 port/pin select                              */
+    __IOM uint32_t CDTI2ROUTE; /**< CDTI2 port/pin select                              */
+    uint32_t RESERVED0[1U];    /**< Reserved for future use                            */
+} GPIO_TIMERROUTE_TypeDef;
+
+typedef struct {
+    GPIO_TIMERROUTE_TypeDef TIMERROUTE[5U];     /**< timer0 DBUS config registers                       */
+    GPIO_TIMERROUTE_TypeDef TIMERROUTE_SET[5U]; /**< timer0 DBUS config registers                       */
+    GPIO_TIMERROUTE_TypeDef TIMERROUTE_CLR[5U]; /**< timer0 DBUS config registers                       */
+} GPIO_TypeDef;
+
+
+EXTERN GPIO_TypeDef* GPIO;
 
 ////
 // Defines needed to get GPIO_Port_Typedef correctly defined

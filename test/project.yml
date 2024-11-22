@@ -66,6 +66,7 @@
   :include:
     - ../src/inc/**
     - ../test/**
+    - ../src/config/**
 
 # You can even specify specific files to add or remove from your test
 # and release collections. Usually it's better to use paths and let
@@ -88,6 +89,7 @@
     - BGM220PC22WGA=1
   :test_preprocess:
     - TEST
+    - BGM220PC22WGA=1
 
   # Enable to inject name of a test as a unique compilation symbol into its respective executable build.
   :use_test_definition: FALSE
@@ -134,6 +136,10 @@
       :*: # use :*: for all sources.
         - -g3
         - -O0
+        - -Wall
+        - -Wextra
+        - -pedantic
+        # - -Werror
 
 # LIBRARIES
 # These libraries are automatically injected into the build process. Those specified as
