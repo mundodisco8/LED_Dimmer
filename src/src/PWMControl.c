@@ -27,6 +27,13 @@
 // My includes
 #include "timer_HW.h"
 
+// Trickery to allow testing of static elements. Better to mess a bit with the code than to overcomplicate tests
+#ifdef TEST
+#   define STATIC
+#else
+#   define STATIC static
+#endif
+
 
 // Gamma correction
 // To correct the intensity of the LEDs to match the perception of our eyes, we need to do some maths™
@@ -34,7 +41,7 @@ const uint32_t GAMMA_VALUE = 2;
 // To make things easy, we will use a lookup table to store the required compare values for a certain
 // frequency to get that percentage of brightness.
 #define gammaLuTSize 101
-uint32_t gammaLookUp[gammaLuTSize] = {0};  // size 101 to get from 0% to 100% -> 101 values
+STATIC uint32_t gammaLookUp[gammaLuTSize] = {0};  // size 101 to get from 0% to 100% -> 101 values
 
 // PWM Parameters
 // never set a PWM frequency that results in less than 12 bits of resolution
@@ -50,7 +57,7 @@ const uint32_t MIN_PWM_FREQ = 250;
 // Forward Declarations
 ////
 
-static void buildGammaLookUpTable(void);
+STATIC void buildGammaLookUpTable(void);
 
 // Start TIMER0's HW
 void initTimer0PWM(uint32_t PWMFreqHz) {
@@ -96,15 +103,15 @@ void configureTimerPWMFrequency(uint32_t frequencyHz) {
 }
 
 // Builds the Gamma-adjusted brighness lookup table.
-static void buildGammaLookUpTable(void) {
+STATIC void buildGammaLookUpTable(void) {
     uint32_t top = TIMHW_getTimer0TopValue();
     for (uint32_t i = 0; i < gammaLuTSize; i++) {
         gammaLookUp[i] = (uint32_t)((pow(i, GAMMA_VALUE) / pow (gammaLuTSize, GAMMA_VALUE)) * top + .5);
     }
     // DEBUG: print the table to check the values
-    // for (uint32_t i = 0; i < gammaLuTSize; i++) {
-    //     app_log_info("%"PRIu32"% -> %"PRIu32"\r\n", i, gammaLookUp[i]);
-    // }
+    for (uint32_t i = 0; i < gammaLuTSize; i++) {
+        app_log_info("%"PRIu32"% -> %"PRIu32"\r\n", i, gammaLookUp[i]);
+    }
 }
 
 // Sets the Duty Cycle of the PWM signal on one of TIMER0's channels
@@ -118,9 +125,9 @@ void setDutyCycle(CCChannel_t channel, int8_t percent) {
         percent = 100;
     }
     // DEBUG: print set value
-    // TODO: This doesn't work, review!
     // app_log_debug("Setting %d%: %"PRIu32"/%"PRIu32, percent, compareValue, TIMER_TopGet(TIMER0));
-    TIMHW_setT0ChannelBufferedOutputCompare(channel, ((top * (uint32_t)percent)) / 100UL);
+    // TIMHW_setT0ChannelBufferedOutputCompare(channel, ((top * (uint32_t)percent)) / 100UL);
+    TIMHW_setT0ChannelBufferedOutputCompare(channel, gammaLookUp[percent]);
     // HACK: while we work with interrupts
     if (channel == CC_CHANNEL_0) {
         dutyCycle0 = (top * (uint32_t)percent) / 100UL;

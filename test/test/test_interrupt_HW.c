@@ -56,3 +56,10 @@ void test_setInterruptCallback_NoInterruptsAvailable(void) {
     uint32_t registeredInterrupt = setInterruptCallbackWCtx(pinNo, dummyCallbackWithContext, NULL);
     TEST_ASSERT_EQUAL_UINT32(0xFF, registeredInterrupt);
 }
+
+void test_enableTimer0Int_CallsNVIC(void) {
+
+    NVIC_EnableIRQ_Expect(TIMER0_IRQn);
+
+    enableTIMER0Int();
+}

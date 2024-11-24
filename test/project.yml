@@ -14,6 +14,7 @@
   # optional features. If you don't need them, keep them turned off for performance
   :use_mocks: TRUE
   :use_test_preprocessor: :all
+  use_preprocessor_directives: TRUE
   :use_backtrace: :none
 
   # tweak the way ceedling handles automatic tasks
