@@ -34,7 +34,6 @@
 #   define STATIC static
 #endif
 
-
 // Gamma correction
 // To correct the intensity of the LEDs to match the perception of our eyes, we need to do some maths™
 const uint32_t GAMMA_VALUE = 2;
@@ -52,6 +51,9 @@ const uint32_t MIN_PWM_FREQ = 250;
 // With a 32 bit register and a clock at 38400000
 // Min PWM Freq -> 250Hz -> TOP is 153599
 // Max PWM Freq -> TOP to 4096 -> 38400000 / 4096 = 9375Hz
+
+/// @brief Stores the current
+STATIC volatile uint32_t dutyCycle[3] = {0};
 
 ////
 // Forward Declarations
@@ -119,23 +121,23 @@ STATIC void buildGammaLookUpTable(void) {
 // Parameters: channel: the channel to set the PWM duty cycle
 //             percent: the value for the duty cycle
 void setDutyCycle(CCChannel_t channel, int8_t percent) {
-    uint32_t top = TIMHW_getTimer0TopValue();
     // Guard for percent being an stupid number
     if (percent > 100) {
         percent = 100;
     }
     // DEBUG: print set value
-    // app_log_debug("Setting %d%: %"PRIu32"/%"PRIu32, percent, compareValue, TIMER_TopGet(TIMER0));
-    // TIMHW_setT0ChannelBufferedOutputCompare(channel, ((top * (uint32_t)percent)) / 100UL);
-    TIMHW_setT0ChannelBufferedOutputCompare(channel, gammaLookUp[percent]);
+    // uint32_t top = TIMHW_getTimer0TopValue();
+    // app_log_debug("Setting %d%: %"PRIu32"/%"PRIu32, percent, gammaLookUp[percent], TIMER_TopGet(TIMER0));
+    // TODO: not sure why this doesn't work (why does the top value get reset on each count)
+    // TIMHW_setT0ChannelBufferedOutputCompare(channel, gammaLookUp[percent]);
     // HACK: while we work with interrupts
-    if (channel == CC_CHANNEL_0) {
-        dutyCycle0 = (top * (uint32_t)percent) / 100UL;
-    } else if (channel == CC_CHANNEL_1) {
-        dutyCycle1 = (top * (uint32_t)percent) / 100UL;
-    } else {
-        dutyCycle2 = (top * (uint32_t)percent) / 100UL;
-    }
+    dutyCycle[channel] = gammaLookUp[percent];
+}
+
+// Gets the COUNT value for the requested channel
+// Parameters: channel: the channel whose top value we want to get
+uint32_t getDutyCycle(CCChannel_t channel) {
+    return dutyCycle[channel];
 }
 
 // Sets the brightness level for one of TIMER0's channels. The brighness is adjusted using gamma correction

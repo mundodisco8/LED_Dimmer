@@ -93,9 +93,9 @@ void TIMER0_IRQHandler(void)
   // TODO: only buffer the count for the int that triggered
 
   // Write OCB to update the duty cycle of the next waveform period
-  TIMER_CompareBufSet(TIMER0, 0, dutyCycle0);
-  TIMER_CompareBufSet(TIMER0, 1, dutyCycle1);
-  TIMER_CompareBufSet(TIMER0, 2, dutyCycle2);
+  TIMER_CompareBufSet(TIMER0, CC_CHANNEL_0, getDutyCycle(CC_CHANNEL_0));
+  TIMER_CompareBufSet(TIMER0, CC_CHANNEL_1, getDutyCycle(CC_CHANNEL_1));
+  TIMER_CompareBufSet(TIMER0, CC_CHANNEL_2, getDutyCycle(CC_CHANNEL_2));
 }
 
 /******************************************************************************

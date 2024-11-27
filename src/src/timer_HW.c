@@ -31,10 +31,6 @@
 #include "gpio_HW.h"
 #include "interrupt_HW.h"
 
-volatile float dutyCycle0;
-volatile float dutyCycle1;
-volatile float dutyCycle2;
-
 // Globals
 // Initialize TIMER. It's the default config, but I added comments
 static TIMER_Init_TypeDef timerInit = {
