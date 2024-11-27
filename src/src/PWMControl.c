@@ -112,7 +112,7 @@ STATIC void buildGammaLookUpTable(void) {
     }
     // DEBUG: print the table to check the values
     for (uint32_t i = 0; i < gammaLuTSize; i++) {
-        app_log_info("%"PRIu32"% -> %"PRIu32"\r\n", i, gammaLookUp[i]);
+        app_log_info("%"PRIu32" -> %"PRIu32"\r\n", i, gammaLookUp[i]);
     }
 }
 
