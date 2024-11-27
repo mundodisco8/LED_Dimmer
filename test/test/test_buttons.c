@@ -40,9 +40,9 @@ void test_initButtonsDoesItsJob(void) {
     // Set Expectations
     setPinMode_Expect(expectedPort, expectedPin, expectedMode, expectedDout);
     SLP_reserveTimer_ExpectAndReturn(&(testBtn.debounceTimerPtr), SLPTIMER_OK);
-    SLP_reserveTimer_ReturnThruPtr_handlePtr(&dummy1);
+    SLP_reserveTimer_ReturnThruPtr_handlePtr((timerHandlePtr_t*)&dummy1);
     SLP_reserveTimer_ExpectAndReturn(&(testBtn.samplingTimerPtr), SLPTIMER_OK);
-    SLP_reserveTimer_ReturnThruPtr_handlePtr(&dummy2);
+    SLP_reserveTimer_ReturnThruPtr_handlePtr((timerHandlePtr_t*)&dummy2);
 
     uint32_t retVal = initButton(&testBtn, expectedPort, expectedPin, fakePressedAction, fakeReleasedAction);
     // Check retVal is true
@@ -116,7 +116,10 @@ void test_initQuadrature_QuadIsNull(void) {
 // configureButtonInterrupts
 ////
 
-void fakeButtonCallback(uint8_t intNo, void* ctx) {}
+void fakeButtonCallback(uint8_t intNo, void* ctx) {
+    (void)intNo;
+    (void)ctx;
+}
 
 // Test configureGPIOInterrupts, make sure the right calls are made to set up interrupts
 void test_configureButtonInterrupts_Works(void) {
@@ -166,7 +169,10 @@ void test_configButtonInts_intNumberPtrIsNull(void) {
 ////
 
 // fake empty callback function
-void fakeQuadCallback(uint8_t intNo, void* ctx) {}
+void fakeQuadCallback(uint8_t intNo, void* ctx) {
+    (void)intNo;
+    (void)ctx;
+}
 
 void test_configQuadInts_ConfigsInts(void) {
     quad_encoder_t testQuad = {

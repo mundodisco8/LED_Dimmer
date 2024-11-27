@@ -105,6 +105,7 @@
   :plugins:
     - :ignore
     - :callback
+    - :expect_any_args
     - :ignore_arg
     - :return_thru_ptr
   :treat_as:
@@ -140,6 +141,7 @@
         - -Wall
         - -Wextra
         - -pedantic
+        - -fdiagnostics-color
         # - -Werror
 
 # LIBRARIES
@@ -203,21 +205,21 @@
   :reports: # Specify one or more reports to generate.
     # Make an HTML summary report.
     # - HtmlBasic
-    - HtmlDetailed
+    # - HtmlDetailed
     # - Text
     # - Cobertura
     # - SonarQube
     # - JSON
-    # - HtmlInline
+    - HtmlInline
     # - HtmlInlineAzure
     # - HtmlInlineAzureDark
-    - HtmlChart
+    # - HtmlChart
     # - MHtml
     # - Badges
     # - CsvSummary
     # - Latex
     # - LatexSummary
-    - PngChart
+    # - PngChart
     # - TeamCitySummary
     # - lcov
     # - Xml
@@ -231,6 +233,10 @@
     :html_high_threshold: 90
     # :html_absolute_paths: TRUE
     # :html_encoding: UTF-8
+  :report_generator:
+    # :targetdir: CoverageReport
+    :history_directory: CoverageReport/CoverageHistory
+
 # :module_generator:
 #   :project_root: ./
 #   :source_root: source/

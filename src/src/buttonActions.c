@@ -21,9 +21,12 @@
 #include "debounce.h"
 #include "gpio_HW.h"
 
-
-// DEBUG:
-#include "timer_HW.h"
+// Trickery to allow testing of static elements. Better to mess a bit with the code than to overcomplicate tests
+#ifdef TEST
+#   define STATIC
+#else
+#   define STATIC static
+#endif
 
 // TODO: Maybe we can store errors in some variables, and then check for interrutp
 // errors in the main loop?
@@ -48,9 +51,9 @@ void gpioCallbackQuad(uint8_t intNo, void* ctx) {
     }
 }
 
-static int8_t currPercent[3] = {0, 0, 0};
-static CCChannel_t currChannel[3] = {CC_CHANNEL_0, CC_CHANNEL_1, CC_CHANNEL_2};
-static uint8_t channelIdx = 0;
+STATIC int8_t currPercent[3] = {0, 0, 0};
+STATIC CCChannel_t currChannel[3] = {CC_CHANNEL_0, CC_CHANNEL_1, CC_CHANNEL_2};
+STATIC uint8_t channelIdx = 0;
 
 void button0Pressed(void) {
     channelIdx++;

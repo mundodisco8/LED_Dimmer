@@ -8,13 +8,7 @@
 /*
  * Unit tests for "PWMControl.h"
  */
-
-// Need these, as they are externed to a module that is n
-volatile float dutyCycle0;
-volatile float dutyCycle1;
-volatile float dutyCycle2;
-
-
+extern volatile uint32_t dutyCycle[3];
 extern uint32_t gammaLookUp[];
 
 void setUp(void) {
@@ -147,41 +141,31 @@ void test_setDutyCycle_DoesItsThing(void) {
     buildGammaLookUpTable();
     uint32_t expectedCompareValue = gammaLookUp[percent];
 
-
-    TIMHW_getTimer0TopValue_ExpectAndReturn(topValue);
-    TIMHW_setT0ChannelBufferedOutputCompare_ExpectAndReturn(testChannel, expectedCompareValue, TIMER_OK);
-
     setDutyCycle(testChannel, percent);
+    TEST_ASSERT_EQUAL(expectedCompareValue, getDutyCycle(testChannel));
 
     testChannel = CC_CHANNEL_1;
 
-    TIMHW_getTimer0TopValue_ExpectAndReturn(topValue);
-    TIMHW_setT0ChannelBufferedOutputCompare_ExpectAndReturn(testChannel, expectedCompareValue, TIMER_OK);
-
     setDutyCycle(testChannel, percent);
+    TEST_ASSERT_EQUAL(expectedCompareValue, getDutyCycle(testChannel));
 
     testChannel = CC_CHANNEL_2;
 
-    TIMHW_getTimer0TopValue_ExpectAndReturn(topValue);
-    TIMHW_setT0ChannelBufferedOutputCompare_ExpectAndReturn(testChannel, expectedCompareValue, TIMER_OK);
-
     setDutyCycle(testChannel, percent);
+    TEST_ASSERT_EQUAL(expectedCompareValue, getDutyCycle(testChannel));
 }
 
 void test_setDutyCycle_PercentIsOver100(void) {
     CCChannel_t testChannel = CC_CHANNEL_0;
     int8_t percent = 120;
-        // To know what will the compare value be, we will need the gamma lookup table
+    // To know what will the compare value be, we will need the gamma lookup table
     uint32_t topValue = 4096;
     TIMHW_getTimer0TopValue_ExpectAndReturn(topValue);
     buildGammaLookUpTable();
     uint32_t expectedCompareValue = gammaLookUp[100];
 
-    TIMHW_getTimer0TopValue_ExpectAndReturn(topValue);
-    // TODO: review
-    TIMHW_setT0ChannelBufferedOutputCompare_ExpectAndReturn(testChannel, expectedCompareValue, TIMER_OK);
-
     setDutyCycle(testChannel, percent);
+    TEST_ASSERT_EQUAL(expectedCompareValue, getDutyCycle(testChannel));
 }
 
 void test_setBrightness_DoesItsThing(void) {
