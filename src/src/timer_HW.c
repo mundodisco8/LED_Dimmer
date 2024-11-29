@@ -62,13 +62,20 @@ static TIMER_Init_TypeDef timerInit = {
     .sync = false /* Not started/stopped/reloaded by other timers. */
 };
 
+
 ////
 // Set Register Values
 ////
 
+// Mark as unused. I don't want to delete them in case they are useful at some point later.
+static void TIMHW_timerModuleEnable(void) __attribute__((unused));
+static void TIMHW_timerModuleDisable(void) __attribute__((unused));
+
+// GCOVR_EXCL_START
 static void TIMHW_timerModuleEnable(void) { TIMER0->EN_SET = TIMER_EN_EN; }
 
 static void TIMHW_timerModuleDisable(void) { TIMER0->EN_CLR = TIMER_EN_EN; }
+// GCOVR_EXCL_STOP
 
 // Sets the value of the Compare Register (unbuffered)
 // NOTE: WRITES TO A SYNC type register, requires TIMER0 module to be ENABLED
@@ -293,10 +300,10 @@ void TIMHW_configCCChannelPWM(CCChannel_t channel, polarity_t polarity) {
 
 // Starts TIMER0
 void TIMHW_startTimer0(void) {
-    TIMHW_timerModuleEnable();
+    TIMER_Enable(TIMER0, true);
 }
 
 // Stops TIMER0
 void TIMHW_stopTimer0(void) {
-    TIMHW_timerModuleDisable();
+    TIMER_Enable(TIMER0, false);
 }
