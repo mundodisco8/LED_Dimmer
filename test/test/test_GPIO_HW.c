@@ -26,7 +26,6 @@ void tearDown(void) {
 ////
 
 void test_enableGPIOClock(void) {
-    char* s[100] = {0};
     CMU_ClockEnable_Expect(cmuClock_GPIO, true);
     enableGPIOClock();
 }

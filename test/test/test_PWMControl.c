@@ -2,17 +2,17 @@
 
 #include <unity.h>
 
+#include <string.h>
+
 #include "mock_timer_HW.h"
 /*
  * Unit tests for "PWMControl.h"
  */
-
-// Need these, as they are externed to a module that is n
-volatile float dutyCycle0;
-volatile float dutyCycle1;
-volatile float dutyCycle2;
+extern volatile uint32_t dutyCycle[3];
+extern uint32_t gammaLookUp[];
 
 void setUp(void) {
+    memset((uint8_t*)gammaLookUp, 0x00, 101);
 }
 
 void tearDown(void) {
@@ -106,10 +106,8 @@ void test_configureTimerPWMFrequency_Freq_is_too_high(void) {
 
 // It's static, so it can only be tested through configureTimerPWMFrequency()
 // There isn't much to test here, as the gamma formula it's what it is
-#define gammaLuTSize 101
-extern uint32_t gammaLookUp[gammaLuTSize];
 extern const uint32_t GAMMA_VALUE;
-
+#define gammaLuTSize 101
 void test_buildGammaLookUpTable_checkTable(void){
     uint32_t clockFreq = 38400000;
     uint32_t testFreq = 250;
@@ -133,30 +131,41 @@ void test_buildGammaLookUpTable_checkTable(void){
 
     TEST_ASSERT_EQUAL_MEMORY(testLuT, gammaLookUp, gammaLuTSize);
 }
-
+extern void buildGammaLookUpTable(void);
 void test_setDutyCycle_DoesItsThing(void) {
     CCChannel_t testChannel = CC_CHANNEL_0;
     uint8_t percent = 80;
+    // To know what will the compare value be, we will need the gamma lookup table
     uint32_t topValue = 4096;
-    uint32_t expectedCompareValue = topValue * percent / 100;
-
     TIMHW_getTimer0TopValue_ExpectAndReturn(topValue);
-    TIMHW_setT0ChannelBufferedOutputCompare_ExpectAndReturn(testChannel, expectedCompareValue, TIMER_OK);
+    buildGammaLookUpTable();
+    uint32_t expectedCompareValue = gammaLookUp[percent];
 
     setDutyCycle(testChannel, percent);
+    TEST_ASSERT_EQUAL(expectedCompareValue, getDutyCycle(testChannel));
+
+    testChannel = CC_CHANNEL_1;
+
+    setDutyCycle(testChannel, percent);
+    TEST_ASSERT_EQUAL(expectedCompareValue, getDutyCycle(testChannel));
+
+    testChannel = CC_CHANNEL_2;
+
+    setDutyCycle(testChannel, percent);
+    TEST_ASSERT_EQUAL(expectedCompareValue, getDutyCycle(testChannel));
 }
 
 void test_setDutyCycle_PercentIsOver100(void) {
     CCChannel_t testChannel = CC_CHANNEL_0;
     int8_t percent = 120;
-    uint32_t topValue = 4096UL;
-    uint32_t expectedCompareValue = topValue;
-
+    // To know what will the compare value be, we will need the gamma lookup table
+    uint32_t topValue = 4096;
     TIMHW_getTimer0TopValue_ExpectAndReturn(topValue);
-    // TODO: review
-    TIMHW_setT0ChannelBufferedOutputCompare_ExpectAndReturn(testChannel, expectedCompareValue, TIMER_OK);
+    buildGammaLookUpTable();
+    uint32_t expectedCompareValue = gammaLookUp[100];
 
     setDutyCycle(testChannel, percent);
+    TEST_ASSERT_EQUAL(expectedCompareValue, getDutyCycle(testChannel));
 }
 
 void test_setBrightness_DoesItsThing(void) {

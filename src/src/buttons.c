@@ -33,14 +33,6 @@
 #include "interrupt_HW.h"
 #include "sleepyTimers_HW.h"
 
-// TO DELETE?
-//////
-//// function prototypes
-//////
-//
-//static uint32_t setDebounceTimer(button_t* btnPtr);
-//static uint32_t setSamplingTimer(button_t* btnPtr);
-
 // Initialises the button_t struct with the default values and associates the pressed and released actions.
 // NOTE: Each button uses two sleeptimers, so make sure you have enough!
 // Parameters: btnPtr: a pointer to a button_t object which will be initialised
@@ -152,43 +144,3 @@ btnError_t configureQuadratureInterrupts(quad_encoder_t* quadPtr, callbackCtxPtr
     enablePinInterrupts(1 << *intNoPtr);
     return BTN_OK;
 }
-
-// TO DELETE?
-////
-// Debouncing and timer handling
-////
-
-// Sets the debounce timer for a button
-// Parameters: btnPtr, a pointer to a button_t object to be passed as a context
-//static uint32_t startDebounceTimer(button_t* btnPtr) {
-//    (void)btnPtr;
-//    uint32_t retVal = SLPTIMER_OK;
-//    if (!SLP_isTimerRunning(&debounceTimerBtn1)) {
-//        retVal = sl_sleeptimer_start_timer_ms(&debounceTimerBtn1, getDebounceTime(), sleeptimerDebounceCallback, btnPtr,
-//                                              0, 0);
-//        if (retVal != SL_STATUS_OK) {
-//            app_log_error("Error 0x%04X starting debounce timer btn1 running\r\n", retVal);
-//            return retVal;
-//        }
-//    }
-//    return retVal;
-//}
-//
-//uint32_t startButtonTimer(button_t* btnPtr, timerType_t timerType) {
-//    uint32_t retVal = SL_STATUS_OK;
-//    if (!isTimerRunning(&samplingTimerBtn1)) {
-//        if (timerType == TIMER_SAMPLING) {
-//            retVal = sl_sleeptimer_start_periodic_timer_ms(btnPtr->samplingTimerPtr, getDebounceSamplingPeriod(),
-//                                                           sleeptimerSamplingCallback, btnPtr, 0, 0);
-//        } else {  // Only two types of timers, TIMER_SAMPLE and TIMER_DEBOUNCE
-//            retVal = sl_sleeptimer_start_timer_ms(btnPtr->samplingTimerPtr, getDebounceTime(),
-//                                                  sleeptimerDebounceCallback, btnPtr, 0, 0);
-//        }
-//        if (retVal != SL_STATUS_OK) {
-//            app_log_error("Error 0x%04X starting sampling timer btn1\r\n", retVal);
-//            return retVal;
-//        }
-//        // app_log_debug("Sampling Timer1 Set\r\n");
-//    }
-//    return retVal;
-//}

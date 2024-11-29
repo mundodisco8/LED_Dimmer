@@ -7,10 +7,6 @@
 #include "gpio_HW_types.h"
 #include "timer_HW_types.h"
 
-extern volatile float dutyCycle0;
-extern volatile float dutyCycle1;
-extern volatile float dutyCycle2;
-
 // Initalises the HW clock of TIMER0
 void TIMHW_initTimer0Clock(void);
 // Initialises TIMER0

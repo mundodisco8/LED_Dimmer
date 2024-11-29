@@ -1,9 +1,5 @@
 #include "debounce.h"
 
-// Ugly, but debounce has two static functions that are not testable otherwise, as they are only called as
-// callbacks of a timer running out, and we can't trigger that timer in the test.
-#include "../../src/src/debounce.c"
-
 #include <unity.h>
 
 #include "mock_buttons.h"
@@ -15,6 +11,12 @@
 "
  */
 
+// STATIC'ed objects that need now to be extern'ed
+extern const uint32_t DEBOUNCE_TIME_MS;
+extern const uint32_t DEBOUNCE_SAMPLING_PERIOD_MS;
+extern const int32_t INTEGRATOR_TARGET;
+extern void sleeptimerSamplingCallback(timerHandlePtr_t* handle, void* data);
+extern void sleeptimerDebounceCallback(timerHandlePtr_t* handle, void* data);
 // Some empty action callbacks for the buttons
 void fakePressAction(void) {}
 void fakeReleaseAction(void) {}
@@ -169,7 +171,7 @@ void test_fromReleasedToPressed(void) {
         .state = BUTTON_RELEASED,
         .integrator = 0};
 
-    for (uint32_t i = 0; i < INTEGRATOR_TARGET - 1; i++) {
+    for (int32_t i = 0; i < INTEGRATOR_TARGET - 1; i++) {
         // Press the button for (INTEGRATOR_TARGET -1) times
         readPin_ExpectAndReturn(portA, 1, 1);
         samplingTimerCallback(&testBtn);
@@ -195,7 +197,7 @@ void test_fromPressedToReleased(void) {
         .pressedAction = fakePressAction,
         .releasedAction = fakeReleaseAction};
 
-    for (uint32_t i = 0; i < INTEGRATOR_TARGET - 1; i++) {
+    for (int32_t i = 0; i < INTEGRATOR_TARGET - 1; i++) {
         // Press the button for (INTEGRATOR_TARGET -1) times
         readPin_ExpectAndReturn(portA, 1, 0);
         samplingTimerCallback(&testBtn);

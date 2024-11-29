@@ -15,14 +15,20 @@
  * Unit tests for "sleepyTimers_HW.c"
  */
 
+// Test Callaback functions. They don't do anything, but we use them to pass as callbacks for timers, and to check they
+// are correctly being assigned
+void dummyCallback(timerHandlePtr_t* handle, void* data){
+    (void) handle;
+    (void) data;
+}
+
+
 void setUp(void) {
     SLP_resetTimersUsed();
 }
 
 void tearDown(void) {
 }
-
-
 
 void test_reserveTimer_success(void) {
     slpTimerStatus_t expectedRetVal = SLPTIMER_OK;
@@ -64,4 +70,154 @@ void test_reserveTimer_ReserveNPlusOneTimer(void) {
 
     TEST_ASSERT_EQUAL(expectedRetVal, retVal);
     TEST_ASSERT_NULL(testPtr);
+}
+
+// startTimer
+// - Success, start the timer with the correct params
+// - Success-ish, get a warning if timer is already running
+// - Error, timer could not be started
+
+void test_startTimer_Success(void) {
+    slpTimerStatus_t expectedRetVal = SLPTIMER_OK;
+    timerHandlePtr_t testPtr = NULL;
+    uint32_t testTimeOut = 100;
+    uint32_t testContext = 4; // Context passed to the callback, can be anything
+    uint8_t testPriority = 0;
+    uint16_t testFlags = 0;
+
+    // Set Expectations
+    sl_sleeptimer_start_timer_ms_ExpectAndReturn((sl_sleeptimer_timer_handle_t*) testPtr, testTimeOut, (sl_sleeptimer_timer_callback_t) dummyCallback, &testContext, testPriority, testFlags, SL_STATUS_OK);
+
+    slpTimerStatus_t retVal = SLP_startTimer(testPtr, testTimeOut, dummyCallback, &testContext);
+    TEST_ASSERT_EQUAL(expectedRetVal, retVal);
+}
+
+void test_startTimer_WarningTimerRunning(void) {
+    slpTimerStatus_t expectedRetVal = SLPTIMER_OK;
+    timerHandlePtr_t testPtr = NULL;
+    uint32_t testTimeOut = 100;
+    uint32_t testContext = 4; // Context passed to the callback, can be anything
+
+    // Set Expectations
+    sl_sleeptimer_start_timer_ms_ExpectAnyArgsAndReturn(SL_STATUS_NOT_READY);
+
+    slpTimerStatus_t retVal = SLP_startTimer(testPtr, testTimeOut, dummyCallback, &testContext);
+    TEST_ASSERT_EQUAL(expectedRetVal, retVal);
+}
+
+void test_startTimer_Error(void) {
+    slpTimerStatus_t expectedRetVal = SLPTIMER_ERROR;
+    timerHandlePtr_t testPtr = NULL;
+    uint32_t testTimeOut = 100;
+    uint32_t testContext = 4; // Context passed to the callback, can be anything
+
+    // Set Expectations
+    sl_sleeptimer_start_timer_ms_ExpectAnyArgsAndReturn(SL_STATUS_NULL_POINTER);
+
+    slpTimerStatus_t retVal = SLP_startTimer(testPtr, testTimeOut, dummyCallback, &testContext);
+    TEST_ASSERT_EQUAL(expectedRetVal, retVal);
+}
+
+// startPeriodicTimer - Same as startTimer, really...
+// - Success, start the timer with the correct params
+// - Success-ish, get a warning if timer is already running
+// - Error, timer could not be started
+
+void test_startPeriodicTimer_Success(void) {
+    slpTimerStatus_t expectedRetVal = SLPTIMER_OK;
+    timerHandlePtr_t testPtr = NULL;
+    uint32_t testTimeOut = 100;
+    uint32_t testContext = 4; // Context passed to the callback, can be anything
+    uint8_t testPriority = 0;
+    uint16_t testFlags = 0;
+
+    // Set Expectations
+    sl_sleeptimer_start_periodic_timer_ms_ExpectAndReturn((sl_sleeptimer_timer_handle_t*) testPtr,testTimeOut, (sl_sleeptimer_timer_callback_t) dummyCallback, &testContext, testPriority, testFlags, SL_STATUS_OK);
+
+    slpTimerStatus_t retVal = SLP_startPeriodicTimer(testPtr, testTimeOut, dummyCallback, &testContext);
+    TEST_ASSERT_EQUAL(expectedRetVal, retVal);
+}
+
+void test_startPeriodicTimer_WarningTimerRunning(void) {
+    slpTimerStatus_t expectedRetVal = SLPTIMER_OK;
+    timerHandlePtr_t testPtr = NULL;
+    uint32_t testTimeOut = 100;
+    uint32_t testContext = 4; // Context passed to the callback, can be anything
+
+    // Set Expectations
+    sl_sleeptimer_start_periodic_timer_ms_ExpectAnyArgsAndReturn(SL_STATUS_INVALID_STATE);
+
+    slpTimerStatus_t retVal = SLP_startPeriodicTimer(testPtr, testTimeOut, dummyCallback, &testContext);
+    TEST_ASSERT_EQUAL(expectedRetVal, retVal);
+}
+
+void test_startPeriodicTimer_Error(void) {
+    slpTimerStatus_t expectedRetVal = SLPTIMER_ERROR;
+    timerHandlePtr_t testPtr = NULL;
+    uint32_t testTimeOut = 100;
+    uint32_t testContext = 4; // Context passed to the callback, can be anything
+
+    // Set Expectations
+    sl_sleeptimer_start_periodic_timer_ms_ExpectAnyArgsAndReturn(SL_STATUS_NULL_POINTER);
+
+    slpTimerStatus_t retVal = SLP_startPeriodicTimer(testPtr, testTimeOut, dummyCallback, &testContext);
+    TEST_ASSERT_EQUAL(expectedRetVal, retVal);
+}
+
+// stopTimer
+// - Success
+// - SDK Returns error
+
+void test_stopTimer_Success(void) {
+    slpTimerStatus_t expectedRetVal = SLPTIMER_OK;
+    timerHandlePtr_t testPtr = NULL;
+
+    // Set Expectations
+    sl_sleeptimer_stop_timer_ExpectAndReturn((sl_sleeptimer_timer_handle_t*) testPtr, SL_STATUS_OK);
+
+    slpTimerStatus_t retVal = SLP_stopTimer(testPtr);
+
+    TEST_ASSERT_EQUAL(expectedRetVal, retVal);
+}
+
+void test_stopTimer_Error(void) {
+    slpTimerStatus_t expectedRetVal = SLPTIMER_ERROR;
+    timerHandlePtr_t testPtr = NULL;
+
+    // Set Expectations
+    sl_sleeptimer_stop_timer_ExpectAndReturn((sl_sleeptimer_timer_handle_t*) testPtr, SL_STATUS_INVALID_STATE);
+
+    slpTimerStatus_t retVal = SLP_stopTimer(testPtr);
+
+    TEST_ASSERT_EQUAL(expectedRetVal, retVal);
+}
+
+// isTimerRunning
+// - Success, and returns whatever the SDK function returns
+// - Error checking for the timer, and returns false
+
+void test_isTimerRunning_Success(void) {
+    bool expectedRetVal = true;
+    timerHandlePtr_t testPtr = NULL;
+
+    // Set Expectations
+    bool isTimerRunning = true;
+    sl_sleeptimer_is_timer_running_ExpectAndReturn((sl_sleeptimer_timer_handle_t*) testPtr, NULL, SL_STATUS_OK);
+    sl_sleeptimer_is_timer_running_IgnoreArg_running();
+    sl_sleeptimer_is_timer_running_ReturnThruPtr_running(&isTimerRunning);
+    bool retVal = SLP_isTimerRunning(testPtr);
+
+    TEST_ASSERT_EQUAL(expectedRetVal, retVal);
+}
+
+void test_isTimerRunning_Error(void) {
+    bool expectedRetVal = false;
+    timerHandlePtr_t testPtr = NULL;
+
+    // Set Expectations
+    sl_sleeptimer_is_timer_running_ExpectAndReturn((sl_sleeptimer_timer_handle_t*) testPtr, &expectedRetVal, SL_STATUS_INVALID_STATE);
+
+    bool retVal = SLP_isTimerRunning(testPtr);
+
+    TEST_ASSERT_EQUAL(expectedRetVal, retVal);
 }

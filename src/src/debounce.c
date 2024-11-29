@@ -31,6 +31,14 @@
 // Project headers
 #include "gpio_HW.h"
 #include "sleepyTimers_HW.h"
+
+// Trickery to allow testing of static elements. Better to mess a bit with the code than to overcomplicate tests
+#ifdef TEST
+#   define STATIC
+#else
+#   define STATIC static
+#endif
+
 /******************************************************************************
 written by Kenneth A. Kuhn
 version 1.00
@@ -100,17 +108,17 @@ is in Hertz */
 // DEBOUNCE_SAMPLING_PERIOD_MS is the period of the sampling events.
 // INTEGRATOR_TARGET is the number of sampling events the pin has to remain in the new position to consider it a valid
 // press. A button press won't be valid until is pressed at least for INTEGRATOR_TARGET * DEBOUNCE_SAMPLING_PERIOD_MS
-const uint32_t DEBOUNCE_TIME_MS            = 75U;  // Max time for the button to settle in the new state
-const uint32_t DEBOUNCE_SAMPLING_PERIOD_MS = 5U;   // read the button every this ms
-const int32_t INTEGRATOR_TARGET            = 5U;    // Button is stable after SAMPLING * TARGET ms
+STATIC const uint32_t DEBOUNCE_TIME_MS            = 75U;  // Max time for the button to settle in the new state
+STATIC const uint32_t DEBOUNCE_SAMPLING_PERIOD_MS = 5U;   // read the button every this ms
+STATIC const int32_t INTEGRATOR_TARGET            = 5U;    // Button is stable after SAMPLING * TARGET ms
 
 ////
 // forward declarations
 ////
 
 static uint32_t stopButtonTimers(button_t* btnPtr);
-static void sleeptimerDebounceCallback(timerHandlePtr_t* handle, void* data);
-static void sleeptimerSamplingCallback(timerHandlePtr_t* handle, void* data);
+STATIC void sleeptimerDebounceCallback(timerHandlePtr_t* handle, void* data);
+STATIC void sleeptimerSamplingCallback(timerHandlePtr_t* handle, void* data);
 
 ////
 // getters for the timer durations
@@ -227,7 +235,7 @@ static uint32_t stopButtonTimers(button_t* btnPtr) {
 ////
 
 // Action to run when a debounce timer has timed out
-static void sleeptimerDebounceCallback(timerHandlePtr_t* handle, void* data) {
+STATIC void sleeptimerDebounceCallback(timerHandlePtr_t* handle, void* data) {
     // If the debounce timer callback is executed, it means the integrator hasn't converged in the debouncing time
     // given. Stop the sampling timer, because it's periodic, and reset the integrator value to the default value
     // for the current state
@@ -237,7 +245,7 @@ static void sleeptimerDebounceCallback(timerHandlePtr_t* handle, void* data) {
 }
 
 // Action to run when a sampling timer has timed out
-static void sleeptimerSamplingCallback(timerHandlePtr_t* handle, void* data) {
+STATIC void sleeptimerSamplingCallback(timerHandlePtr_t* handle, void* data) {
     (void)handle;
     // When a sampling sleeptimer runs out, calls samplingTimerCallback from debounce.h, passing a button_t object as
     // context data.
