@@ -98,6 +98,9 @@ void test_IntegratorNotAboveMax(void) {
     // Expectations for stopButtonTimers. Ignore parameters as we are not testing it here.
     // Retunr false so we exit the execution faster. It doesn't change the outcome
     SLP_isTimerRunning_IgnoreAndReturn(false);
+    // The system tick of the current press is registered in the button_t struct
+    uint64_t timeAtPress = 1000;
+    SLP_getSystemTickInMs_ExpectAndReturn(timeAtPress);
 
     samplingTimerCallback(&testBtn);
     TEST_ASSERT_EQUAL_INT32(INTEGRATOR_TARGET, testBtn.integrator);
@@ -115,6 +118,9 @@ void test_ButtonActionIsNull(void) {
         .releasedAction = NULL};
 
     readPin_ExpectAndReturn(portA, 1, 1);
+    // The system tick of the current press is registered in the button_t struct
+    uint64_t timeAtPress = 1000;
+    SLP_getSystemTickInMs_ExpectAndReturn(timeAtPress);
     // Expectations for stopButtonTimers. Ignore parameters as we are not testing it here.
     // Retunr false so we exit the execution faster. It doesn't change the outcome
     SLP_isTimerRunning_IgnoreAndReturn(false);
@@ -170,6 +176,7 @@ void test_fromReleasedToPressed(void) {
         .pinNo = 1,
         .state = BUTTON_RELEASED,
         .integrator = 0};
+    uint64_t timeAtPress = 1000;
 
     for (int32_t i = 0; i < INTEGRATOR_TARGET - 1; i++) {
         // Press the button for (INTEGRATOR_TARGET -1) times
@@ -183,9 +190,13 @@ void test_fromReleasedToPressed(void) {
     // Expectations for stopButtonTimers. Ignore parameters as we are not testing it here.
     // Retunr false so we exit the execution faster. It doesn't change the outcome
     SLP_isTimerRunning_IgnoreAndReturn(false);
+    // The system tick of the current press is registered in the button_t struct
+    SLP_getSystemTickInMs_ExpectAndReturn(timeAtPress);
+
     samplingTimerCallback(&testBtn);
 
     TEST_ASSERT_EQUAL_UINT32(BUTTON_PRESSED, testBtn.state);
+    TEST_ASSERT_LESS_OR_EQUAL_INT64(timeAtPress, testBtn.lastPressMs);
 }
 
 void test_fromPressedToReleased(void) {
@@ -228,6 +239,9 @@ void test_someNoisyInputs(void) {
     // integrator values = 1  2  3  2  1  2  3  4  5  4  5
     // this is used to check the expected state, based on the input
     uint32_t buttonExpectedState1[] = {BUTTON_RELEASED, BUTTON_RELEASED, BUTTON_RELEASED, BUTTON_RELEASED, BUTTON_RELEASED, BUTTON_RELEASED, BUTTON_RELEASED, BUTTON_RELEASED, BUTTON_PRESSED, BUTTON_PRESSED, BUTTON_PRESSED};
+    // Espectations for getSystemTick. Ignore parameters as we are not testing it here.
+    // Retunr false so we exit the execution faster. It doesn't change the outcome
+    SLP_getSystemTickInMs_IgnoreAndReturn(1000);
     // Expectations for stopButtonTimers. Ignore parameters as we are not testing it here.
     // Retunr false so we exit the execution faster. It doesn't change the outcome
     SLP_isTimerRunning_IgnoreAndReturn(false);
@@ -286,7 +300,7 @@ void test_corruptionGuardOn1(void) {
         .btnPort = portA,
         .pinNo = 1,
         .state = BUTTON_PRESSED,
-        .integrator = 50,
+        .integrator = INTEGRATOR_TARGET * 10,
         .pressedAction = fakePressAction,
         .releasedAction = fakeReleaseAction};
 
@@ -296,10 +310,12 @@ void test_corruptionGuardOn1(void) {
     TEST_ASSERT_EQUAL_INT32(INTEGRATOR_TARGET, testBtn.integrator);
 
     testBtn.state = BUTTON_RELEASED;
-    testBtn.integrator = 50;
+    testBtn.integrator = INTEGRATOR_TARGET * 10;
     readPin_ExpectAndReturn(portA, 1, 0);
-    // Expectations for stopButtonTimers. Ignore parameters as we are not testing it here.
+    // Expectations for getsystemTick and stopButtonTimers.
+    // Ignore parameters as we are not testing it here.
     // Retunr false so we exit the execution faster. It doesn't change the outcome
+    SLP_getSystemTickInMs_IgnoreAndReturn(1000);
     SLP_isTimerRunning_IgnoreAndReturn(false);
     samplingTimerCallback(&testBtn);
     TEST_ASSERT_EQUAL_INT32(5, testBtn.integrator);
@@ -330,6 +346,8 @@ void test_stateChangesOnlyWhenNeeded(void) {
     for (uint32_t i = 0; i < (sizeof(buttonExpectedPress) / sizeof(buttonExpectedPress[0])); i++) {
         readPin_ExpectAndReturn(portA, 1, buttonExpectedPress[i]);
     }
+    uint64_t timeAtPress = 1000;
+    SLP_getSystemTickInMs_ExpectAndReturn(timeAtPress);
     // Stop timer should be called only once, at the last call of samplingTimerCallback()
     // Expectations for stopButtonTimers. Ignore parameters as we are not testing it here.
     // Retunr false so we exit the execution faster. It doesn't change the outcome
@@ -439,6 +457,9 @@ void test_stopButtonTimers_BothAreRunnig(void) {
     // Mock the button being pressed. Ignore parameters,  samplingTimerCallback is not being tested here
     readPin_IgnoreAndReturn(1);
 
+    uint64_t timeAtPress = 1000;
+    SLP_getSystemTickInMs_ExpectAndReturn(timeAtPress);
+
     SLP_isTimerRunning_ExpectAndReturn(testBtn.samplingTimerPtr, true);
     SLP_stopTimer_ExpectAndReturn(testBtn.samplingTimerPtr, SLPTIMER_OK);
 
@@ -461,6 +482,9 @@ void test_stopButtonTimers_NoneRunnig(void) {
     // Mock the button being pressed. Ignore parameters,  samplingTimerCallback is not being tested here
     readPin_IgnoreAndReturn(1);
 
+    uint64_t timeAtPress = 1000;
+    SLP_getSystemTickInMs_ExpectAndReturn(timeAtPress);
+
     SLP_isTimerRunning_ExpectAndReturn(testBtn.samplingTimerPtr, false);
 
     SLP_isTimerRunning_ExpectAndReturn(testBtn.debounceTimerPtr, false);
@@ -481,6 +505,9 @@ void test_stopButtonTimers_SamplingTimerRunningButErrorOnStop(void) {
     // Mock the button being pressed. Ignore parameters,  samplingTimerCallback is not being tested here
     readPin_IgnoreAndReturn(1);
 
+    uint64_t timeAtPress = 1000;
+    SLP_getSystemTickInMs_ExpectAndReturn(timeAtPress);
+
     SLP_isTimerRunning_ExpectAndReturn(testBtn.samplingTimerPtr, true);
     SLP_stopTimer_ExpectAndReturn(testBtn.samplingTimerPtr, SLPTIMER_ERROR);
 
@@ -499,6 +526,9 @@ void test_stopButtonTimers_DebounceTimersRunningButErrorOnStop(void) {
 
     // Mock the button being pressed. Ignore parameters,  samplingTimerCallback is not being tested here
     readPin_IgnoreAndReturn(1);
+
+    uint64_t timeAtPress = 1000;
+    SLP_getSystemTickInMs_ExpectAndReturn(timeAtPress);
 
     SLP_isTimerRunning_ExpectAndReturn(testBtn.samplingTimerPtr, false);
     SLP_isTimerRunning_ExpectAndReturn(testBtn.debounceTimerPtr, true);

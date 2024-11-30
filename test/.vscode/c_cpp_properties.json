@@ -4,13 +4,12 @@
             "name": "UnityTesting",
             "includePath": [
                 "${workspaceFolder:Test}/**",
-                "${workspaceFolder:Test}/build/**",
+                "${workspaceFolder:Test}/build/test/mocks/**",
                 "${workspaceFolder:Test}/src",
                 "${workspaceFolder:Test}/test",
                 "${workspaceFolder:Test}/test/support",
                 "${workspaceFolder:Source}/inc",
-                "${workspaceFolder}/build/test/mocks/test_sleepyTimers_HW",
-                "C:/Users/mundo/Desktop/LED_Dimmer/src/simplicity_sdk_2024.6.2/platform/common/inc"
+                "${workspaceFolder:Source}/simplicity_sdk_2024.6.2/platform/common/inc"
             ],
             "defines": [
                 "TEST",

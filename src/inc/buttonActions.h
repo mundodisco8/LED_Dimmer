@@ -2,14 +2,15 @@
 #define _BUTTON_ACTIONS_H_
 
 #include "inttypes.h"
+#include "buttons.h"
 
 void gpioCallbackButton(uint8_t intNo, void* ctx);
 void gpioCallbackQuad(uint8_t intNo, void* ctx);
 
-void button0Pressed(void);
-void button0Released(void);
-void quad0ClockWise(void);
-void quad0CounterClockWise(void);
+void button0Pressed(void* ctx);
+void button0Released(void* ctx);
+void quad0ClockWise(void* ctx);
+void quad0CounterClockWise(void* ctx);
 
 uint32_t getRotary(void);
 uint32_t getButton(void);

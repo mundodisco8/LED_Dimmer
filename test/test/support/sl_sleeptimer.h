@@ -63,4 +63,8 @@ sl_status_t sl_sleeptimer_start_periodic_timer_ms(sl_sleeptimer_timer_handle_t *
 sl_status_t sl_sleeptimer_stop_timer(sl_sleeptimer_timer_handle_t *handle);
 sl_status_t sl_sleeptimer_is_timer_running(sl_sleeptimer_timer_handle_t *handle,
                                            bool *running);
+uint64_t sl_sleeptimer_get_tick_count64(void);
+sl_status_t sl_sleeptimer_tick64_to_ms(uint64_t tick,
+                                       uint64_t *ms);
+
 #endif // SL_SLEEPTIMER_H

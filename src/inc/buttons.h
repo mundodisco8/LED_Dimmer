@@ -16,29 +16,31 @@
 #include "sleepyTimers_HW_types.h"
 
 typedef enum btnError {
-    BTN_OK                  = 0,
-    BTN_NO_INTS_AVAILABLE   = 0x1,
+    BTN_OK = 0,
+    BTN_NO_INTS_AVAILABLE = 0x1,
     BTN_NULL_POINTER_PASSED = 0x2,
 } btnError_t;
 
 // An enum to define the state of a button
 typedef enum button_state { BUTTON_PRESSED = 0, BUTTON_RELEASED = 1 } button_state_t;
 
-typedef void (*actionCallback_t)(void);
+// Action callback prototype. We provide the option to pass a context to the function
+typedef void (*actionCallback_t)(void* ctx);
 
 // A struct to contain the context of a button
-typedef struct {
+typedef struct button {
     pinPort_t btnPort;
     uint8_t pinNo;
-    button_state_t state;             // The state of the button, pressed or released
-    int32_t integrator;               // The value of the integrator for this button
-    actionCallback_t pressedAction;   // action to perform when the state changes to BUTTON_PRESSED
-    actionCallback_t releasedAction;  // action to perform when the state changes to BUTTON_RELEASED
+    button_state_t state;               // The state of the button, pressed or released
+    int32_t integrator;                 // The value of the integrator for this button
+    uint64_t lastPressMs;               // System Tick of last press in ms
+    actionCallback_t pressedAction;     // action to perform when the state changes to BUTTON_PRESSED
+    actionCallback_t releasedAction;    // action to perform when the state changes to BUTTON_RELEASED
     timerHandlePtr_t debounceTimerPtr;  // a handler to the timer that checks the debouncing
     timerHandlePtr_t samplingTimerPtr;  // a handler to the timer that checks the button state sampling
 } button_t;
 
-typedef struct {
+typedef struct quad_encoder {
     pinPort_t pin0Port;
     uint8_t pin0No;
     pinPort_t pin1Port;
@@ -48,10 +50,8 @@ typedef struct {
 } quad_encoder_t;
 
 // Initialises the button_t struct with the default values and associates the pressed and released actions.
-btnError_t initButton(button_t* btnPtr, pinPort_t pinPort, uint8_t pinNo, actionCallback_t pressedAction,
-                      actionCallback_t releasedAction);
-btnError_t initQuadEncoder(quad_encoder_t* quadPtr, pinPort_t pin0Port, uint8_t pin0No, pinPort_t pin1Port,
-                           uint8_t pin1No, actionCallback_t CWAction, actionCallback_t CCWAction);
+btnError_t initButton(button_t* btnPtr, pinPort_t pinPort, uint8_t pinNo, actionCallback_t pressedAction, actionCallback_t releasedAction);
+btnError_t initQuadEncoder(quad_encoder_t* quadPtr, pinPort_t pin0Port, uint8_t pin0No, pinPort_t pin1Port, uint8_t pin1No, actionCallback_t CWAction, actionCallback_t CCWAction);
 
 // Configures the interrupt for the button and sets its callback
 btnError_t configureButtonInterrupts(button_t* btnPtr, callbackCtxPtr_t callback, uint32_t* intNoPtr);

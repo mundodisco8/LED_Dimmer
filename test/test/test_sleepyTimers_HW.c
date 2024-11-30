@@ -221,3 +221,30 @@ void test_isTimerRunning_Error(void) {
 
     TEST_ASSERT_EQUAL(expectedRetVal, retVal);
 }
+
+void test_getSystemTicksInMs_Success(void) {
+    uint64_t expectedRetVal = 1000;
+
+    uint64_t expectedTicks = 100;
+    sl_sleeptimer_get_tick_count64_ExpectAndReturn(100);
+    sl_sleeptimer_tick64_to_ms_ExpectAndReturn(expectedTicks, NULL, SL_STATUS_OK);
+    sl_sleeptimer_tick64_to_ms_IgnoreArg_ms();
+    sl_sleeptimer_tick64_to_ms_ReturnThruPtr_ms(&expectedRetVal);
+
+    uint64_t retVal = SLP_getSystemTickInMs();
+    TEST_ASSERT_EQUAL_INT64(expectedRetVal, retVal);
+}
+
+void test_getSystemTicksInMs_Error(void) {
+    uint64_t expectedRetVal = 0;
+
+    uint64_t expectedTicks = 100;
+    uint64_t dummyValue = 200;
+    sl_sleeptimer_get_tick_count64_ExpectAndReturn(100);
+    sl_sleeptimer_tick64_to_ms_ExpectAndReturn(expectedTicks, NULL, SL_STATUS_INVALID_STATE);
+    sl_sleeptimer_tick64_to_ms_IgnoreArg_ms();
+    sl_sleeptimer_tick64_to_ms_ReturnThruPtr_ms(&dummyValue);
+
+    uint64_t retVal = SLP_getSystemTickInMs();
+    TEST_ASSERT_EQUAL_INT64(expectedRetVal, retVal);
+}

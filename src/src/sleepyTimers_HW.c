@@ -126,3 +126,12 @@ bool SLP_isTimerRunning(timerHandlePtr_t handlePtr) {
     // app_log_debug("%s\r\n", timerRunning?"timer is running":"timer is not running");
     return timerRunning;
 }
+
+// Returns the current system tick in ms
+uint64_t SLP_getSystemTickInMs(void) {
+    uint64_t timeInMs = 0;
+    if (sl_sleeptimer_tick64_to_ms(sl_sleeptimer_get_tick_count64(), &timeInMs) == SL_STATUS_OK){
+        return timeInMs;
+    }
+    return 0;
+}

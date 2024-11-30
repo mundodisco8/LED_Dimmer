@@ -44,11 +44,13 @@ void test_gpioCallBackButton(void) {
 // The quad encoder object is passed as context
 // We will need two dummy callback functions to test them
 uint32_t quadCallbackTest = 0;
-void dummy_CWAction(void) {
+void dummy_CWAction(void* ctx) {
+    (void) ctx;
     quadCallbackTest = 1;
 }
 
-void dummy_CCWAction(void) {
+void dummy_CCWAction(void* ctx) {
+    (void) ctx;
     quadCallbackTest = 2;
 }
 
@@ -72,28 +74,46 @@ void test_gpioCallBackQuad(void) {
 }
 
 // button0 changes the current PWM channel active. Third press resets channel to 0
-void test_button0Pressed(void) {
+void test_button0Released_ShortPress(void) {
     uint32_t expectedCh = 1;
+    button_t testBtn = {.lastPressMs = 1000};
+    uint64_t timeOfRelease = 1100; // mimicks a short press
 
-    button0Pressed();
+    // Set Expectations
+    SLP_getSystemTickInMs_ExpectAndReturn(timeOfRelease);
+    button0Released(&testBtn);
     TEST_ASSERT_EQUAL(expectedCh, channelIdx);
 
     // Second press gets channel 2
     expectedCh = 2;
 
-    button0Pressed();
+    // Set Expectations
+    SLP_getSystemTickInMs_ExpectAndReturn(timeOfRelease);
+    button0Released(&testBtn);
     TEST_ASSERT_EQUAL(expectedCh, channelIdx);
 
     // Third press rests to 0;
     expectedCh = 0;
 
-    button0Pressed();
+    // Set Expectations
+    SLP_getSystemTickInMs_ExpectAndReturn(timeOfRelease);
+    button0Released(&testBtn);
     TEST_ASSERT_EQUAL(expectedCh, channelIdx);
 }
 
-// Button 0 Released does nothing for now
-void test_button0Released(void) {
-    button0Released();
+// button0 on long press. does nothing, for now
+void test_button0Released_LongPress(void) {
+    button_t testBtn = {.lastPressMs = 1000};
+    uint64_t timeOfRelease = 3000; // mimicks a short press
+
+    // Set Expectations
+    SLP_getSystemTickInMs_ExpectAndReturn(timeOfRelease);
+    button0Released(&testBtn);
+}
+
+// Button 0 Pressed does nothing for now
+void test_button0Pressed(void) {
+    button0Pressed(NULL);
 }
 
 // Test Quad actions
@@ -105,7 +125,7 @@ void test_quad0ClockWise(void) {
 
     // Set Expectations
     setDutyCycle_Expect(expectedChannel, expectedPercent);
-    quad0ClockWise();
+    quad0ClockWise(NULL);
     TEST_ASSERT_EQUAL(expectedPercent, currPercent[channelIdx]);
 
     // Turn twice more...
@@ -114,8 +134,8 @@ void test_quad0ClockWise(void) {
     // Set Expectations
     setDutyCycle_Expect(expectedChannel, 10);
     setDutyCycle_Expect(expectedChannel, expectedPercent);
-    quad0ClockWise();
-    quad0ClockWise();
+    quad0ClockWise(NULL);
+    quad0ClockWise(NULL);
     TEST_ASSERT_EQUAL(expectedPercent, currPercent[channelIdx]);
 
     // Test the limit
@@ -123,7 +143,7 @@ void test_quad0ClockWise(void) {
     expectedPercent = 100;
     setDutyCycle_Expect(expectedChannel, expectedPercent);
 
-    quad0ClockWise();
+    quad0ClockWise(NULL);
     TEST_ASSERT_EQUAL(expectedPercent, currPercent[channelIdx]);
 }
 
@@ -134,7 +154,7 @@ void test_quad0CounterClockWise(void) {
 
     // Set Expectations
     setDutyCycle_Expect(expectedChannel, expectedPercent);
-    quad0CounterClockWise();
+    quad0CounterClockWise(NULL);
     TEST_ASSERT_EQUAL(expectedPercent, currPercent[channelIdx]);
 
     // Turn twice more...
@@ -143,8 +163,8 @@ void test_quad0CounterClockWise(void) {
     // Set Expectations
     setDutyCycle_Expect(expectedChannel, 73);
     setDutyCycle_Expect(expectedChannel, expectedPercent);
-    quad0CounterClockWise();
-    quad0CounterClockWise();
+    quad0CounterClockWise(NULL);
+    quad0CounterClockWise(NULL);
     TEST_ASSERT_EQUAL(expectedPercent, currPercent[channelIdx]);
 
     // Test the limit
@@ -152,6 +172,6 @@ void test_quad0CounterClockWise(void) {
     expectedPercent = 0;
     setDutyCycle_Expect(expectedChannel, expectedPercent);
 
-    quad0CounterClockWise();
+    quad0CounterClockWise(NULL);
     TEST_ASSERT_EQUAL(expectedPercent, currPercent[channelIdx]);
 }

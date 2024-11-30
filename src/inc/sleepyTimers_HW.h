@@ -29,4 +29,6 @@ slpTimerStatus_t SLP_startPeriodicTimer(timerHandlePtr_t handlePtr, uint32_t tim
 slpTimerStatus_t SLP_stopTimer(timerHandlePtr_t handlePtr);
 
 bool SLP_isTimerRunning(timerHandlePtr_t handlePtr);
+
+uint64_t SLP_getSystemTickInMs(void);
 #endif // _SLEEPYTIMERS_HW_

@@ -168,15 +168,16 @@ void samplingTimerCallback(button_t* btnPtr) {
 
    if ((btnPtr->state == BUTTON_RELEASED) && (btnPtr->integrator == INTEGRATOR_TARGET)) {
        btnPtr->state = BUTTON_PRESSED;
+       btnPtr->lastPressMs = SLP_getSystemTickInMs();
        stopButtonTimers(btnPtr);
        if (btnPtr->pressedAction != NULL) {
-           btnPtr->pressedAction();
+           btnPtr->pressedAction(btnPtr);
        }  // else, action was NULL, assert, I guess?
    } else if ((btnPtr->state == BUTTON_PRESSED) && (btnPtr->integrator == 0)) {
        btnPtr->state = BUTTON_RELEASED;
        stopButtonTimers(btnPtr);
        if (btnPtr->releasedAction != NULL) {
-           btnPtr->releasedAction();
+           btnPtr->releasedAction(btnPtr);
        }  // else, action was NULL, assert, I guess?
    }  // else, or integrator is 0 but button is released or integrator is INTEGRATOR_TARGET but button is pressed, do
       // nothing
