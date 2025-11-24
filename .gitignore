@@ -24,7 +24,7 @@ _autosave-*
 *-rescue.lib
 *-save.pro
 *-save.kicad_pcb
-hardware/**-backups/**
+**/**-backups/**
 *.lck
 
 # Netlist files (exported from Eeschema)
@@ -37,7 +37,6 @@ hardware/**-backups/**
 # Fabrication Outputs: gerbers / boms / etc
 *.xml
 *.csv
-hardware/Snowflake-backups/**
 
 ## Silabs FW
 # Artifacts
