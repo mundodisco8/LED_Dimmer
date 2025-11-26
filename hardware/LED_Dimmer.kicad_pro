@@ -63,26 +63,6 @@
         [
           "lib_footprint_mismatch|113500000|86630000|5f46e6b3-914e-41bc-9ad9-2ce855545dec|00000000-0000-0000-0000-000000000000",
           "I don't know what this error is about. I reimported the footprint, can't seem to be able to remove it"
-        ],
-        [
-          "silk_over_copper|115849658|95062006|c30ee36c-bf54-4c4d-82d6-110532d8d1fb|00000000-0000-0000-0000-000000000000",
-          "Graphic Object importing is still finicky. Let the PCB house deal with the clipping"
-        ],
-        [
-          "silk_over_copper|122713355|106780398|df17e434-c4e1-4d81-b448-4c4cf1257981|00000000-0000-0000-0000-000000000000",
-          "Graphic Object importing is still finicky. Let the PCB house deal with the clipping"
-        ],
-        [
-          "silk_overlap|124350000|109500000|0f42400f-5b0b-4524-890e-a3ff6516900d|58f2c882-ffb2-4c7f-b294-2686e6673524",
-          "I want the connectors close, this overlap is ok"
-        ],
-        [
-          "silk_overlap|124350000|110750000|0f42400f-5b0b-4524-890e-a3ff6516900d|a4a30d17-7dc8-4af9-8129-820a98e876eb",
-          "I want the connectors close, this overlap is ok"
-        ],
-        [
-          "silk_overlap|124350000|110750000|728ad66e-0654-4e86-a655-2df78d140315|a4a30d17-7dc8-4af9-8129-820a98e876eb",
-          "I want the connectors close, this overlap is ok"
         ]
       ],
       "meta": {
@@ -543,7 +523,7 @@
       "plot": "",
       "pos_files": "",
       "specctra_dsn": "",
-      "step": "",
+      "step": "LED_Dimmer_linked.step",
       "svg": "",
       "vrml": ""
     },
@@ -741,8 +721,8 @@
     ]
   ],
   "text_variables": {
-    "GIT_HASH": "<b15e82e>",
-    "TODAY": "2025-11-24",
+    "GIT_HASH": "<cfe0ccb>",
+    "TODAY": "2025-11-26",
     "git_hash": "Git hash: <2dc1eef>"
   }
 }

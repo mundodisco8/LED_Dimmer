@@ -38,6 +38,10 @@ _autosave-*
 *.xml
 *.csv
 
+# KiBot Artifacts
+**/Generated/**
+LED_Dimmer-*rc.html
+
 ## Silabs FW
 # Artifacts
 **/GNU*/
