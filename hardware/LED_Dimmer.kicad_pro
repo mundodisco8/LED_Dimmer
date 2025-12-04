@@ -61,8 +61,24 @@
       ],
       "drc_exclusions": [
         [
-          "lib_footprint_mismatch|113500000|86630000|5f46e6b3-914e-41bc-9ad9-2ce855545dec|00000000-0000-0000-0000-000000000000",
-          "I don't know what this error is about. I reimported the footprint, can't seem to be able to remove it"
+          "silk_over_copper|115849658|95062006|e7c29688-9354-4778-b6b3-1383f74260ba|00000000-0000-0000-0000-000000000000",
+          ""
+        ],
+        [
+          "silk_over_copper|122713355|106780398|5ec81883-38e8-4792-a2ef-2f874753fb63|00000000-0000-0000-0000-000000000000",
+          ""
+        ],
+        [
+          "silk_overlap|124350000|109500000|045a5819-d5d8-4e43-84e6-740f9ff2b86e|c182a943-bba6-4bfa-8976-08b9c462ccd2",
+          ""
+        ],
+        [
+          "silk_overlap|124350000|110750000|045a5819-d5d8-4e43-84e6-740f9ff2b86e|718c1f1a-efbe-4314-9285-6d782ea0b65b",
+          ""
+        ],
+        [
+          "silk_overlap|124350000|110750000|5d9d99ee-f8d0-4390-9fbc-2c0ab4441ea7|718c1f1a-efbe-4314-9285-6d782ea0b65b",
+          ""
         ]
       ],
       "meta": {
@@ -523,7 +539,7 @@
       "plot": "",
       "pos_files": "",
       "specctra_dsn": "",
-      "step": "LED_Dimmer_linked.step",
+      "step": "LED_Dimmer.step",
       "svg": "",
       "vrml": ""
     },
