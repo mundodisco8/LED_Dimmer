@@ -28,7 +28,7 @@ outputs:
 # - The `Component` column is named `Row` and works just like any other column.
 # This output is what you get from the 'Tools/Generate Bill of Materials' menu in eeschema.
   - name: 'BoM_In_CSV'
-    comment: 'Used to generate the BoM in CSV format using the internal BoM.'
+    comment: 'Generate the BoM in CSV format using the internal BoM.'
     type: 'bom'
     dir: '@BOMOUTPUTDIR@'
     options:

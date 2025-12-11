@@ -61,6 +61,14 @@
       ],
       "drc_exclusions": [
         [
+          "silk_edge_clearance|135000000|108750000|464f5349-5367-4b6e-b06c-f72d5afc1f5e|c182a943-bba6-4bfa-8976-08b9c462ccd2",
+          "Put two connectors together so we can replace with an 1x08 in case it's needed"
+        ],
+        [
+          "silk_edge_clearance|135000000|98750000|464f5349-5367-4b6e-b06c-f72d5afc1f5e|8e930296-6d6a-48fc-b0dc-841adcf901df",
+          "Put two connectors together so we can replace with an 1x08 in case it's needed"
+        ],
+        [
           "silk_over_copper|115849658|95062006|e7c29688-9354-4778-b6b3-1383f74260ba|00000000-0000-0000-0000-000000000000",
           ""
         ],
@@ -69,16 +77,24 @@
           ""
         ],
         [
-          "silk_overlap|124350000|109500000|045a5819-d5d8-4e43-84e6-740f9ff2b86e|c182a943-bba6-4bfa-8976-08b9c462ccd2",
-          ""
+          "silk_over_copper|124412360|108752525|c182a943-bba6-4bfa-8976-08b9c462ccd2|00000000-0000-0000-0000-000000000000",
+          "Put two connectors together so we can replace with an 1x08 in case it's needed"
         ],
         [
-          "silk_overlap|124350000|110750000|045a5819-d5d8-4e43-84e6-740f9ff2b86e|718c1f1a-efbe-4314-9285-6d782ea0b65b",
-          ""
+          "silk_over_copper|124583454|109096667|718c1f1a-efbe-4314-9285-6d782ea0b65b|00000000-0000-0000-0000-000000000000",
+          "Put two connectors together so we can replace with an 1x08 in case it's needed"
         ],
         [
-          "silk_overlap|124350000|110750000|5d9d99ee-f8d0-4390-9fbc-2c0ab4441ea7|718c1f1a-efbe-4314-9285-6d782ea0b65b",
-          ""
+          "silk_over_copper|124584304|110403133|045a5819-d5d8-4e43-84e6-740f9ff2b86e|00000000-0000-0000-0000-000000000000",
+          "Put two connectors together so we can replace with an 1x08 in case it's needed"
+        ],
+        [
+          "silk_over_copper|126241012|110750000|5d9d99ee-f8d0-4390-9fbc-2c0ab4441ea7|00000000-0000-0000-0000-000000000000",
+          "Put two connectors together so we can replace with an 1x08 in case it's needed"
+        ],
+        [
+          "silk_overlap|124500000|109250000|045a5819-d5d8-4e43-84e6-740f9ff2b86e|718c1f1a-efbe-4314-9285-6d782ea0b65b",
+          "Put two connectors together so we can replace with an 1x08 in case it's needed"
         ]
       ],
       "meta": {
@@ -614,25 +630,25 @@
           "group_by": false,
           "label": "Digikey PN",
           "name": "Digikey PN",
-          "show": false
+          "show": true
         },
         {
           "group_by": false,
           "label": "Farnell PN",
           "name": "Farnell PN",
-          "show": false
+          "show": true
         },
         {
           "group_by": false,
           "label": "MPN",
           "name": "MPN",
-          "show": false
+          "show": true
         },
         {
           "group_by": false,
           "label": "Manufacturer",
           "name": "Manufacturer",
-          "show": false
+          "show": true
         },
         {
           "group_by": false,
@@ -737,8 +753,8 @@
     ]
   ],
   "text_variables": {
-    "GIT_HASH": "<cfe0ccb>",
-    "TODAY": "2025-11-26",
+    "GIT_HASH": "<223d26b>",
+    "TODAY": "2025-12-11",
     "git_hash": "Git hash: <2dc1eef>"
   }
 }

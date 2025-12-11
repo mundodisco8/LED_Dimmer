@@ -11819,6 +11819,42 @@
 				(hide yes)
 			)
 		)
+		(property "Digikey PN" "-"
+			(at 82.55 195.58 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Farnell PN" "-"
+			(at 82.55 195.58 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "-"
+			(at 82.55 195.58 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Manufacturer" "-"
+			(at 82.55 195.58 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "6"
 			(uuid "84673f0c-527d-42d7-8792-d051fbafc3b3")
 		)
@@ -12885,7 +12921,7 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" "~"
+		(property "Datasheet" "https://datasheets.kyocera-avx.com/PokeHomeHorizontal_00-9276.pdf"
 			(at 204.47 77.47 0)
 			(effects
 				(font
@@ -12912,7 +12948,7 @@
 				(hide yes)
 			)
 		)
-		(property "Digikey PN" ""
+		(property "Digikey PN" "478-009276004021906CT-ND"
 			(at 204.47 77.47 0)
 			(effects
 				(font
@@ -12921,7 +12957,7 @@
 				(hide yes)
 			)
 		)
-		(property "Farnell PN" ""
+		(property "Farnell PN" "1891140"
 			(at 204.47 77.47 0)
 			(effects
 				(font
@@ -12930,7 +12966,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" ""
+		(property "MPN" "009276004021906"
 			(at 204.47 77.47 0)
 			(effects
 				(font
@@ -12939,7 +12975,7 @@
 				(hide yes)
 			)
 		)
-		(property "Manufacturer" "Molex"
+		(property "Manufacturer" "Kyocera"
 			(at 204.47 77.47 0)
 			(effects
 				(font
@@ -13201,7 +13237,7 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" "~"
+		(property "Datasheet" "https://datasheets.kyocera-avx.com/PokeHomeHorizontal_00-9276.pdf"
 			(at 204.47 93.98 0)
 			(effects
 				(font
@@ -13228,7 +13264,7 @@
 				(hide yes)
 			)
 		)
-		(property "Digikey PN" ""
+		(property "Digikey PN" "478-009276004021906CT-ND"
 			(at 204.47 93.98 0)
 			(effects
 				(font
@@ -13237,7 +13273,7 @@
 				(hide yes)
 			)
 		)
-		(property "Farnell PN" ""
+		(property "Farnell PN" "1891140"
 			(at 204.47 93.98 0)
 			(effects
 				(font
@@ -13246,7 +13282,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" ""
+		(property "MPN" "009276004021906"
 			(at 204.47 93.98 0)
 			(effects
 				(font
@@ -13255,7 +13291,7 @@
 				(hide yes)
 			)
 		)
-		(property "Manufacturer" "Molex"
+		(property "Manufacturer" "Kyocera"
 			(at 204.47 93.98 0)
 			(effects
 				(font
@@ -13578,6 +13614,42 @@
 		)
 		(property "Description" "1x16, 0.05\" Pitch Vertical Header"
 			(at 82.55 186.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Digikey PN" "-"
+			(at 82.55 186.69 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Farnell PN" "-"
+			(at 82.55 186.69 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "-"
+			(at 82.55 186.69 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Manufacturer" "-"
+			(at 82.55 186.69 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14892,7 +14964,7 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 262.255 88.9 0)
 			(effects
 				(font
@@ -14907,6 +14979,42 @@
 				(font
 					(size 1.27 1.27)
 				)
+			)
+		)
+		(property "Digikey PN" "-"
+			(at 262.255 88.9 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Farnell PN" "-"
+			(at 262.255 88.9 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "-"
+			(at 262.255 88.9 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Manufacturer" "-"
+			(at 262.255 88.9 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
 			)
 		)
 		(instances

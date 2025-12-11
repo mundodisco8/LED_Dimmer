@@ -1,7 +1,7 @@
 version: '3'
 services:
   GruffaloDev:
-    image: ghcr.io/inti-cmnb/kicad7_auto_full:dev
+    image: ghcr.io/inti-cmnb/kicad9_auto_full:dev
     container_name: GruffaloKiBotDev
     command: /bin/bash
     working_dir: /Gruffalo
