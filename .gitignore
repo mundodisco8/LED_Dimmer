@@ -40,14 +40,16 @@ hardware/**-backups/**
 hardware/Snowflake-backups/**
 
 ## Silabs FW
+# From SS6 Tips and Tricks Git Ignore section
+**/.projectlinkstore
+
 # Rubbish - Not needed as indicated by SiLabs
 **/.trash
 **/.uceditor
-**/.projectlinkstore
 **/*.bak*
 
 # Artifacts
-**/GNU*/
+**/cmake_gcc/build/**
 
 # Test Artifacts
 **/test/build/

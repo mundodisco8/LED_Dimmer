@@ -5,14 +5,11 @@
 #include "dmadrv.h"
 #include "sl_device_peripheral.h"
 #include "sl_clock_manager.h"
+#include "sl_hal_eusart.h"
+#include "sl_hal_gpio.h"
 
 
 #include "sl_clock_manager_tree_config.h"
- 
-
-
-#include "em_eusart.h"
-#include "em_gpio.h"
  
 
  
@@ -26,6 +23,7 @@
 #define SL_IOSTREAM_EUSART_TX_IRQ_HANDLER(periph_nbr)    SL_CONCAT_PASTER_3(EUART, periph_nbr, _TX_IRQHandler)   
 #define SL_IOSTREAM_EUSART_RX_IRQ_HANDLER(periph_nbr)    SL_CONCAT_PASTER_3(EUART, periph_nbr, _RX_IRQHandler)   
 #define SL_IOSTREAM_EUSART_RX_DMA_SIGNAL(periph_nbr)     SL_CONCAT_PASTER_3(dmadrvPeripheralSignal_EUART, periph_nbr, _RXDATAV)
+#define SL_IOSTREAM_EUSART_TX_DMA_SIGNAL(periph_nbr)     SL_CONCAT_PASTER_3(dmadrvPeripheralSignal_EUART, periph_nbr, _TXBL)
 #define SL_IOSTREAM_EUSART_CLOCK_REF(periph_nbr)         SL_CONCAT_PASTER_2(SL_BUS_CLOCK_EUART, periph_nbr)  
 #define SL_IOSTREAM_EUSART_PERIPHERAL(periph_nbr)        SL_CONCAT_PASTER_2(SL_PERIPHERAL_EUART, periph_nbr) 
 #else
@@ -34,17 +32,10 @@
 #define SL_IOSTREAM_EUSART_TX_IRQ_HANDLER(periph_nbr)    SL_CONCAT_PASTER_3(EUSART, periph_nbr, _TX_IRQHandler)   
 #define SL_IOSTREAM_EUSART_RX_IRQ_HANDLER(periph_nbr)    SL_CONCAT_PASTER_3(EUSART, periph_nbr, _RX_IRQHandler)   
 #define SL_IOSTREAM_EUSART_RX_DMA_SIGNAL(periph_nbr)     SL_CONCAT_PASTER_3(dmadrvPeripheralSignal_EUSART, periph_nbr, _RXDATAV)  
+#define SL_IOSTREAM_EUSART_TX_DMA_SIGNAL(periph_nbr)     SL_CONCAT_PASTER_3(dmadrvPeripheralSignal_EUSART, periph_nbr, _TXBL)
 #define SL_IOSTREAM_EUSART_CLOCK_REF(periph_nbr)         SL_CONCAT_PASTER_2(SL_BUS_CLOCK_EUSART, periph_nbr)  
 #define SL_IOSTREAM_EUSART_PERIPHERAL(periph_nbr)        SL_CONCAT_PASTER_2(SL_PERIPHERAL_EUSART, periph_nbr) 
 #endif
-
-
-
-#define SL_IOSTREAM_EUSART_HWFC_NONE                     eusartHwFlowControlNone
-#define SL_IOSTREAM_EUSART_HWFC_CTS                      eusartHwFlowControlCts
-#define SL_IOSTREAM_EUSART_HWFC_RTS                      eusartHwFlowControlRts
-#define SL_IOSTREAM_EUSART_HWFC_CTS_RTS                  eusartHwFlowControlCtsAndRts
- 
 
 
 #if defined(EUART_COUNT) && (EUART_COUNT > 0)
@@ -92,7 +83,8 @@
 
 
 // EM Events
-#define SLEEP_EM_EVENT_MASK      (SL_POWER_MANAGER_EVENT_TRANSITION_LEAVING_EM0)
+#define SLEEP_EM_EVENT_MASK      (SL_POWER_MANAGER_EVENT_TRANSITION_ENTERING_EM0 \
+                                  | SL_POWER_MANAGER_EVENT_TRANSITION_LEAVING_EM0)
 static void events_handler(sl_power_manager_em_t from,
                            sl_power_manager_em_t to);
 static sl_power_manager_em_transition_event_info_t events_info =
@@ -110,9 +102,19 @@ sl_status_t sl_iostream_eusart_init_inst(void);
 // Instance(s) handle and context variable 
 static sl_iostream_uart_t sl_iostream_inst;
 sl_iostream_t *sl_iostream_inst_handle = &sl_iostream_inst.stream;
+
 sl_iostream_uart_t *sl_iostream_uart_inst_handle = &sl_iostream_inst;
 static sl_iostream_eusart_context_t  context_inst;
+
 static uint8_t  rx_buffer_inst[SL_IOSTREAM_EUSART_INST_RX_BUFFER_SIZE];
+
+static sli_iostream_uart_periph_t uart_periph_inst = {
+  .rx_irq_number = SL_IOSTREAM_EUSART_RX_IRQ_NUMBER(SL_IOSTREAM_EUSART_INST_PERIPHERAL_NO),
+#if defined(SL_CATALOG_POWER_MANAGER_PRESENT)  
+  .tx_irq_number = SL_IOSTREAM_EUSART_TX_IRQ_NUMBER(SL_IOSTREAM_EUSART_INST_PERIPHERAL_NO),
+#endif
+};
+
 sl_iostream_instance_info_t sl_iostream_instance_inst_info = {
   .handle = &sl_iostream_inst.stream,
   .name = "inst",
@@ -135,7 +137,6 @@ sl_status_t sl_iostream_eusart_init_inst(void)
     .parity = SL_IOSTREAM_EUSART_INST_PARITY,
     .flow_control = SL_IOSTREAM_EUSART_INST_FLOW_CONTROL_TYPE,
     .stop_bits = SL_IOSTREAM_EUSART_INST_STOP_BITS,
-    .enable_high_frequency = _SL_IOSTREAM_EUSART_INST_ENABLE_HIGH_FREQUENCY,
 #if defined(EUSART_COUNT) && (EUSART_COUNT > 1)
     .port_index = SL_IOSTREAM_EUSART_INST_PERIPHERAL_NO,
 #endif
@@ -153,18 +154,28 @@ sl_status_t sl_iostream_eusart_init_inst(void)
 #endif
   };
 
-  sl_iostream_dma_config_t dma_config_inst = {.src = (uint8_t *)&SL_IOSTREAM_EUSART_INST_PERIPHERAL->RXDATA,
-                                                        .peripheral_signal = SL_IOSTREAM_EUSART_RX_DMA_SIGNAL(SL_IOSTREAM_EUSART_INST_PERIPHERAL_NO)};
+  sl_iostream_dma_config_t rx_dma_config_inst = {.src = (uint8_t *)&SL_IOSTREAM_EUSART_INST_PERIPHERAL->RXDATA,
+                                                        .xfer_cfg = IOSTREAM_LDMA_TFER_CFG_PERIPH(SL_IOSTREAM_EUSART_RX_DMA_SIGNAL(SL_IOSTREAM_EUSART_INST_PERIPHERAL_NO))};
+
+  sl_iostream_dma_config_t tx_dma_config_inst = {.dst = (uint8_t *)&SL_IOSTREAM_EUSART_INST_PERIPHERAL->TXDATA,
+                                                        .xfer_cfg = IOSTREAM_LDMA_TFER_CFG_PERIPH(SL_IOSTREAM_EUSART_TX_DMA_SIGNAL(SL_IOSTREAM_EUSART_INST_PERIPHERAL_NO))};
+
   sl_iostream_uart_config_t uart_config_inst = {
-    .dma_cfg = dma_config_inst,
+    .rx_dma_cfg = rx_dma_config_inst,
+    .tx_dma_cfg = tx_dma_config_inst,
     .rx_buffer = rx_buffer_inst,
     .rx_buffer_length = SL_IOSTREAM_EUSART_INST_RX_BUFFER_SIZE,
-    .tx_irq_number = SL_IOSTREAM_EUSART_TX_IRQ_NUMBER(SL_IOSTREAM_EUSART_INST_PERIPHERAL_NO),
-    .rx_irq_number = SL_IOSTREAM_EUSART_RX_IRQ_NUMBER(SL_IOSTREAM_EUSART_INST_PERIPHERAL_NO),
+    .enable_high_frequency = _SL_IOSTREAM_EUSART_INST_ENABLE_HIGH_FREQUENCY, 
     .lf_to_crlf = SL_IOSTREAM_EUSART_INST_CONVERT_BY_DEFAULT_LF_TO_CRLF,
     .rx_when_sleeping = SL_IOSTREAM_EUSART_INST_RESTRICT_ENERGY_MODE_TO_ALLOW_RECEPTION,
+    .uart_periph = &uart_periph_inst
   };
-  uart_config_inst.sw_flow_control = SL_IOSTREAM_EUSART_INST_FLOW_CONTROL_TYPE == uartFlowControlSoftware;
+  uart_config_inst.sw_flow_control = SL_IOSTREAM_EUSART_INST_FLOW_CONTROL_TYPE == SL_IOSTREAM_EUSART_UART_FLOW_CTRL_SOFT;
+#if defined(SL_IOSTREAM_EUSART_INST_ASYNC_TX)
+  uart_config_inst.async_tx_enabled = SL_IOSTREAM_EUSART_INST_ASYNC_TX;
+#else
+  uart_config_inst.async_tx_enabled = false;
+#endif
   // Instantiate eusart instance 
   status = sl_iostream_eusart_init(&sl_iostream_inst,
                                   &uart_config_inst,
@@ -215,8 +226,14 @@ static void events_handler(sl_power_manager_em_t from,
                            sl_power_manager_em_t to)
 {
   (void) from;
-  if (to < SL_POWER_MANAGER_EM3){
-    // Only prepare for wakeup from EM2 or less, since EUSART doesn't run in EM3
+  if (to == SL_POWER_MANAGER_EM0) {
+    
+    if (sl_iostream_uart_inst_handle->stream.context != NULL) {
+      sl_iostream_uart_wakeup(sl_iostream_uart_inst_handle);
+    }
+    
+  } else if (to < SL_POWER_MANAGER_EM2){
+    // Only prepare for sleep to EM2 or less
     
     if (sl_iostream_uart_inst_handle->stream.context != NULL) {
       sl_iostream_uart_prepare_for_sleep(sl_iostream_uart_inst_handle);

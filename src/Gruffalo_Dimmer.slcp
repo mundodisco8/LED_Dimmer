@@ -24,13 +24,15 @@ include:
 - path: .
   file_list:
   - {path: app.h}
-sdk: {id: simplicity_sdk, version: 2024.6.2}
+sdk: {vendor: null, id: simplicity_sdk, version: 2025.6.2}
 toolchain_settings: []
 component:
 - {id: BGM220PC22WGA}
 - {id: app_assert}
 - {id: app_log}
 - {id: bluetooth_feature_connection}
+- {id: bluetooth_feature_connection_role_central}
+- {id: bluetooth_feature_connection_role_peripheral}
 - {id: bluetooth_feature_gatt}
 - {id: bluetooth_feature_gatt_server}
 - {id: bluetooth_feature_legacy_advertiser}
@@ -42,7 +44,7 @@ component:
 - {id: clock_manager}
 - {id: device_init}
 - {id: gatt_configuration}
-- {id: gatt_service_device_information}
+- {id: gatt_service_device_information_override}
 - {id: gpiointerrupt}
 - instance: [inst]
   id: iostream_eusart
