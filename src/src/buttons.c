@@ -47,17 +47,19 @@ btnError_t initButton(button_t* btnPtr, pinPort_t pinPort, uint8_t pinNo, action
         return BTN_NULL_POINTER_PASSED;
     }
     setPinMode(pinPort, pinNo, MODE_INPUT, false);
-    btnPtr->btnPort          = pinPort;
-    btnPtr->pinNo            = pinNo;
-    btnPtr->integrator       = 0;
-    btnPtr->state            = BUTTON_RELEASED;  // buttons are released by default
-    btnPtr->pressedAction    = pressedAction;
-    btnPtr->releasedAction   = releasedAction;
+    btnPtr->btnPort = pinPort;
+    btnPtr->pinNo = pinNo;
+    btnPtr->integrator = 0;
+    btnPtr->state = BUTTON_RELEASED;  // buttons are released by default
+    btnPtr->pressedAction = pressedAction;
+    btnPtr->releasedAction = releasedAction;
     slpTimerStatus_t retVal = SLP_reserveTimer(&(btnPtr->debounceTimerPtr));
     //TODO: Test Asserts on error
-    app_assert_status_f((retVal == SLPTIMER_NO_TIMERS_AVAILABLE), "No timer available. Increase the number of timers\r\n");
+    app_assert_status_f((retVal == SLPTIMER_NO_TIMERS_AVAILABLE),
+                        "No timer available. Increase the number of timers\r\n");
     retVal = SLP_reserveTimer(&(btnPtr->samplingTimerPtr));
-    app_assert_status_f((retVal == SLPTIMER_NO_TIMERS_AVAILABLE), "No timer available. Increase the number of timers\r\n");
+    app_assert_status_f((retVal == SLPTIMER_NO_TIMERS_AVAILABLE),
+                        "No timer available. Increase the number of timers\r\n");
 
     return BTN_OK;
 }
@@ -81,11 +83,11 @@ btnError_t initQuadEncoder(quad_encoder_t* quadPtr, pinPort_t pin0Port, uint8_t 
     // I only managed to get it working by actively pulling it dowm, but it should not be neccessary. Do more reasearch!
     setPinMode(pin0Port, pin0No, MODE_INPUT_PULL, false);
     setPinMode(pin1Port, pin1No, MODE_INPUT_PULL, false);
-    quadPtr->pin0No                 = pin0No;
-    quadPtr->pin0Port               = pin0Port;
-    quadPtr->pin1No                 = pin1No;
-    quadPtr->pin1Port               = pin1Port;
-    quadPtr->clockWiseAction        = CWAction;
+    quadPtr->pin0No = pin0No;
+    quadPtr->pin0Port = pin0Port;
+    quadPtr->pin1No = pin1No;
+    quadPtr->pin1Port = pin1Port;
+    quadPtr->clockWiseAction = CWAction;
     quadPtr->counterClockWiseAction = CCWAction;
     return BTN_OK;
 }

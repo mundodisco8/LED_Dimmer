@@ -10,10 +10,7 @@
 
 #include "buttons.h"
 
-typedef enum timerType {
-    TIMER_SAMPLE,
-    TIMER_DEBOUNCE
-} timerType_t;
+typedef enum timerType { TIMER_SAMPLE, TIMER_DEBOUNCE } timerType_t;
 
 // Callback used by the sampling timer to update the integrator value.
 void samplingTimerCallback(button_t* btnPtr);

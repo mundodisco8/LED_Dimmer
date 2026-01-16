@@ -1,10 +1,9 @@
 #ifndef gpio_HW_H
 #define gpio_HW_H
 
+#include "gpio_HW_types.h"
 #include "inttypes.h"
 #include "stdbool.h"
-
-#include "gpio_HW_types.h"
 
 void enableGPIOClock(void);
 

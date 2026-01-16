@@ -29,9 +29,9 @@
 
 // Trickery to allow testing of static elements. Better to mess a bit with the code than to overcomplicate tests
 #ifdef TEST
-#   define STATIC
+#define STATIC
 #else
-#   define STATIC static
+#define STATIC static
 #endif
 
 // Gamma correction
@@ -108,11 +108,11 @@ void configureTimerPWMFrequency(uint32_t frequencyHz) {
 STATIC void buildGammaLookUpTable(void) {
     uint32_t top = TIMHW_getTimer0TopValue();
     for (uint32_t i = 0; i < gammaLuTSize; i++) {
-        gammaLookUp[i] = (uint32_t)((pow(i, GAMMA_VALUE) / pow (gammaLuTSize, GAMMA_VALUE)) * top + .5);
+        gammaLookUp[i] = (uint32_t)((pow(i, GAMMA_VALUE) / pow(gammaLuTSize, GAMMA_VALUE)) * top + .5);
     }
     // DEBUG: print the table to check the values
     for (uint32_t i = 0; i < gammaLuTSize; i++) {
-        app_log_info("%"PRIu32" -> %"PRIu32"\r\n", i, gammaLookUp[i]);
+        app_log_info("%" PRIu32 " -> %" PRIu32 "\r\n", i, gammaLookUp[i]);
     }
 }
 
@@ -136,9 +136,7 @@ void setDutyCycle(CCChannel_t channel, int8_t percent) {
 
 // Gets the COUNT value for the requested channel
 // Parameters: channel: the channel whose top value we want to get
-uint32_t getDutyCycle(CCChannel_t channel) {
-    return dutyCycle[channel];
-}
+uint32_t getDutyCycle(CCChannel_t channel) { return dutyCycle[channel]; }
 
 // Sets the brightness level for one of TIMER0's channels. The brighness is adjusted using gamma correction
 // Parameters: channel: the channel to set the PWM duty cycle

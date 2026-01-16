@@ -2,9 +2,8 @@
 #define _SLEEPYTIMERS_HW_
 
 #include <inttypes.h>
-#include <stdbool.h>
-
 #include <sleepyTimers_HW_types.h>
+#include <stdbool.h>
 
 // TODO: Ok, rookie mistake. I created a struct, timerHandle, that had the same elements as sl_sleeptimer_timer_handle
 // to avoid exporting it, as it's an SDK thingy. We moved to a newer SDK and boom, they change the definition, their's
@@ -25,10 +24,11 @@ void SLP_resetTimersUsed(void);
 slpTimerStatus_t SLP_reserveTimer(timerHandlePtr_t* handlePtr);
 
 slpTimerStatus_t SLP_startTimer(timerHandlePtr_t handlePtr, uint32_t timeoutMs, timerCallback_t callback, void* ctxPtr);
-slpTimerStatus_t SLP_startPeriodicTimer(timerHandlePtr_t handlePtr, uint32_t timeoutMs, timerCallback_t callback, void* ctxPtr);
+slpTimerStatus_t SLP_startPeriodicTimer(timerHandlePtr_t handlePtr, uint32_t timeoutMs, timerCallback_t callback,
+                                        void* ctxPtr);
 slpTimerStatus_t SLP_stopTimer(timerHandlePtr_t handlePtr);
 
 bool SLP_isTimerRunning(timerHandlePtr_t handlePtr);
 
 uint64_t SLP_getSystemTickInMs(void);
-#endif // _SLEEPYTIMERS_HW_
+#endif  // _SLEEPYTIMERS_HW_

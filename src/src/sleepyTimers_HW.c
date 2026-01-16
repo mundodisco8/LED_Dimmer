@@ -48,7 +48,8 @@ slpTimerStatus_t SLP_reserveTimer(timerHandlePtr_t* handlePtr) {
 //          SL_STATUS_INVALID_PARAMETER if timeoutMs > 131071999mssion = .
 //          SL_STATUS_NULL_POINTER if the timer handler is null
 //          SL_STATUS_NOT_READY if the timer is already running (can be treated as a warning)
-slpTimerStatus_t SLP_startTimer(timerHandlePtr_t handlePtr, uint32_t timeoutMs, timerCallback_t callback, void* ctxPtr) {
+slpTimerStatus_t SLP_startTimer(timerHandlePtr_t handlePtr, uint32_t timeoutMs, timerCallback_t callback,
+                                void* ctxPtr) {
     // sl_sleeptimer_start_periodic_timer_ms() returns SL_STATUS_OK on success and
     // 1) 0x21 - SL_STATUS_INVALID_PARAMETER if time is out of bounds:
     //    max_millisecond_conversion = (uint32_t)(((uint64_t)UINT32_MAX * (uint64_t)1000u) / timer_frequency);
@@ -56,7 +57,8 @@ slpTimerStatus_t SLP_startTimer(timerHandlePtr_t handlePtr, uint32_t timeoutMs, 
     // 2) 0x22 - SL_STATUS_NULL_POINTER if the timer handler is null
     // 3) 0x03 - SL_STATUS_NOT_READY if the timer is already running
     // Surprisingly, the callback can be NULL: it won't get called and it won't cause an error
-    uint32_t retVal = sl_sleeptimer_start_timer_ms((sl_sleeptimer_timer_handle_t*)handlePtr, timeoutMs, (sl_sleeptimer_timer_callback_t)callback, ctxPtr, 0, 0);
+    uint32_t retVal = sl_sleeptimer_start_timer_ms((sl_sleeptimer_timer_handle_t*)handlePtr, timeoutMs,
+                                                   (sl_sleeptimer_timer_callback_t)callback, ctxPtr, 0, 0);
     if (retVal == SL_STATUS_NOT_READY) {
         app_log_warning("Timer already running\r\n");
         // no need to return, the timer was already running, all is good
@@ -78,7 +80,8 @@ slpTimerStatus_t SLP_startTimer(timerHandlePtr_t handlePtr, uint32_t timeoutMs, 
 //          SL_STATUS_NULL_POINTER if the timer handler is null
 //          SL_STATUS_INVALID_STATE id the timer is already running (can be treated as a warning)
 // NOTE: that if the timer is running, periodic returns INVALID_STATE and one-shot returns NOT_READY!
-slpTimerStatus_t SLP_startPeriodicTimer(timerHandlePtr_t handlePtr, uint32_t timeoutMs, timerCallback_t callback, void* ctxPtr) {
+slpTimerStatus_t SLP_startPeriodicTimer(timerHandlePtr_t handlePtr, uint32_t timeoutMs, timerCallback_t callback,
+                                        void* ctxPtr) {
     // sl_sleeptimer_start_periodic_timer_ms() returns SL_STATUS_OK on success and
     // 1) SL_STATUS_INVALID_PARAMETER if time is out of bounds:
     //    max_millisecond_conversion = (uint32_t)(((uint64_t)UINT32_MAX * (uint64_t)1000u) / timer_frequency);
@@ -86,7 +89,8 @@ slpTimerStatus_t SLP_startPeriodicTimer(timerHandlePtr_t handlePtr, uint32_t tim
     // 2) SL_STATUS_NULL_POINTER if the timer handler is null
     // 3) SL_STATUS_INVALID_STATE id the timer is already running NOTE: annoying that it's different errorcode than start_timer_ms grrrrrr....
     // Surprisingly, the callback can be NULL: it won't get called and it won't cause an error
-    uint32_t retVal = sl_sleeptimer_start_periodic_timer_ms((sl_sleeptimer_timer_handle_t*)handlePtr, timeoutMs, (sl_sleeptimer_timer_callback_t)callback, ctxPtr, 0, 0);
+    uint32_t retVal = sl_sleeptimer_start_periodic_timer_ms((sl_sleeptimer_timer_handle_t*)handlePtr, timeoutMs,
+                                                            (sl_sleeptimer_timer_callback_t)callback, ctxPtr, 0, 0);
     // app_log_debug("Starting periodic returns 0x%04"PRIX32"\r\n", retVal);
     if (retVal == SL_STATUS_INVALID_STATE) {
         app_log_warning("Timer already running\r\n");
@@ -130,7 +134,7 @@ bool SLP_isTimerRunning(timerHandlePtr_t handlePtr) {
 // Returns the current system tick in ms
 uint64_t SLP_getSystemTickInMs(void) {
     uint64_t timeInMs = 0;
-    if (sl_sleeptimer_tick64_to_ms(sl_sleeptimer_get_tick_count64(), &timeInMs) == SL_STATUS_OK){
+    if (sl_sleeptimer_tick64_to_ms(sl_sleeptimer_get_tick_count64(), &timeInMs) == SL_STATUS_OK) {
         return timeInMs;
     }
     return 0;

@@ -7,9 +7,8 @@
 #ifndef INTERRUPT_HW_H
 #define INTERRUPT_HW_H
 
-#include "inttypes.h"
-
 #include "interrupt_HW_types.h"
+#include "inttypes.h"
 
 // Initialises the GPIO Odd and Even interrupts.
 void initialiseInterrupts(void);
@@ -22,4 +21,4 @@ uint32_t setInterruptCallbackWCtx(uint8_t pinNo, callbackCtxPtr_t cbCtxPtr, void
 // Enable TIMER0 interrupts
 void enableTIMER0Int(void);
 
-#endif // INTERRUPT_HW_H
+#endif  // INTERRUPT_HW_H
