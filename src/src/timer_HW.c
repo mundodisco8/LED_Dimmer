@@ -62,7 +62,6 @@ static TIMER_Init_TypeDef timerInit = {
     .sync = false /* Not started/stopped/reloaded by other timers. */
 };
 
-
 ////
 // Set Register Values
 ////
@@ -299,11 +298,7 @@ void TIMHW_configCCChannelPWM(CCChannel_t channel, polarity_t polarity) {
 }
 
 // Starts TIMER0
-void TIMHW_startTimer0(void) {
-    TIMER_Enable(TIMER0, true);
-}
+void TIMHW_startTimer0(void) { TIMER_Enable(TIMER0, true); }
 
 // Stops TIMER0
-void TIMHW_stopTimer0(void) {
-    TIMER_Enable(TIMER0, false);
-}
+void TIMHW_stopTimer0(void) { TIMER_Enable(TIMER0, false); }

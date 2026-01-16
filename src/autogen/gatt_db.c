@@ -36,8 +36,8 @@ GATT_DATA(sli_bt_gattdb_attribute_chrvalue_t gattdb_attribute_field_23) = {
 };
 GATT_DATA(sli_bt_gattdb_attribute_chrvalue_t gattdb_attribute_field_21) = {
   .properties = 0x02,
-  .max_len = 5,
-  .data = { 0x30, 0x2e, 0x30, 0x2e, 0x30, },
+  .max_len = 6,
+  .data = { 0x30, 0x2e, 0x30, 0x2e, 0x30, 0x00, },
 };
 GATT_DATA(sli_bt_gattdb_attribute_chrvalue_t gattdb_attribute_field_19) = {
   .properties = 0x02,

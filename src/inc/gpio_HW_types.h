@@ -26,4 +26,4 @@ typedef enum ports {
     portF,
 } pinPort_t;
 
-#endif // _GPIO_HW_TYPES_H_
+#endif  // _GPIO_HW_TYPES_H_

@@ -1,0 +1,8 @@
+#eyJzdGF0ZSI6eyJidWlsZFByZXNldHMiOnsiZGVmYXVsdF9jb25maWciOnsibmFtZSI6ImRlZmF1bHRfY29uZmlnIiwiY29uZmlndXJhdGlvbiI6ImJhc2UiLCJkZWZpbml0aW9ucyI6W10sInJlbW92ZWRGbGFncyI6eyJDIjpbIi1PcyJdLCJDWFgiOltdLCJBU00iOltdfSwiYWRkaXRpb25hbEZsYWdzIjp7IkMiOlsiLU9nIl0sIkNYWCI6W10sIkFTTSI6W119fX0sImN1cnJlbnRDb25mSW5kZXgiOjB9LCJmb2xkZXJzIjpbXSwiZmlsZXMiOltdfQ==
+get_target_property(interface_compile_options slc INTERFACE_COMPILE_OPTIONS)
+	list(REMOVE_ITEM interface_compile_options $<$<AND:$<CONFIG:default_config>,$<COMPILE_LANGUAGE:C>>:-Os>)
+set_target_properties(Gruffalo_Dimmer PROPERTIES INTERFACE_COMPILE_OPTIONS "${interface_compile_opitions}")
+
+target_compile_options(Gruffalo_Dimmer PRIVATE
+	$<$<AND:$<CONFIG:default_config>,$<COMPILE_LANGUAGE:C>>:-Og>
+)

@@ -48,6 +48,7 @@
 #pragma GCC diagnostic pop
 
 #include "em_gpio.h"
+#include "em_timer.h"
 
 // Ignore a sign conversion warning in sl_sleeptimer.h
 #pragma GCC diagnostic push
@@ -56,18 +57,22 @@
 #include "sl_bluetooth.h"
 #pragma GCC diagnostic pop
 
-#include "PWMControl.h"
 #include "app.h"
 #include "app_assert.h"
 #include "app_log.h"
-#include "buttonActions.h"
-#include "buttons.h"
 #include "gatt_db.h"
 #include "pin_config.h"
 #include "sl_sleeptimer.h"
 
 #define DEBUG_EFM_USER
 #include "sl_assert.h"
+
+// My Headers
+#include "PWMControl.h"
+#include "buttonActions.h"
+#include "buttons.h"
+#include "gpio_HW.h"
+#include "timer_HW.h"
 
 // The advertising set handle allocated from Bluetooth stack.
 static uint8_t advertising_set_handle = 0xff;
@@ -80,28 +85,23 @@ button_t button1 = {0};
 quad_encoder_t quad0 = {0};
 quad_encoder_t quad1 = {0};
 
+void TIMER0_IRQHandler(void) {
+    // Acknowledge the interrupt
+    uint32_t flags = TIMER_IntGet(TIMER0);
+    TIMER_IntClear(TIMER0, flags);
 
-#include "timer_HW.h"
-#include "em_timer.h"
-#include "gpio_HW.h"
-void TIMER0_IRQHandler(void)
-{
-  // Acknowledge the interrupt
-  uint32_t flags = TIMER_IntGet(TIMER0);
-  TIMER_IntClear(TIMER0, flags);
+    // TODO: only buffer the count for the int that triggered
 
-  // TODO: only buffer the count for the int that triggered
-
-  // Write OCB to update the duty cycle of the next waveform period
-  TIMER_CompareBufSet(TIMER0, CC_CHANNEL_0, getDutyCycle(CC_CHANNEL_0));
-  TIMER_CompareBufSet(TIMER0, CC_CHANNEL_1, getDutyCycle(CC_CHANNEL_1));
-  TIMER_CompareBufSet(TIMER0, CC_CHANNEL_2, getDutyCycle(CC_CHANNEL_2));
+    // Write OCB to update the duty cycle of the next waveform period
+    TIMER_CompareBufSet(TIMER0, CC_CHANNEL_0, getDutyCycle(CC_CHANNEL_0));
+    TIMER_CompareBufSet(TIMER0, CC_CHANNEL_1, getDutyCycle(CC_CHANNEL_1));
+    TIMER_CompareBufSet(TIMER0, CC_CHANNEL_2, getDutyCycle(CC_CHANNEL_2));
 }
 
 /******************************************************************************
  * Application Init.
  *****************************************************************************/
-SL_WEAK void app_init(void) {
+void app_init(void) {
     /////////////////////////////////////////////////////////////////////////////
     // Put your additional application init code here!                         //
     // This is called once during start-up.                                    //
@@ -120,9 +120,11 @@ SL_WEAK void app_init(void) {
     uint32_t button1GPIOIntNo = 0;
     uint32_t quad1GPIOIntNo = 0;
     initButton(&button0, (pinPort_t)btn0_PORT, btn0_PIN, button0Pressed, button0Released);
-    initQuadEncoder(&quad0, (pinPort_t)quad0_0_PORT, quad0_0_PIN, (pinPort_t)quad0_1_PORT, quad0_1_PIN, quad0ClockWise, quad0CounterClockWise);
+    initQuadEncoder(&quad0, (pinPort_t)quad0_0_PORT, quad0_0_PIN, (pinPort_t)quad0_1_PORT, quad0_1_PIN, quad0ClockWise,
+                    quad0CounterClockWise);
     initButton(&button1, (pinPort_t)btn1_PORT, btn1_PIN, button0Pressed, button0Released);
-    initQuadEncoder(&quad1, (pinPort_t)quad1_0_PORT, quad1_0_PIN, (pinPort_t)quad1_1_PORT, quad1_1_PIN, quad0ClockWise, quad0CounterClockWise);
+    initQuadEncoder(&quad1, (pinPort_t)quad1_0_PORT, quad1_0_PIN, (pinPort_t)quad1_1_PORT, quad1_1_PIN, quad0ClockWise,
+                    quad0CounterClockWise);
     btnError_t retVal = configureButtonInterrupts(&button0, gpioCallbackButton, &button0GPIOIntNo);
     app_assert_status_f((retVal != BTN_OK), "Error configuring Btn 0 interrupts\r\n");
     retVal = configureQuadratureInterrupts(&quad0, gpioCallbackQuad, &quad0GPIOIntNo);
@@ -146,7 +148,7 @@ SL_WEAK void app_init(void) {
 /******************************************************************************
  * Application Process Action.
  *****************************************************************************/
-SL_WEAK void app_process_action(void) {
+void app_process_action(void) {
     /////////////////////////////////////////////////////////////////////////////
     // Put your additional application code here!                              //
     // This is called infinitely.                                              //

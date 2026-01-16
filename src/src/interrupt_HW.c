@@ -9,14 +9,12 @@
 #pragma GCC diagnostic ignored "-Wsign-conversion"
 #include "app_log.h"
 #pragma GCC diagnostic pop
-#include "em_timer.h"
 #include "cmsis_nvic_virtual.h"
+#include "em_timer.h"
 
 // Wrapper for GPIOINT_Init()
 // Initialises the GPIO Odd and Even interrupts.
-void initialiseInterrupts(void) {
-    GPIOINT_Init();
-}
+void initialiseInterrupts(void) { GPIOINT_Init(); }
 
 // Wrapper for GPIOINT_CallbackRegister()
 // Registers a callback to a pin interrupt number. If the interrupt is already registered, it overwrites it.
@@ -24,9 +22,7 @@ void initialiseInterrupts(void) {
 // Parameters: pinNo: a uint32_t with the interrupt number to associate the callback with
 //             callbackPtr: a pointer to a callback of type callbackPtr_t, to be called when the interrupt triggers
 // Returns: nothing
-void setInterruptCallback(uint8_t pinNo, callbackPtr_t callbackPtr) {
-    GPIOINT_CallbackRegister(pinNo, callbackPtr);
-}
+void setInterruptCallback(uint8_t pinNo, callbackPtr_t callbackPtr) { GPIOINT_CallbackRegister(pinNo, callbackPtr); }
 
 // Wrapper for GPIOINT_CallbackRegisterExt()
 // NOTE: Has to be called before configurePinInterrupt. GPIOINT_CallbackRegister() and GPIOINT_CallbackRegisterExt()
@@ -43,11 +39,9 @@ void setInterruptCallback(uint8_t pinNo, callbackPtr_t callbackPtr) {
 uint32_t setInterruptCallbackWCtx(uint8_t pinNo, callbackCtxPtr_t cbCtxPtr, void* ctxPtr) {
     uint32_t retVal = GPIOINT_CallbackRegisterExt(pinNo, cbCtxPtr, ctxPtr);
     if (retVal == INTERRUPT_UNAVAILABLE) {
-        app_log_error("Error 0x%04"PRIX32" registering interrupt callback with Ctx\r\n", retVal);
+        app_log_error("Error 0x%04" PRIX32 " registering interrupt callback with Ctx\r\n", retVal);
     }
     return retVal;
 }
 
-void enableTIMER0Int(void) {
-    NVIC_EnableIRQ(TIMER0_IRQn);
-}
+void enableTIMER0Int(void) { NVIC_EnableIRQ(TIMER0_IRQn); }

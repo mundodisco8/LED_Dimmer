@@ -25,4 +25,4 @@ uint32_t getDutyCycle(CCChannel_t channel);
 // Sets the brightness level for one of TIMER0's channels. The brighness is adjusted using gamma correction
 void setBrightness(CCChannel_t channel, int8_t percent);
 
-#endif // _PWMCONTROL_H_
+#endif  // _PWMCONTROL_H_
