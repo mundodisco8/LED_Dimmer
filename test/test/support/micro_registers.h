@@ -59,9 +59,9 @@
  */
 
 #ifdef TEST
-#    ifndef EXTERN
-#       define EXTERN extern
-#    endif
+#ifndef EXTERN
+#define EXTERN extern
+#endif
 #endif
 
 #endif  // _MICRO_REGISTERS_H_

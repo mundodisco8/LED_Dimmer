@@ -14,7 +14,6 @@
 // fake `em_gepio` for convenience. Also. note the EXTERN keyword
 #include "micro_registers.h"
 
-
 /* IO definitions (access restrictions to peripheral registers) */
 #define __IOM volatile /*! Defines 'read / write' structure member permissions */
 
@@ -34,7 +33,6 @@ typedef struct {
     GPIO_TIMERROUTE_TypeDef TIMERROUTE_SET[5U]; /**< timer0 DBUS config registers                       */
     GPIO_TIMERROUTE_TypeDef TIMERROUTE_CLR[5U]; /**< timer0 DBUS config registers                       */
 } GPIO_TypeDef;
-
 
 EXTERN GPIO_TypeDef* GPIO;
 

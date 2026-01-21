@@ -2,7 +2,7 @@
 #define EM_DEVICE_H
 
 #if defined(BGM220PC22WGA)
-#    include "bgm220pc22wga.h"
+#include "bgm220pc22wga.h"
 #endif
 
-#endif // EM_DEVICE_H
+#endif  // EM_DEVICE_H

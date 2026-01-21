@@ -8,6 +8,6 @@
  *
  ****************************************************************************************/
 
-#define SL_BT_CONFIG_MAX_SOFTWARE_TIMERS     (4)
+#define SL_BT_CONFIG_MAX_SOFTWARE_TIMERS (4)
 
-#endif // SL_BLUETOOTH_CONFIG_H
+#endif  // SL_BLUETOOTH_CONFIG_H

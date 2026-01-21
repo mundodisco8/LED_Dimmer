@@ -1,9 +1,8 @@
-#include "buttonActions.h"
-
 #include <unity.h>
 
-#include "mock_buttons.h"
+#include "buttonActions.h"
 #include "mock_PWMControl.h"
+#include "mock_buttons.h"
 #include "mock_debounce.h"
 #include "mock_gpio_HW.h"
 #include "mock_sleepyTimers_HW.h"
@@ -24,8 +23,7 @@ void setUp(void) {
     currPercent[2] = 0;
 }
 
-void tearDown(void) {
-}
+void tearDown(void) {}
 
 // gpioCallbackButton
 // The press of a button starts the debounce and sample timers
@@ -45,12 +43,12 @@ void test_gpioCallBackButton(void) {
 // We will need two dummy callback functions to test them
 uint32_t quadCallbackTest = 0;
 void dummy_CWAction(void* ctx) {
-    (void) ctx;
+    (void)ctx;
     quadCallbackTest = 1;
 }
 
 void dummy_CCWAction(void* ctx) {
-    (void) ctx;
+    (void)ctx;
     quadCallbackTest = 2;
 }
 
@@ -77,7 +75,7 @@ void test_gpioCallBackQuad(void) {
 void test_button0Released_ShortPress(void) {
     uint32_t expectedCh = 1;
     button_t testBtn = {.lastPressMs = 1000};
-    uint64_t timeOfRelease = 1100; // mimicks a short press
+    uint64_t timeOfRelease = 1100;  // mimicks a short press
 
     // Set Expectations
     SLP_getSystemTickInMs_ExpectAndReturn(timeOfRelease);
@@ -104,7 +102,7 @@ void test_button0Released_ShortPress(void) {
 // button0 on long press. does nothing, for now
 void test_button0Released_LongPress(void) {
     button_t testBtn = {.lastPressMs = 1000};
-    uint64_t timeOfRelease = 3000; // mimicks a short press
+    uint64_t timeOfRelease = 3000;  // mimicks a short press
 
     // Set Expectations
     SLP_getSystemTickInMs_ExpectAndReturn(timeOfRelease);
@@ -112,9 +110,7 @@ void test_button0Released_LongPress(void) {
 }
 
 // Button 0 Pressed does nothing for now
-void test_button0Pressed(void) {
-    button0Pressed(NULL);
-}
+void test_button0Pressed(void) { button0Pressed(NULL); }
 
 // Test Quad actions
 // Rotating CW increases channel's % by 5, and CCW decreases it
@@ -148,7 +144,7 @@ void test_quad0ClockWise(void) {
 }
 
 void test_quad0CounterClockWise(void) {
-     currPercent[channelIdx] = 83;
+    currPercent[channelIdx] = 83;
     uint32_t expectedPercent = 78;
     CCChannel_t expectedChannel = CC_CHANNEL_0;
 

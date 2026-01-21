@@ -1,19 +1,15 @@
-#include "buttons.h"
-
+#include <string.h>
 #include <unity.h>
 
-#include <string.h>
+#include "buttons.h"
 #include "inttypes.h"
-
 #include "mock_gpio_HW.h"
 #include "mock_interrupt_HW.h"
 #include "mock_sleepyTimers_HW.h"
 
-void setUp() {
-}
+void setUp() {}
 
-void tearDown() {
-}
+void tearDown() {}
 
 ////
 // init Buttons
@@ -73,7 +69,6 @@ void test_initButtons_TimersAreNullPtrs(void) {
 
     retVal = initButton(testPtr, portA, 1, fakePressedAction, fakeReleasedAction);
     TEST_ASSERT_EQUAL_INT32(BTN_NULL_POINTER_PASSED, retVal);
-
 }
 
 ////

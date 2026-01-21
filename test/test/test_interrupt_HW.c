@@ -1,9 +1,11 @@
-#include "interrupt_HW.h"
-
 #include <unity.h>
 
-#include "mock_gpiointerrupt.h"
+// Mock SDK headers
 #include "mock_cmsis_nvic_virtual.h"
+#include "mock_gpiointerrupt.h"
+
+// My header
+#include "interrupt_HW.h"
 
 /***
  * Unit tests for "interrupt_HW.h"
@@ -12,12 +14,9 @@
  * Just trying to cover 100%
  */
 
-void setUp(void) {
-}
+void setUp(void) {}
 
-void tearDown(void) {
-}
-
+void tearDown(void) {}
 
 void test_initialiseInterrupts(void) {
     GPIOINT_Init_Expect();
@@ -26,9 +25,7 @@ void test_initialiseInterrupts(void) {
 }
 
 // dummy callback for testing
-void dummyCallback(uint8_t intNo){
-    (void)intNo;
-}
+void dummyCallback(uint8_t intNo) { (void)intNo; }
 
 void test_setInterruptCallback(void) {
     uint32_t pinNo = 5;
@@ -39,7 +36,7 @@ void test_setInterruptCallback(void) {
 }
 
 // dummy callback with context for testing
-void dummyCallbackWithContext(uint8_t intNo, void *ctx){
+void dummyCallbackWithContext(uint8_t intNo, void* ctx) {
     (void)intNo;
     (void)ctx;
 }
@@ -63,7 +60,6 @@ void test_setInterruptCallback_NoInterruptsAvailable(void) {
 }
 
 void test_enableTimer0Int_CallsNVIC(void) {
-
     NVIC_EnableIRQ_Expect(TIMER0_IRQn);
 
     enableTIMER0Int();

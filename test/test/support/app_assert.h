@@ -8,13 +8,13 @@
  ****************************************************************************************/
 
 #ifdef PRINT_ENABLED
-    #define app_assert_status_f(...)    \
-        do{                             \
-            printf("ASSERTING! ");          \
-            printf (__VA_ARGS__);           \
-    } while(0);
+#define app_assert_status_f(...) \
+    do {                         \
+        printf("ASSERTING! ");   \
+        printf(__VA_ARGS__);     \
+    } while (0);
 #else
-    #define app_assert_status_f(...)
-#endif // PRINT_ENABLED
+#define app_assert_status_f(...)
+#endif  // PRINT_ENABLED
 
-#endif // APP_ASSERT_H
+#endif  // APP_ASSERT_H

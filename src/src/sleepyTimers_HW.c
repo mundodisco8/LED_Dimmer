@@ -1,5 +1,7 @@
 #include "sleepyTimers_HW.h"
 
+#include <stddef.h>
+
 // Silabs SDK headers
 // Ignore a cast-align warning in some cmsis header and a sign conversion in
 // sl_sleeptimer.h

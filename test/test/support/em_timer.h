@@ -7,9 +7,9 @@
  *
  ****************************************************************************************/
 #include <stdbool.h>
-#include "inttypes.h"
 
 #include "em_device.h"
+#include "inttypes.h"
 ////
 // Definition of TIMER0 register
 ////
@@ -149,8 +149,6 @@
 //     __IOM uint32_t DTFAULTC_TGL;  /**< DTI Fault Clear Register                           */
 //     __IOM uint32_t DTLOCK_TGL;    /**< DTI Configuration Lock Register                    */
 // } TIMER_TypeDef;
-
-
 
 // #define initcc
 // #define timerinit

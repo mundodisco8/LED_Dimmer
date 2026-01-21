@@ -1,21 +1,17 @@
-#include "gpio_HW.h"
-
+#include <string.h>
 #include <unity.h>
 
-#include <string.h>
-
-#include "mock_em_gpio.h"
+#include "gpio_HW.h"
 #include "mock_em_cmu.h"
+#include "mock_em_gpio.h"
 
 /*
  * Unit tests for "gpio_HW.h"
  */
 
-void setUp(void) {
-}
+void setUp(void) {}
 
-void tearDown(void) {
-}
+void tearDown(void) {}
 
 ////
 // This library is just a wrapper, so tests are quite straightforward, only filled for 100%
