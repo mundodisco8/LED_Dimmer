@@ -2,11 +2,11 @@
     "folders": [
         {
             "name": "Source",
-            "path": "src"
+            "path": "firmware/Gruffalo_Dimmer"
         },
         {
-            "name": "test",
-            "path": "test"
+            "name": "Ceedling Tests",
+            "path": "firmware/test"
         }
     ],
     "settings": {

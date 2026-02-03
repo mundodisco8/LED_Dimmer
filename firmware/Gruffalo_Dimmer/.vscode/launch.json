@@ -1,0 +1,20 @@
+{
+    "configurations": [
+        {
+            "name": "Gruffalo_Dimmer_silabs_debug",
+            "cwd": "${workspaceFolder}",
+            "type": "cortex-debug",
+            "request": "launch",
+            "serverpath": "C:\\Users\\mundo\\.silabs\\slt\\installs\\archive\\exx32-v6.0.31\\JLinkGDBServerCL.exe",
+            "servertype": "jlink",
+            "gdbPath": "C:\\Users\\mundo\\.silabs\\slt\\installs\\archive\\exx32-v6.0.31\\arm-none-eabi-gdb.exe",
+            "device": "BGM220PC22WGA2",
+            "svdFile": "C:\\Users\\mundo\\AppData\\Local\\Temp\\silabs_extension\\silabs_extension\\svd\\BGM220PC22WGA.svd",
+            "runToEntryPoint": "main",
+            "rtos": "None",
+            "showDevDebugOutput": "raw",
+            "executable": "c:\\Users\\mundo\\OneDrive\\Desktop\\LED_Dimmer\\src\\cmake_gcc\\build\\base\\Gruffalo_Dimmer.out",
+            "serialNumber": "440270126"
+        }
+    ]
+}
