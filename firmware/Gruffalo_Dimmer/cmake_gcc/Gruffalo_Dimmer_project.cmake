@@ -5,10 +5,10 @@ include_directories(
 )
 
 target_sources(Gruffalo_Dimmer PRIVATE
-	"../sl_gatt_service_device_information_override.c"
 	"../src/buttonActions.c"
 	"../src/buttons.c"
 	"../src/debounce.c"
+	"../src/effectControl.c"
 	"../src/gpio_HW.c"
 	"../src/interrupt_HW.c"
 	"../src/PWMControl.c"

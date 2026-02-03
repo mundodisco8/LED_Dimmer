@@ -25,7 +25,7 @@
                 "${workspaceFolder}/simplicity_sdk_2025.6.2/platform/emdrv/common/inc",
                 "${workspaceFolder}/simplicity_sdk_2025.6.2/platform/emlib/inc",
                 "${workspaceFolder}/simplicity_sdk_2025.6.2/platform/radio/rail_lib/plugin/fem_util",
-                "${workspaceFolder}/simplicity_sdk_2025.6.2/app/bluetooth/common/gatt_service_device_information_legacy",
+                "${workspaceFolder}/simplicity_sdk_2025.6.2/app/bluetooth/common/gatt_service_device_information_override",
                 "${workspaceFolder}/simplicity_sdk_2025.6.2/platform/driver/gpio/inc",
                 "${workspaceFolder}/simplicity_sdk_2025.6.2/platform/emdrv/gpiointerrupt/inc",
                 "${workspaceFolder}/simplicity_sdk_2025.6.2/platform/peripheral/inc",

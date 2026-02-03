@@ -24,12 +24,23 @@ target_compile_definitions(Gruffalo_Dimmer PUBLIC
     # Add additional macros here
 )
 
-target_compile_options(Gruffalo_Dimmer PUBLIC
-    # Set additional compiler flags here
-)
-
 target_link_options(Gruffalo_Dimmer PUBLIC
     # Set additional linker flags here
+)
+
+target_compile_options(slc PRIVATE
+    # Set additional compiler flags here - FOR SDK FILES (OR ALL FILES)
+    # NOTE: THIS DON'T OVERRIDE THE FLAGS ALREADY SET ON CMAKELIST.TXT, BUT APPEAR AT THE END OF THE COMMAND, SO AT LEAST
+    # THEY TAKE PRECEDENCE
+    $<$<COMPILE_LANGUAGE:C>:-Og>
+    $<$<COMPILE_LANGUAGE:C>:-ggdb3>
+)
+
+target_compile_options(Gruffalo_Dimmer PRIVATE
+    # Set additional compiler flags here - FOR FILES ADDED ABOVE AS GRUFFALO DIMMER
+    # NOTE: THIS ARE ADDED BEFORE THE SLC OPTIONS, so slc switches might take precedence
+    $<$<COMPILE_LANGUAGE:C>:-Og>
+    $<$<COMPILE_LANGUAGE:C>:-ggdb3>
 )
 
 # Link with the content defined in the SLC project
@@ -51,7 +62,7 @@ add_custom_command(TARGET Gruffalo_Dimmer
     POST_BUILD
     COMMAND ${CMAKE_OBJCOPY} ${OBJCOPY_SREC_CMD} "$<TARGET_FILE:Gruffalo_Dimmer>" "$<TARGET_FILE_DIR:Gruffalo_Dimmer>/$<TARGET_FILE_BASE_NAME:Gruffalo_Dimmer>.s37"
     COMMAND ${CMAKE_OBJCOPY} ${OBJCOPY_IHEX_CMD} "$<TARGET_FILE:Gruffalo_Dimmer>" "$<TARGET_FILE_DIR:Gruffalo_Dimmer>/$<TARGET_FILE_BASE_NAME:Gruffalo_Dimmer>.hex"
-    COMMAND ${CMAKE_OBJCOPY} ${OBJCOPY_BIN_CMD}  "$<TARGET_FILE:Gruffalo_Dimmer>" "$<TARGET_FILE_DIR:Gruffalo_Dimmer>/$<TARGET_FILE_BASE_NAME:Gruffalo_Dimmer>.bin" 
+    COMMAND ${CMAKE_OBJCOPY} ${OBJCOPY_BIN_CMD}  "$<TARGET_FILE:Gruffalo_Dimmer>" "$<TARGET_FILE_DIR:Gruffalo_Dimmer>/$<TARGET_FILE_BASE_NAME:Gruffalo_Dimmer>.bin"
 )
 
 # Run post-build pipeline to perform additional post-processing

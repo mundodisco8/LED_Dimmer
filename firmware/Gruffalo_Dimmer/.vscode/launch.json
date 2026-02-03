@@ -14,6 +14,7 @@
             "rtos": "None",
             "showDevDebugOutput": "raw",
             "executable": "c:\\Users\\mundo\\OneDrive\\Desktop\\LED_Dimmer\\src\\cmake_gcc\\build\\base\\Gruffalo_Dimmer.out",
+            "preLaunchTask": "Gruffalo_Dimmer_silabs_debug_combined",
             "serialNumber": "440270126"
         }
     ]

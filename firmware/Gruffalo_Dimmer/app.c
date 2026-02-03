@@ -85,19 +85,6 @@ button_t button1 = {0};
 quad_encoder_t quad0 = {0};
 quad_encoder_t quad1 = {0};
 
-void TIMER0_IRQHandler(void) {
-    // Acknowledge the interrupt
-    uint32_t flags = TIMER_IntGet(TIMER0);
-    TIMER_IntClear(TIMER0, flags);
-
-    // TODO: only buffer the count for the int that triggered
-
-    // Write OCB to update the duty cycle of the next waveform period
-    TIMER_CompareBufSet(TIMER0, CC_CHANNEL_0, getDutyCycle(CC_CHANNEL_0));
-    TIMER_CompareBufSet(TIMER0, CC_CHANNEL_1, getDutyCycle(CC_CHANNEL_1));
-    TIMER_CompareBufSet(TIMER0, CC_CHANNEL_2, getDutyCycle(CC_CHANNEL_2));
-}
-
 /******************************************************************************
  * Application Init.
  *****************************************************************************/
@@ -135,7 +122,7 @@ void app_init(void) {
     app_assert_status_f((retVal != BTN_OK), "Error configuring Quad 1 interrupts\r\n");
 
     // Init PWM on TIMER0
-    initTimer0PWM(250);
+    initTimer0PWM(1000);
     initTimer0CCChannel(CC_CHANNEL_0, (pinPort_t)pwm0_PORT, pwm0_PIN, PWM_ACTIVE_HIGH);
     initTimer0CCChannel(CC_CHANNEL_1, (pinPort_t)pwm1_PORT, pwm1_PIN, PWM_ACTIVE_HIGH);
     initTimer0CCChannel(CC_CHANNEL_2, (pinPort_t)pwm2_PORT, pwm2_PIN, PWM_ACTIVE_HIGH);

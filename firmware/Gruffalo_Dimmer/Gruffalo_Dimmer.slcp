@@ -44,7 +44,7 @@ component:
 - {id: clock_manager}
 - {id: device_init}
 - {id: gatt_configuration}
-- {id: gatt_service_device_information}
+- {id: gatt_service_device_information_override}
 - {id: gpiointerrupt}
 - instance: [inst]
   id: iostream_eusart
