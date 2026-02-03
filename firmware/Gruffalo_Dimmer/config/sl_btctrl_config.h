@@ -31,7 +31,7 @@
 // <i> Enable or disable the scanner reception early abort feature.
 // <i> This feature allows the controller to control the scanner to abort the reception of a packet if it will conflinct with another scheduled higher priority task.
 #ifndef SL_BT_CONTROLLER_SCANNER_RECEPTION_EARLY_ABORT
-#define SL_BT_CONTROLLER_SCANNER_RECEPTION_EARLY_ABORT (0)
+#define SL_BT_CONTROLLER_SCANNER_RECEPTION_EARLY_ABORT 0
 #endif
 
 // <o SL_BT_CONTROLLER_LINKLAYER_IRQ_PRIORITY> Linklayer interrupt priority in baremetal applications <1..7:1>
@@ -126,7 +126,7 @@
 // <i> This allows connections to overrun lower priority tasks as long as there is data to transmit or receive on the connection,
 // and the maximum connection event length is not reached.
 #ifndef SL_BT_CONTROLLER_CONN_EVENT_LENGTH_EXTENSION
-#define SL_BT_CONTROLLER_CONN_EVENT_LENGTH_EXTENSION (0)
+#define SL_BT_CONTROLLER_CONN_EVENT_LENGTH_EXTENSION 0
 #endif
 // </h> Bluetooth Controller Configuration for LE Connection
 
@@ -146,15 +146,27 @@
 #define SL_BT_CONTROLLER_ADAPTIVITY_MODE     (SL_BTCTRL_CHANNELMAP_FLAG_ACTIVE_ADAPTIVITY)
 #endif
 
-// <o SL_BT_CONTROLLER_PA_CONFIG> Power Amplifier (PA) Configuration
-// <SL_BT_BLUETOOTH_PA_AUTOMODE=> Automode PA configuration
-// <SL_BT_BLUETOOTH_HIGHEST_PA=> Highest available PA configuration
-// <SL_BT_BLUETOOTH_RAIL_UTIL_PA=> RAIL Utility component PA configuration
-// <i> Select the Power Amplifier configuration
-// <i> Default: RAIL Utility component PA configuration
-#ifndef SL_BT_CONTROLLER_PA_CONFIG
-#define SL_BT_CONTROLLER_PA_CONFIG     SL_BT_BLUETOOTH_RAIL_UTIL_PA
-#endif
+// <h> Advertising Configuration
+// <e SL_BT_CONTROLLER_PRIMARY_EXT_PACKET_INCLUDE_TX_POWER> Include TX Power in the extended header of primary extended advertising packets
+// <i> This is default setting to all advertising sets unless it is specifically overridden by VS_SiliconLabs_Set_Advertising_Config_Bits.
+// <i> Default: 0
+// <i> Enabling this option takes effect only if permitted by Le_Set_Extended_Advertising_Parameters
+// <i> According to Link Layer specification, Vol 6, Part B, Table 2.4 and Table 2.5:
+// <i> Optional in 1M PHY when the advertiser is connectable or scannable, or with auxiliary pointer.
+// <i> In other cases, the Extended Advertising TX Power is always optional by settings.
+#define SL_BT_CONTROLLER_PRIMARY_EXT_PACKET_INCLUDE_TX_POWER     (0)
+// </e>
+// <e SL_BT_CONTROLLER_PRIMARY_EXT_PACKET_INCLUDE_ADDRESS> Include Advertiser Address in the header of primary extended advertising packets
+// <i> This is default setting to all advertising sets unless it is specifically overridden by VS_SiliconLabs_Set_Advertising_Config_Bits.
+// <i> Default: 0
+// <i> Enabling this option takes effect only if permitted by Le_Set_Extended_Advertising_Parameters
+// <i> According to Link Layer specification, Vol 6, Part B, Table 2.4 and Table 2.5:
+// <i> Optional in 1M PHY when the advertiser is non-connectable and non-scannable, with auxiliary pointer.
+// <i> Mandatory when the advertiser is non-connectable and non-scannable, without auxiliary pointer.
+// <i> Forbidden when the advertiser is connectable or scannable.
+#define SL_BT_CONTROLLER_PRIMARY_EXT_PACKET_INCLUDE_ADDRESS      (0)
+// </e>
+// </h> Advertising Configuration
 // </h> Bluetooth Controller Configuration
 
 // <<< end of configuration section >>>

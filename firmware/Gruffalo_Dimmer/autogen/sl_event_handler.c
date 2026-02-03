@@ -1,7 +1,7 @@
 #include "sl_event_handler.h"
 
 #include "sl_clock_manager.h"
-#include "pa_conversions_efr32.h"
+#include "sl_rail_util_compatible_pa.h"
 #include "sl_rail_util_power_manager_init.h"
 #include "sl_rail_util_pti.h"
 #include "sl_fem_util.h"

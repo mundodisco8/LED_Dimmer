@@ -30,6 +30,8 @@
 
 #include <sl_common.h>
 #include "sl_bluetooth.h"
+#include "sli_bt_api.h"
+#include "sli_bgapi.h"
 #include "sl_assert.h"
 #include "sl_bt_stack_init.h"
 #include "sl_component_catalog.h"
@@ -70,17 +72,23 @@ void sl_bt_step(void)
 {
   sl_bt_msg_t evt;
 
+  // Run the Bluetooth host stack processing step
   sl_bt_run();
-  uint32_t event_len = sl_bt_event_pending_len();
-  // For preventing from data loss, the event will be kept in the stack's queue
-  // if application cannot process it at the moment.
+
+  // Check the length of the next event, if any, and verify that the application
+  // can process it. To prevent data loss, the event will be kept in the stack's
+  // queue if the application cannot process it at the moment.
+  size_t event_len = sli_bgapi_device_peek_event_len(&sli_bt_bgapi_device);
   if ((event_len == 0) || (!sl_bt_can_process_event(event_len))) {
     return;
   }
 
-  // Pop (non-blocking) a Bluetooth stack event from event queue.
-  sl_status_t status = sl_bt_pop_event(&evt);
-  if(status != SL_STATUS_OK){
+  // Pop the event and process it if successful
+  sl_status_t status = sli_bgapi_device_pop_event(&sli_bt_bgapi_device,
+                                                  sizeof(evt),
+                                                  &evt);
+
+  if (status != SL_STATUS_OK) {
     return;
   }
   sl_bt_process_event(&evt);

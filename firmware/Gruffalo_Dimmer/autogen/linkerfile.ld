@@ -79,13 +79,12 @@ SECTIONS
   {
     . = ALIGN(32);
     __vma_ramfuncs_start__ = .;
-    __text_application_ram_start__ = .;
 
+    /* text_application_ram */
     *(text_application_ram)
 
     . = ALIGN(32);
     __vma_ramfuncs_end__ = .;
-    __text_application_ram_end__ = .;
   } > RAM AT > FLASH
 
   __lma_ramfuncs_start__ = LOADADDR(text_application_ram);
@@ -93,7 +92,6 @@ SECTIONS
 
   .rodata (READONLY):
   {
-    __rodata_end__ = .;
   } > FLASH
 
   .text :
@@ -219,10 +217,8 @@ heap_size = heap_limit - __HeapBase;
     __HeapLimit = ORIGIN(RAM) + LENGTH(RAM);
   } > RAM
 
-  __heap_size = __HeapLimit - __HeapBase;
   __ram_end__ = 0x20000000 + 0x8000;
   __main_flash_end__ = 0x0 + 0x56000;
-
    /* This is where we handle flash storage blocks. We use dummy sections for finding the configured
    * block sizes and then "place" them at the end of flash when the size is known. */
   .internal_storage (DSECT) : {

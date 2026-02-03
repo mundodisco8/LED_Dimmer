@@ -53,6 +53,12 @@
 // <<< sl:start pin_tool >>>
 // <pti signal=DOUT,(DFRAME),(DCLK)> SL_RAIL_UTIL_PTI
 // $[PTI_SL_RAIL_UTIL_PTI]
+#ifndef SL_RAIL_UTIL_PTI_PERIPHERAL             
+#define SL_RAIL_UTIL_PTI_PERIPHERAL              PTI
+#endif
+
+
+
 // [PTI_SL_RAIL_UTIL_PTI]$
 
 // <<< sl:end pin_tool >>>

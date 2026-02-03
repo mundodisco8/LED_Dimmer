@@ -12,35 +12,45 @@ project(
 # which contains the content of the SLC project
 include(Gruffalo_Dimmer.cmake)
 
+# Add local project headers to the slc object library
+# (app.c is compiled into slc and needs to find our headers)
+if(TARGET slc)
+    target_include_directories(slc PUBLIC
+        "${CMAKE_CURRENT_SOURCE_DIR}/../inc"
+    )
+endif()
+
 add_executable(Gruffalo_Dimmer
     # Add additional sources here
+    "${CMAKE_CURRENT_SOURCE_DIR}/../src/PWMControl.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../src/buttonActions.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../src/buttons.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../src/debounce.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../src/gpio_HW.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../src/interrupt_HW.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../src/sleepyTimers_HW.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../src/timer_HW.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../src/effectControl.c"
+
 )
 
+# These are includes for the files in the Gruffalo_Dimmer executable, the slc won't get them
 target_include_directories(Gruffalo_Dimmer PUBLIC
     # Add additional include paths here
+    "${CMAKE_CURRENT_SOURCE_DIR}/../inc"
+    # "${CMAKE_CURRENT_SOURCE_DIR}/../src"
 )
 
 target_compile_definitions(Gruffalo_Dimmer PUBLIC
     # Add additional macros here
 )
 
+target_compile_options(Gruffalo_Dimmer PUBLIC
+    # Set additional compiler flags here
+)
+
 target_link_options(Gruffalo_Dimmer PUBLIC
     # Set additional linker flags here
-)
-
-target_compile_options(slc PRIVATE
-    # Set additional compiler flags here - FOR SDK FILES (OR ALL FILES)
-    # NOTE: THIS DON'T OVERRIDE THE FLAGS ALREADY SET ON CMAKELIST.TXT, BUT APPEAR AT THE END OF THE COMMAND, SO AT LEAST
-    # THEY TAKE PRECEDENCE
-    $<$<COMPILE_LANGUAGE:C>:-Og>
-    $<$<COMPILE_LANGUAGE:C>:-ggdb3>
-)
-
-target_compile_options(Gruffalo_Dimmer PRIVATE
-    # Set additional compiler flags here - FOR FILES ADDED ABOVE AS GRUFFALO DIMMER
-    # NOTE: THIS ARE ADDED BEFORE THE SLC OPTIONS, so slc switches might take precedence
-    $<$<COMPILE_LANGUAGE:C>:-Og>
-    $<$<COMPILE_LANGUAGE:C>:-ggdb3>
 )
 
 # Link with the content defined in the SLC project

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="ASCII"?>
 <model:MDescriptors xmlns:model="http://www.silabs.com/ss/Studio.ecore">
   <descriptors name="Gruffalo_Dimmer">
-    <properties key="projectCommon.sdkId" value="com.silabs.sdk.stack.sisdk:2025.6.2._-641063553"/>
+    <properties key="projectCommon.sdkId" value="com.silabs.sdk.stack.sisdk:2025.12.0._818804327-563987568"/>
     <properties key="universalConfig.relativeWorkspacePath" value="..\Gruffalo_Dimmer.slcw"/>
     <properties key="universalConfig.generationDirectory" value=""/>
-    <properties key="universalConfig.toolchainCompatibility" value="iar gcc"/>
+    <properties key="universalConfig.toolchainCompatibility" value="iar llvm gcc"/>
     <properties key="projectCommon.boardIds" value="com.silabs.board.none:0.0.0"/>
     <properties key="projectCommon.kitId" value=""/>
     <properties key="projectCommon.partId" value="mcu.arm.efr32.bg22.bgm220pc22wga"/>
@@ -13,5 +13,6 @@
     <properties key="projectCommon.importModeId" value="COPY"/>
     <properties key="universalConfig.compSelProjInstanceId" value="1727294983968"/>
     <properties key="projectCommon.overwriteCopiedSources" value="false"/>
+    <properties key="universalConfig.previousSdkId" value="com.silabs.sdk.stack.sisdk:2025.6.2._-641063553"/>
   </descriptors>
 </model:MDescriptors>
