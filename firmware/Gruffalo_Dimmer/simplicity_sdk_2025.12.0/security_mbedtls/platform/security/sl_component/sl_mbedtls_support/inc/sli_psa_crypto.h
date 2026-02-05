@@ -42,7 +42,7 @@
 // Pragmas
 
 #if SL_MBEDTLS_PSA_ASSUME_EXCLUSIVE_BUFFERS == 1
-// Commenting this to ignore the warning
+// Silencing this message because I don't care about security and like memory efficiency
 // #pragma message("SL_MBEDTLS_PSA_ASSUME_EXCLUSIVE_BUFFERS=1: This improves performance by avoiding extra buffer copies, reducing memory usage and allocation overhead. However, it is NOT the most secure option and should only be enabled if all buffers passed to PSA functions are exclusively accessible to PSA and never shared with untrusted code. If buffers may cross trust boundaries, set this to 0 for best security, as disabling this option ensures input and output buffers are protected by making local copies at the cost of increased memory usage and reduced performance.")
 #endif
 

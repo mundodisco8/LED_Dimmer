@@ -12,33 +12,12 @@ project(
 # which contains the content of the SLC project
 include(Gruffalo_Dimmer.cmake)
 
-# Add local project headers to the slc object library
-# (app.c is compiled into slc and needs to find our headers)
-if(TARGET slc)
-    target_include_directories(slc PUBLIC
-        "${CMAKE_CURRENT_SOURCE_DIR}/../inc"
-    )
-endif()
-
 add_executable(Gruffalo_Dimmer
     # Add additional sources here
-    "${CMAKE_CURRENT_SOURCE_DIR}/../src/PWMControl.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/../src/buttonActions.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/../src/buttons.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/../src/debounce.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/../src/gpio_HW.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/../src/interrupt_HW.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/../src/sleepyTimers_HW.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/../src/timer_HW.c"
-    "${CMAKE_CURRENT_SOURCE_DIR}/../src/effectControl.c"
-
 )
 
-# These are includes for the files in the Gruffalo_Dimmer executable, the slc won't get them
 target_include_directories(Gruffalo_Dimmer PUBLIC
     # Add additional include paths here
-    "${CMAKE_CURRENT_SOURCE_DIR}/../inc"
-    # "${CMAKE_CURRENT_SOURCE_DIR}/../src"
 )
 
 target_compile_definitions(Gruffalo_Dimmer PUBLIC
@@ -72,7 +51,7 @@ add_custom_command(TARGET Gruffalo_Dimmer
     POST_BUILD
     COMMAND ${CMAKE_OBJCOPY} ${OBJCOPY_SREC_CMD} "$<TARGET_FILE:Gruffalo_Dimmer>" "$<TARGET_FILE_DIR:Gruffalo_Dimmer>/$<TARGET_FILE_BASE_NAME:Gruffalo_Dimmer>.s37"
     COMMAND ${CMAKE_OBJCOPY} ${OBJCOPY_IHEX_CMD} "$<TARGET_FILE:Gruffalo_Dimmer>" "$<TARGET_FILE_DIR:Gruffalo_Dimmer>/$<TARGET_FILE_BASE_NAME:Gruffalo_Dimmer>.hex"
-    COMMAND ${CMAKE_OBJCOPY} ${OBJCOPY_BIN_CMD}  "$<TARGET_FILE:Gruffalo_Dimmer>" "$<TARGET_FILE_DIR:Gruffalo_Dimmer>/$<TARGET_FILE_BASE_NAME:Gruffalo_Dimmer>.bin"
+    COMMAND ${CMAKE_OBJCOPY} ${OBJCOPY_BIN_CMD}  "$<TARGET_FILE:Gruffalo_Dimmer>" "$<TARGET_FILE_DIR:Gruffalo_Dimmer>/$<TARGET_FILE_BASE_NAME:Gruffalo_Dimmer>.bin" 
 )
 
 # Run post-build pipeline to perform additional post-processing

@@ -1,17 +1,3 @@
 {
-    "workbench.colorCustomizations": {
-        "activityBar.activeBackground": "#ffde57",
-        "activityBar.background": "#ffde57",
-        "activityBar.foreground": "#15202b",
-        "activityBar.inactiveForeground": "#15202b99",
-        "activityBarBadge.background": "#009f80",
-        "activityBarBadge.foreground": "#e7e7e7",
-        "sash.hoverBorder": "#ffde57",
-        "statusBar.background": "#ffde57",
-        "statusBar.foreground": "#15202b",
-        "statusBarItem.hoverBackground": "#ffd424",
-        "statusBarItem.remoteBackground": "#ffde57",
-        "statusBarItem.remoteForeground": "#15202b"
-    },
-    "cmake.sourceDirectory": "C:/Users/mundo/OneDrive/Desktop/LED_Dimmer/src/cmake_gcc"
+    "cmake.sourceDirectory": "C:/Users/mundo/OneDrive/Desktop/LED_Dimmer/firmware/Gruffalo_Dimmer/cmake_gcc"
 }

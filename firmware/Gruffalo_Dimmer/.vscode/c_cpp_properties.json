@@ -75,7 +75,9 @@
                 "${workspaceFolder}/simplicity_sdk_2025.12.0/security_mbedtls/platform/security/sl_component/sli_crypto/inc",
                 "${workspaceFolder}/simplicity_sdk_2025.12.0/security_mbedtls/platform/security/sl_component/sl_protocol_crypto/src",
                 "${workspaceFolder}/simplicity_sdk_2025.12.0/security_se_manager/platform/security/sl_component/sli_psec_osal/inc",
-                "${workspaceFolder}/simplicity_sdk_2025.12.0/platform_core/platform/service/udelay/inc"
+                "${workspaceFolder}/simplicity_sdk_2025.12.0/platform_core/platform/service/udelay/inc",
+                "${workspaceFolder}/inc",
+                "${workspaceFolder}/src"
             ],
             "defines": [
                 "BGM220PC22WGA=1",

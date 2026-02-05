@@ -53,7 +53,6 @@ component:
 - {package: simplicity_sdk, vendor: silabs, id: mpu}
 - {package: simplicity_sdk, vendor: silabs, id: rail_util_pti}
 - {package: simplicity_sdk, vendor: silabs, id: sl_system}
-- {id: BGM220PC22WGA}
 other_file:
 - {path: image/readme_img0.png}
 - {path: image/readme_img1.png}
