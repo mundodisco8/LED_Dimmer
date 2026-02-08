@@ -71,6 +71,7 @@
 #include "PWMControl.h"
 #include "buttonActions.h"
 #include "buttons.h"
+#include "effectControl.h"
 #include "gpio_HW.h"
 #include "timer_HW.h"
 
@@ -84,6 +85,9 @@ button_t button1 = {0};
 // And our quad encoders
 quad_encoder_t quad0 = {0};
 quad_encoder_t quad1 = {0};
+
+// Used in the interrupt to signal we have to process the LED Effects
+volatile bool processLEDEffects = true;
 
 /******************************************************************************
  * Application Init.
@@ -127,9 +131,7 @@ void app_init(void) {
     initTimer0CCChannel(CC_CHANNEL_1, (pinPort_t)pwm1_PORT, pwm1_PIN, PWM_ACTIVE_HIGH);
     initTimer0CCChannel(CC_CHANNEL_2, (pinPort_t)pwm2_PORT, pwm2_PIN, PWM_ACTIVE_HIGH);
 
-    setDutyCycle(CC_CHANNEL_0, 80);
-    setDutyCycle(CC_CHANNEL_1, 80);
-    setDutyCycle(CC_CHANNEL_2, 80);
+    initLEDStrips();
 }
 
 /******************************************************************************
@@ -155,18 +157,10 @@ void app_process_action(void) {
     // uint32_t b = 2;
     // app_assert_s(a == b);
 
-    // static bool pin0status = false;
-    // static bool pin1status = false;
-    // bool newPin0status = GPIO_PinInGet(quad0_0_PORT, quad0_0_PIN);
-    // bool newPin1status = GPIO_PinInGet(quad0_1_PORT, quad0_1_PIN);
-    // if (newPin0status != pin0status) {
-    //     app_log_debug("Pin 0 %d\r\n", newPin0status);
-    //     pin0status = newPin0status;
-    // }
-    // if (newPin1status != pin1status) {
-    //     app_log_debug("Pin 1 %d\r\n", newPin1status);
-    //     pin1status = newPin1status;
-    // }
+    if (processLEDEffects) {
+        processLEDEffects = false;
+        effectControlLoop();
+    }
 }
 
 /******************************************************************************
@@ -249,5 +243,19 @@ void sl_bt_on_event(sl_bt_msg_t* evt) {
         // Default event handler.
         default:
             break;
+    }
+}
+
+// Handles the overflow interrupt on TIMER0
+void TIMER0_IRQHandler(void) {
+    // Acknowledge the interrupt
+    uint32_t flags = TIMER_IntGet(TIMER0);
+    TIMER_IntClear(TIMER0, flags);
+
+    // There's a single OF interrupt per timer as there's only a single TOP value (The COUNT value can change and thus
+    // there are CCn interrupt flags). We only care about the OF interrupt (at least for now)
+
+    if (!processLEDEffects) {
+        processLEDEffects = true;
     }
 }

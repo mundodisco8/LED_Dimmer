@@ -1,11 +1,7 @@
 #ifndef _TIMER_HW_TYPES_H_
 #define _TIMER_HW_TYPES_H_
 
-typedef enum CCChannel {
-    CC_CHANNEL_0 = 0,
-    CC_CHANNEL_1 = 1,
-    CC_CHANNEL_2 = 2,
-} CCChannel_t;
+typedef enum CCChannel { CC_CHANNEL_0 = 0, CC_CHANNEL_1 = 1, CC_CHANNEL_2 = 2, CC_MAX_CHANNELS } CCChannel_t;
 
 typedef enum timerStatus {
     TIMER_OK = 0,

@@ -29,9 +29,15 @@ void TIMHW_stopTimer0(void);
 // Sets the value of the Compare Register (unbuffered)
 timerStatus_t TIMHW_setT0ChannelOutputCompare(CCChannel_t channel, uint32_t compareValue);
 // Sets the value of the buffered Compare Register (buffered). The change will be effective on the
-timerStatus_t TIMHW_setT0ChannelBufferedOutputCompare(CCChannel_t channel, uint32_t compareValue);
+timerStatus_t TIMHW_setT0ChannelOutputCompareBuffered(CCChannel_t channel, uint32_t compareValue);
+/**
+ * @brief gets the Compare / Capture value (NOTE: ACTUAL VALUE, NOT THE BUFFER)
+ */
+uint32_t TIMHW_getTimer0CompareValue(const CCChannel_t channel);
+
+timerStatus_t TIMHW_setTimer0TopValue(const uint32_t top);
 // Set the value of the TOP register on TIMER0
-timerStatus_t TIMHW_setTimer0TopValue(uint32_t top);
+timerStatus_t TIMHW_setTimer0TopValueBuffered(const uint32_t top);
 // Gets the value of the TOP register on TIMER0
 uint32_t TIMHW_getTimer0TopValue(void);
 // Returns the clock frequency of TIMER0

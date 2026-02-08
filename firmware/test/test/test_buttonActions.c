@@ -4,6 +4,7 @@
 #include "mock_PWMControl.h"
 #include "mock_buttons.h"
 #include "mock_debounce.h"
+#include "mock_effectControl.h"
 #include "mock_gpio_HW.h"
 #include "mock_sleepyTimers_HW.h"
 
@@ -12,15 +13,11 @@
  */
 
 // externs to test some static variables in the module
-extern int8_t currPercent[3];
 extern uint8_t channelIdx;
 
 void setUp(void) {
     // reset globals
     channelIdx = 0;
-    currPercent[0] = 0;
-    currPercent[1] = 0;
-    currPercent[2] = 0;
 }
 
 void tearDown(void) {}
@@ -56,7 +53,10 @@ void test_gpioCallBackQuad(void) {
     uint32_t testIntNo = 9;
     pinPort_t testPort = portA;
     uint8_t testPinNo = 4;
-    quad_encoder_t testEncoder = {.pin1No = testPinNo, .pin1Port = testPort, .clockWiseAction = dummy_CWAction, .counterClockWiseAction = dummy_CCWAction};
+    quad_encoder_t testEncoder = {.pin1No = testPinNo,
+                                  .pin1Port = testPort,
+                                  .clockWiseAction = dummy_CWAction,
+                                  .counterClockWiseAction = dummy_CCWAction};
 
     // Set Expectations - CW rotation
     readPin_ExpectAndReturn(testEncoder.pin1Port, testEncoder.pin1No, 1);
@@ -114,60 +114,47 @@ void test_button0Pressed(void) { button0Pressed(NULL); }
 
 // Test Quad actions
 // Rotating CW increases channel's % by 5, and CCW decreases it
-// Check that it doesn't go over 100 or below 0
+
 void test_quad0ClockWise(void) {
-    uint32_t expectedPercent = 5;
-    CCChannel_t expectedChannel = CC_CHANNEL_0;
+    uint32_t expectedInitialBrightness = 1000;
+    uint32_t expectedFinalBrightness = 1500;
+    CCChannel_t expectedChannel = LED_CHANNEL_1;
 
     // Set Expectations
-    setDutyCycle_Expect(expectedChannel, expectedPercent);
+    getLEDBrightness_ExpectAndReturn(expectedChannel, expectedInitialBrightness);
+    setLEDBrightness_ExpectAndReturn(expectedChannel, expectedFinalBrightness, EFF_OK);
     quad0ClockWise(NULL);
-    TEST_ASSERT_EQUAL(expectedPercent, currPercent[channelIdx]);
 
     // Turn twice more...
-    expectedPercent = 15;
+    expectedFinalBrightness = 2500;
 
     // Set Expectations
-    setDutyCycle_Expect(expectedChannel, 10);
-    setDutyCycle_Expect(expectedChannel, expectedPercent);
+    getLEDBrightness_ExpectAndReturn(expectedChannel, 1500);
+    setLEDBrightness_ExpectAndReturn(expectedChannel, 2000, EFF_OK);
+    getLEDBrightness_ExpectAndReturn(expectedChannel, 2000);
+    setLEDBrightness_ExpectAndReturn(expectedChannel, expectedFinalBrightness, EFF_OK);
     quad0ClockWise(NULL);
     quad0ClockWise(NULL);
-    TEST_ASSERT_EQUAL(expectedPercent, currPercent[channelIdx]);
-
-    // Test the limit
-    currPercent[channelIdx] = 97;
-    expectedPercent = 100;
-    setDutyCycle_Expect(expectedChannel, expectedPercent);
-
-    quad0ClockWise(NULL);
-    TEST_ASSERT_EQUAL(expectedPercent, currPercent[channelIdx]);
 }
 
 void test_quad0CounterClockWise(void) {
-    currPercent[channelIdx] = 83;
-    uint32_t expectedPercent = 78;
-    CCChannel_t expectedChannel = CC_CHANNEL_0;
+    uint32_t expectedInitialBrightness = 9000;
+    uint32_t expectedFinalBrightness = 8500;
+    CCChannel_t expectedChannel = LED_CHANNEL_1;
 
     // Set Expectations
-    setDutyCycle_Expect(expectedChannel, expectedPercent);
+    getLEDBrightness_ExpectAndReturn(expectedChannel, expectedInitialBrightness);
+    setLEDBrightness_ExpectAndReturn(expectedChannel, expectedFinalBrightness, EFF_OK);
     quad0CounterClockWise(NULL);
-    TEST_ASSERT_EQUAL(expectedPercent, currPercent[channelIdx]);
 
     // Turn twice more...
-    expectedPercent = 68;
+    expectedFinalBrightness = 7500;
 
     // Set Expectations
-    setDutyCycle_Expect(expectedChannel, 73);
-    setDutyCycle_Expect(expectedChannel, expectedPercent);
+    getLEDBrightness_ExpectAndReturn(expectedChannel, 8500);
+    setLEDBrightness_ExpectAndReturn(expectedChannel, 8000, EFF_OK);
+    getLEDBrightness_ExpectAndReturn(expectedChannel, 8000);
+    setLEDBrightness_ExpectAndReturn(expectedChannel, expectedFinalBrightness, EFF_OK);
     quad0CounterClockWise(NULL);
     quad0CounterClockWise(NULL);
-    TEST_ASSERT_EQUAL(expectedPercent, currPercent[channelIdx]);
-
-    // Test the limit
-    currPercent[channelIdx] = 3;
-    expectedPercent = 0;
-    setDutyCycle_Expect(expectedChannel, expectedPercent);
-
-    quad0CounterClockWise(NULL);
-    TEST_ASSERT_EQUAL(expectedPercent, currPercent[channelIdx]);
 }

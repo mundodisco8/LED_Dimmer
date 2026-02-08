@@ -19,6 +19,7 @@
 #include "PWMControl.h"
 #include "buttons.h"
 #include "debounce.h"
+#include "effectControl.h"
 #include "gpio_HW.h"
 #include "sleepyTimers_HW.h"
 
@@ -29,8 +30,23 @@
 #define STATIC static
 #endif
 
+////
+// Defines and Consts
+////
+
+/**
+ * @brief Increase in brightness triggered by button actions
+ */
+static const uint32_t BRIGHTNESS_DELTA = 500UL;  // in percent with two decimals -> 5%
+
 static const uint32_t LONG_PRESS_DELTA =
-    1000;  // Time delta in ms from button press to button release to consider it a long press
+    1000UL;  // Time delta in ms from button press to button release to consider it a long press
+
+/**
+ * @brief A silly way to keep track of which channel is selected via push-buttons
+ */
+static const LEDChannel_t currChannel[PWM_CHANNELS] = {LED_CHANNEL_1, LED_CHANNEL_2, LED_CHANNEL_3};
+STATIC uint8_t channelIdx = 0UL;  // currently selected channel, used to know where to apply changes
 
 // TODO: Maybe we can store errors in some variables, and then check for interrutp
 // errors in the main loop?
@@ -55,10 +71,6 @@ void gpioCallbackQuad(uint8_t intNo, void* ctx) {
     }
 }
 
-STATIC int8_t currPercent[3] = {0, 0, 0};
-STATIC CCChannel_t currChannel[3] = {CC_CHANNEL_0, CC_CHANNEL_1, CC_CHANNEL_2};
-STATIC uint8_t channelIdx = 0;
-
 void button0Pressed(void* ctx) {
     (void)ctx;
     // app_log_debug("Btn0 Pressed\r\n");
@@ -75,7 +87,7 @@ void button0Released(void* ctx) {
     } else {
         // Short Press
         channelIdx++;
-        if (channelIdx > 2) {
+        if (channelIdx >= (uint8_t)CC_MAX_CHANNELS) {
             channelIdx = 0;
         }
         app_log_info("Set Ch%d\r\n", channelIdx);
@@ -84,20 +96,25 @@ void button0Released(void* ctx) {
 
 void quad0ClockWise(void* ctx) {
     (void)ctx;
-    currPercent[channelIdx] += 5;
-    if (currPercent[channelIdx] > 100) {
-        currPercent[channelIdx] = 100;
+    const uint32_t currBrightness = getLEDBrightness(currChannel[channelIdx]);
+    if (currBrightness < MAX_BRIGHTNESS) {
+        // Only trigger an action if brightness is less than 100%
+        const uint32_t newBrightness = getLEDBrightness(currChannel[channelIdx]) + BRIGHTNESS_DELTA;
+        // No need to check return
+        uint32_t setValue = setLEDBrightness(channelIdx, newBrightness);
+        app_log_info("Set Ch%d PWM to %" PRIu32 "\r\n", channelIdx, setValue);
     }
-    app_log_info("Set Ch%d PWM to %d\r\n", channelIdx, currPercent[channelIdx]);
-    setDutyCycle(currChannel[channelIdx], currPercent[channelIdx]);
 }
 
 void quad0CounterClockWise(void* ctx) {
     (void)ctx;
-    currPercent[channelIdx] -= 5;
-    if (currPercent[channelIdx] < 0) {
-        currPercent[channelIdx] = 0;
+
+    const uint32_t currBrightness = getLEDBrightness(currChannel[channelIdx]);
+    if (currBrightness > MIN_BRIGHTNESS) {
+        const uint32_t newBrightness = getLEDBrightness(currChannel[channelIdx]) - BRIGHTNESS_DELTA;
+        // No need to check return
+        uint32_t setValue = setLEDBrightness(channelIdx, newBrightness);
+
+        app_log_info("Set Ch%d PWM to %" PRIu32 "\r\n", channelIdx, setValue);
     }
-    app_log_info("Set Ch%d PWM to %d\r\n", channelIdx, currPercent[channelIdx]);
-    setDutyCycle(currChannel[channelIdx], currPercent[channelIdx]);
 }

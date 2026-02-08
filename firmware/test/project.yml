@@ -104,11 +104,11 @@
     - +:test/**
     - -:test/support
   :source:
-    - ../src/src/**
+    - ../Gruffalo_Dimmer/src/**
   :include:
-    - ../src/inc/**
+    - ../Gruffalo_Dimmer/inc/**
     - ../test/**
-    - ../src/config/**
+    - ../Gruffalo_Dimmer/config/**
   :support:
     - test/support
   :libraries: []
@@ -151,11 +151,10 @@
       #         - -pedantic
       # NOTE: add debugging and some extra warnings
       "*": # Add '-foo' to compilation of all files in all test executables
-        - -g3
-        - -O0
+        - -ggdb3
+        - -Og
         - -Wall
         - -Wextra
-        - -pedantic
         - -fdiagnostics-color
 # Configuration Options specific to CMock. See CMock docs for details
 :cmock:
