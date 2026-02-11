@@ -137,6 +137,16 @@ void test_quad0ClockWise(void) {
     quad0ClockWise(NULL);
 }
 
+void test_quad0ClockWise_MaxBrightness(void) {
+    uint32_t expectedInitialBrightness = MAX_BRIGHTNESS;
+    CCChannel_t expectedChannel = LED_CHANNEL_1;
+
+    // Set Expectations
+    getLEDBrightness_ExpectAndReturn(expectedChannel, expectedInitialBrightness);
+
+    quad0ClockWise(NULL);
+}
+
 void test_quad0CounterClockWise(void) {
     uint32_t expectedInitialBrightness = 9000;
     uint32_t expectedFinalBrightness = 8500;
@@ -156,5 +166,15 @@ void test_quad0CounterClockWise(void) {
     getLEDBrightness_ExpectAndReturn(expectedChannel, 8000);
     setLEDBrightness_ExpectAndReturn(expectedChannel, expectedFinalBrightness, EFF_OK);
     quad0CounterClockWise(NULL);
+    quad0CounterClockWise(NULL);
+}
+
+void test_quad0CounterClockWise_MinBrightness(void) {
+    uint32_t expectedInitialBrightness = MIN_BRIGHTNESS;
+    CCChannel_t expectedChannel = LED_CHANNEL_1;
+
+    // Set Expectations
+    getLEDBrightness_ExpectAndReturn(expectedChannel, expectedInitialBrightness);
+
     quad0CounterClockWise(NULL);
 }

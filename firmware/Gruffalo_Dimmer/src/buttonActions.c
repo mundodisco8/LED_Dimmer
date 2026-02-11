@@ -99,7 +99,7 @@ void quad0ClockWise(void* ctx) {
     const uint32_t currBrightness = getLEDBrightness(currChannel[channelIdx]);
     if (currBrightness < MAX_BRIGHTNESS) {
         // Only trigger an action if brightness is less than 100%
-        const uint32_t newBrightness = getLEDBrightness(currChannel[channelIdx]) + BRIGHTNESS_DELTA;
+        const uint32_t newBrightness = currBrightness + BRIGHTNESS_DELTA;
         // No need to check return
         uint32_t setValue = setLEDBrightness(channelIdx, newBrightness);
         app_log_info("Set Ch%d PWM to %" PRIu32 "\r\n", channelIdx, setValue);
@@ -111,7 +111,7 @@ void quad0CounterClockWise(void* ctx) {
 
     const uint32_t currBrightness = getLEDBrightness(currChannel[channelIdx]);
     if (currBrightness > MIN_BRIGHTNESS) {
-        const uint32_t newBrightness = getLEDBrightness(currChannel[channelIdx]) - BRIGHTNESS_DELTA;
+        const uint32_t newBrightness = currBrightness - BRIGHTNESS_DELTA;
         // No need to check return
         uint32_t setValue = setLEDBrightness(channelIdx, newBrightness);
 

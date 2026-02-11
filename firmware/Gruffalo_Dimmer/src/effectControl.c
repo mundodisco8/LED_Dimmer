@@ -47,16 +47,6 @@ const uint32_t DEFAULT_LED_BRIGHTNESS = 5000UL;
  */
 STATIC uint16_t gausianBreatheLUT[BREATHE_LUT_SIZE] = {0UL};
 
-// // instances of brightness control structs
-// STATIC brightnessControl_t brightnessCh1 = {.targetBrightness = 0};
-// STATIC brightnessControl_t brightnessCh2 = {.targetBrightness = 0};
-// STATIC brightnessControl_t brightnessCh3 = {.targetBrightness = 0};
-
-// // Instances of breathe effects for each channel
-// STATIC breatheControl_t breatheCh1 = {.periodms = 0UL};
-// STATIC breatheControl_t breatheCh2 = {.periodms = 0UL};
-// STATIC breatheControl_t breatheCh3 = {.periodms = 0UL};
-
 // Default parameters of the breathe effect, in case none are provided
 breatheParams_t defaultParams = {.maxBrightness = MAX_BRIGHTNESS,
                                  .minBrightness = MIN_BRIGHTNESS,
@@ -251,10 +241,6 @@ STATIC void effectControl_ChangeBrightness(CCChannel_t channel) {
         uint32_t diff =
             labs(((int32_t)targetCompare - (int32_t)currentCompare));  // we will use this result a couple of times
 
-        //
-        // if diff == 0
-        //
-
         uint32_t delta = diff / PWMFreq;
         // If PWM freq is bigger than the difference between levels, then delta would be 0. In that case we would step at
         // the minimum delta of 1
@@ -273,7 +259,7 @@ STATIC void effectControl_ChangeBrightness(CCChannel_t channel) {
     } else if (currentCompare < targetCompare) {
         // Increase towards target
         TIMHW_setT0ChannelOutputCompareBuffered(channel, currentCompare + LED_ptr->brightnessCtrl.delta);
-    }
+    }  // and if both are equal, don't do anything
 }
 
 void effectControlLoop(void) {
