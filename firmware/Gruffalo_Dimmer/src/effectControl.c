@@ -47,10 +47,15 @@ const uint32_t DEFAULT_LED_BRIGHTNESS = 5000UL;
  */
 STATIC uint16_t gausianBreatheLUT[BREATHE_LUT_SIZE] = {0UL};
 
-// Instances of breathe effects for each channel
-STATIC breatheControl_t breatheCh1 = {.periodms = 0UL};
-STATIC breatheControl_t breatheCh2 = {.periodms = 0UL};
-STATIC breatheControl_t breatheCh3 = {.periodms = 0UL};
+// // instances of brightness control structs
+// STATIC brightnessControl_t brightnessCh1 = {.targetBrightness = 0};
+// STATIC brightnessControl_t brightnessCh2 = {.targetBrightness = 0};
+// STATIC brightnessControl_t brightnessCh3 = {.targetBrightness = 0};
+
+// // Instances of breathe effects for each channel
+// STATIC breatheControl_t breatheCh1 = {.periodms = 0UL};
+// STATIC breatheControl_t breatheCh2 = {.periodms = 0UL};
+// STATIC breatheControl_t breatheCh3 = {.periodms = 0UL};
 
 // Default parameters of the breathe effect, in case none are provided
 breatheParams_t defaultParams = {.maxBrightness = MAX_BRIGHTNESS,
@@ -89,22 +94,25 @@ void fillBreatheEffectLUT(const breatheParams_t* effectParams_ptr) {
 efferr_t initLEDStrips(void) {
     // No need to pass anything to it as we are initting all the strips we have to default values
     LED_t* channels[3] = {&LEDCh1, &LEDCh2, &LEDCh3};
-    breatheControl_t* breatheControl[3] = {&breatheCh1, &breatheCh2, &breatheCh3};
+    // breatheControl_t* breatheCtrlArray[3] = {&breatheCh1, &breatheCh2, &breatheCh3};
+    // brightnessControl_t* brightnessCtrlArray = {&brightnessCh1, &brightnessCh2, &brightnessCh3};
+
     for (uint32_t i = 0; i < NUM_LED_CHANNELS; i++) {
         // Get next pointer fron the list of channels
         LED_t* currChannel_ptr = channels[i];
         // Set animation to fixed brightness
         currChannel_ptr->currAnimation = ANIM_FIXED;
-        // Set brightness to starting default
-        currChannel_ptr->targetBrightness = DEFAULT_LED_BRIGHTNESS;
+        // Set brightness to starting default, and set the brightness Change Request Flag
+        currChannel_ptr->brightnessCtrl.targetBrightness = DEFAULT_LED_BRIGHTNESS;
+        currChannel_ptr->brightnessCtrl.delta = 0;  // will be calculated in the effect control loop
+        currChannel_ptr->brightnessCtrl.brightChangeRequestedFlag = true;
         // Set PWM period from clock. multiplied by 1000 to get ms
         currChannel_ptr->pmwPeriodms = 1000UL / (getPWMFrequency());
-        // Init breatheControl_t for that LED and associate
-        currChannel_ptr->breathe_ptr = breatheControl[i];
-        currChannel_ptr->breathe_ptr->periodms = 0;
-        currChannel_ptr->breathe_ptr->wavesPerSample = 0;
-        currChannel_ptr->breathe_ptr->currWave = 0;
-        currChannel_ptr->breathe_ptr->currLUTIndex = 0;
+        // Init breatheControl_t for that LED, set to 0 as we are starting with fixed brightness
+        currChannel_ptr->breatheCtrl.periodms = 0;
+        currChannel_ptr->breatheCtrl.wavesPerSample = 0;
+        currChannel_ptr->breatheCtrl.currWave = 0;
+        currChannel_ptr->breatheCtrl.currLUTIndex = 0;
     }
 
     return EFF_OK;
@@ -157,14 +165,15 @@ uint32_t setLEDBrightness(const LEDChannel_t channel, uint32_t percent) {
         percent = MAX_BRIGHTNESS;
     }
 
-    LED_ptr->targetBrightness = percent;
+    LED_ptr->brightnessCtrl.targetBrightness = percent;
+    LED_ptr->brightnessCtrl.brightChangeRequestedFlag = true;
 
     return percent;
 }
 
 uint32_t getLEDBrightness(const LEDChannel_t channel) {
     // No need to check valid return because it asserts on invalid channel
-    return getLEDStruct(channel)->targetBrightness;
+    return getLEDStruct(channel)->brightnessCtrl.targetBrightness;
 }
 
 /**
@@ -194,9 +203,9 @@ efferr_t breatheSetPeriod(const LEDChannel_t channelNo, const uint32_t newPeriod
     // I think the best way to tackle this is to store the "non-integer period" and approximate the wavesPerSample. This
     // means that out period would potentially not match the real one, but the margin of error is within
     // nSamplesLUT * Tpwm / 2 ms
-    LED_ptr->breathe_ptr->periodms = newPeriodms;
+    LED_ptr->breatheCtrl.periodms = newPeriodms;
     // Set wavesPerSample: round result to nearest "wavePerSample"
-    LED_ptr->breathe_ptr->wavesPerSample = lroundf(((float)newPeriodms) / (BREATHE_LUT_SIZE * LED_ptr->pmwPeriodms));
+    LED_ptr->breatheCtrl.wavesPerSample = lroundf(((float)newPeriodms) / (BREATHE_LUT_SIZE * LED_ptr->pmwPeriodms));
     // if we abruptly drop newPeriod, we might find ourselves in a situation where currWave is > than wavesPerSample.
     // This should be handled by the interrupt code, so there are no glitches. I could patch this by setting it to
     // currWave = wavesPerSample - 1 to trigger a buffered COMP at the next wave, but I will leave it for now as it is.
@@ -226,33 +235,44 @@ STATIC void effectControl_ChangeBrightness(CCChannel_t channel) {
         }
     }
     LEDChannel_t ledChannel = LEDChannels[idx];
-
+    LED_t* LED_ptr = getLEDStruct(ledChannel);
     uint32_t currentCompare = TIMHW_getTimer0CompareValue(channel);
     uint32_t targetCompare = percentToCompare(getLEDBrightness(ledChannel));
 
     // Find the delta: the goal is to change brightness in ~1s. Because we call this loop after each overflow int,
     // we tick at ~PWM freq.
-    uint32_t PWMFreq = getPWMFrequency();
-    // Because the "compares" are uints, we can't simply take the absolute value of the difference, because of target is
-    // smaller than current, we get the abs of a "negative" which is MASSIVE parsed as uint. We do some casting trickery
-    // con control the result.
-    uint32_t diff =
-        labs(((int32_t)targetCompare - (int32_t)currentCompare));  // we will use this result a couple of times
-    uint32_t delta = diff / PWMFreq;
-    // If PWM freq is bigger than the difference between levels, then delta would be 0. In that case we would step at
-    // the minimum delta of 1
-    delta = (delta == 0) ? 1 : delta;
-    // Check if the delta is less than the difference between the current compare and the target.
-    if (diff < delta) {
-        delta = diff;  // difference is less than delta, so use difference to hit the target
+
+    if (LED_ptr->brightnessCtrl.brightChangeRequestedFlag) {
+        // We want to calculate the delta only when there's a change in brightness
+        uint32_t PWMFreq = getPWMFrequency();
+        // Because the "compares" are uints, we can't simply take the absolute value of the difference, because of target is
+        // smaller than current, we get the abs of a "negative" which is MASSIVE parsed as uint. We do some casting trickery
+        // con control the result.
+        uint32_t diff =
+            labs(((int32_t)targetCompare - (int32_t)currentCompare));  // we will use this result a couple of times
+
+        //
+        // if diff == 0
+        //
+
+        uint32_t delta = diff / PWMFreq;
+        // If PWM freq is bigger than the difference between levels, then delta would be 0. In that case we would step at
+        // the minimum delta of 1
+        delta = (delta == 0) ? 1 : delta;
+        // Check if the delta is less than the difference between the current compare and the target.
+        if (diff < delta) {
+            delta = diff;  // difference is less than delta, so use difference to hit the target
+        }
+        LED_ptr->brightnessCtrl.brightChangeRequestedFlag = false;
+        LED_ptr->brightnessCtrl.delta = delta;
     }
 
     if (currentCompare > targetCompare) {
         // Decrease towards target
-        TIMHW_setT0ChannelOutputCompareBuffered(channel, currentCompare - delta);
+        TIMHW_setT0ChannelOutputCompareBuffered(channel, currentCompare - LED_ptr->brightnessCtrl.delta);
     } else if (currentCompare < targetCompare) {
         // Increase towards target
-        TIMHW_setT0ChannelOutputCompareBuffered(channel, currentCompare + delta);
+        TIMHW_setT0ChannelOutputCompareBuffered(channel, currentCompare + LED_ptr->brightnessCtrl.delta);
     }
 }
 

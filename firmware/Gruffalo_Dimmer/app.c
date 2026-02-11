@@ -125,13 +125,14 @@ void app_init(void) {
     retVal = configureQuadratureInterrupts(&quad1, gpioCallbackQuad, &quad1GPIOIntNo);
     app_assert_status_f((retVal != BTN_OK), "Error configuring Quad 1 interrupts\r\n");
 
+    // Init the LED strips before the timer is initted, so everything is ready by the time the clock starts  ticking.
+    initLEDStrips();
+
     // Init PWM on TIMER0
     initTimer0PWM(1000);
     initTimer0CCChannel(CC_CHANNEL_0, (pinPort_t)pwm0_PORT, pwm0_PIN, PWM_ACTIVE_HIGH);
     initTimer0CCChannel(CC_CHANNEL_1, (pinPort_t)pwm1_PORT, pwm1_PIN, PWM_ACTIVE_HIGH);
     initTimer0CCChannel(CC_CHANNEL_2, (pinPort_t)pwm2_PORT, pwm2_PIN, PWM_ACTIVE_HIGH);
-
-    initLEDStrips();
 }
 
 /******************************************************************************

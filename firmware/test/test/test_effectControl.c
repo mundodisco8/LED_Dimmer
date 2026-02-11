@@ -75,19 +75,16 @@ void test_fillBreatheLUT_passedNull(void) {
 void test_initEDStripts_success(void) {
     efferr_t expectedRetVal = EFF_OK;
 
-    uint32_t expectedPeriodms = 0UL;
-    uint32_t expectedWavesPerSample = 0UL;
-    uint32_t expectedCurrWave = 0UL;
-    uint32_t expectedCurrLutIdx = 0UL;
-
     // Expectations
-    LED_t expectedLED1Ch = {
-        .currAnimation = ANIM_FIXED, .targetBrightness = 5000UL, .pmwPeriodms = 1UL, .breathe_ptr = &breatheCh1};
-    // ((uint8_t*)&expectedLED1Ch)[12] = 0;
-    LED_t expectedLED2Ch = {
-        .currAnimation = ANIM_FIXED, .targetBrightness = 5000UL, .pmwPeriodms = 1UL, .breathe_ptr = &breatheCh2};
-    LED_t expectedLED3Ch = {
-        .currAnimation = ANIM_FIXED, .targetBrightness = 5000UL, .pmwPeriodms = 1UL, .breathe_ptr = &breatheCh3};
+    LED_t defaultLEDConfig = {.currAnimation = ANIM_FIXED,
+                              .brightnessCtrl.targetBrightness = 5000UL,
+                              .brightnessCtrl.delta = 0UL,
+                              .brightnessCtrl.brightChangeRequestedFlag = true,
+                              .pmwPeriodms = 1UL,
+                              .breatheCtrl.currLUTIndex = 0UL,
+                              .breatheCtrl.currWave = 0UL,
+                              .breatheCtrl.periodms = 0UL,
+                              .breatheCtrl.wavesPerSample = 0UL};
 
     // Expectations - Use 38400
     getPWMFrequency_ExpectAndReturn(1000);
@@ -100,37 +97,46 @@ void test_initEDStripts_success(void) {
     // NOTE: This fails because padding is not being initialised! WTF? Anyway, I think clearing the padding is insane
     // just for this test to pass, so I'm going to test individual members... grrrrr
     // TEST_ASSERT_EQUAL_MEMORY(&expectedLED1Ch, &LEDCh1, sizeof(LED_t));
-    TEST_ASSERT_EQUAL_UINT32(expectedLED1Ch.currAnimation, LEDCh1.currAnimation);
-    TEST_ASSERT_EQUAL_UINT32(expectedLED1Ch.targetBrightness, LEDCh1.targetBrightness);
-    TEST_ASSERT_EQUAL_UINT32(expectedLED1Ch.pmwPeriodms, LEDCh1.pmwPeriodms);
-    TEST_ASSERT_EQUAL_UINT64(expectedLED1Ch.breathe_ptr, LEDCh1.breathe_ptr);
+    TEST_ASSERT_EQUAL_UINT32(defaultLEDConfig.currAnimation, LEDCh1.currAnimation);
 
-    TEST_ASSERT_EQUAL_UINT32(expectedPeriodms, LEDCh1.breathe_ptr->periodms);
-    TEST_ASSERT_EQUAL_UINT32(expectedWavesPerSample, LEDCh1.breathe_ptr->wavesPerSample);
-    TEST_ASSERT_EQUAL_UINT32(expectedCurrWave, LEDCh1.breathe_ptr->currWave);
-    TEST_ASSERT_EQUAL_UINT32(expectedCurrLutIdx, LEDCh1.breathe_ptr->currLUTIndex);
+    TEST_ASSERT_EQUAL_UINT32(defaultLEDConfig.brightnessCtrl.targetBrightness, LEDCh1.brightnessCtrl.targetBrightness);
+    TEST_ASSERT_EQUAL_UINT32(defaultLEDConfig.brightnessCtrl.delta, LEDCh1.brightnessCtrl.delta);
+    TEST_ASSERT_TRUE(LEDCh1.brightnessCtrl.brightChangeRequestedFlag);
 
-    // Channel 2
-    TEST_ASSERT_EQUAL_UINT32(expectedLED2Ch.currAnimation, LEDCh2.currAnimation);
-    TEST_ASSERT_EQUAL_UINT32(expectedLED2Ch.targetBrightness, LEDCh2.targetBrightness);
-    TEST_ASSERT_EQUAL_UINT32(expectedLED2Ch.pmwPeriodms, LEDCh2.pmwPeriodms);
-    TEST_ASSERT_EQUAL_UINT64(expectedLED2Ch.breathe_ptr, LEDCh2.breathe_ptr);
+    TEST_ASSERT_EQUAL_UINT32(defaultLEDConfig.pmwPeriodms, LEDCh1.pmwPeriodms);
 
-    TEST_ASSERT_EQUAL_UINT32(expectedPeriodms, LEDCh2.breathe_ptr->periodms);
-    TEST_ASSERT_EQUAL_UINT32(expectedWavesPerSample, LEDCh2.breathe_ptr->wavesPerSample);
-    TEST_ASSERT_EQUAL_UINT32(expectedCurrWave, LEDCh2.breathe_ptr->currWave);
-    TEST_ASSERT_EQUAL_UINT32(expectedCurrLutIdx, LEDCh2.breathe_ptr->currLUTIndex);
+    TEST_ASSERT_EQUAL_UINT32(defaultLEDConfig.breatheCtrl.currLUTIndex, LEDCh1.breatheCtrl.currLUTIndex);
+    TEST_ASSERT_EQUAL_UINT32(defaultLEDConfig.breatheCtrl.currWave, LEDCh1.breatheCtrl.currWave);
+    TEST_ASSERT_EQUAL_UINT32(defaultLEDConfig.breatheCtrl.periodms, LEDCh1.breatheCtrl.periodms);
+    TEST_ASSERT_EQUAL_UINT32(defaultLEDConfig.breatheCtrl.wavesPerSample, LEDCh1.breatheCtrl.wavesPerSample);
 
     // Channel 2
-    TEST_ASSERT_EQUAL_UINT32(expectedLED3Ch.currAnimation, LEDCh3.currAnimation);
-    TEST_ASSERT_EQUAL_UINT32(expectedLED3Ch.targetBrightness, LEDCh3.targetBrightness);
-    TEST_ASSERT_EQUAL_UINT32(expectedLED3Ch.pmwPeriodms, LEDCh3.pmwPeriodms);
-    TEST_ASSERT_EQUAL_UINT64(expectedLED3Ch.breathe_ptr, LEDCh3.breathe_ptr);
+    TEST_ASSERT_EQUAL_UINT32(defaultLEDConfig.currAnimation, LEDCh2.currAnimation);
 
-    TEST_ASSERT_EQUAL_UINT32(expectedPeriodms, LEDCh3.breathe_ptr->periodms);
-    TEST_ASSERT_EQUAL_UINT32(expectedWavesPerSample, LEDCh3.breathe_ptr->wavesPerSample);
-    TEST_ASSERT_EQUAL_UINT32(expectedCurrWave, LEDCh3.breathe_ptr->currWave);
-    TEST_ASSERT_EQUAL_UINT32(expectedCurrLutIdx, LEDCh3.breathe_ptr->currLUTIndex);
+    TEST_ASSERT_EQUAL_UINT32(defaultLEDConfig.brightnessCtrl.targetBrightness, LEDCh2.brightnessCtrl.targetBrightness);
+    TEST_ASSERT_EQUAL_UINT32(defaultLEDConfig.brightnessCtrl.delta, LEDCh2.brightnessCtrl.delta);
+    TEST_ASSERT_TRUE(LEDCh2.brightnessCtrl.brightChangeRequestedFlag);
+
+    TEST_ASSERT_EQUAL_UINT32(defaultLEDConfig.pmwPeriodms, LEDCh2.pmwPeriodms);
+
+    TEST_ASSERT_EQUAL_UINT32(defaultLEDConfig.breatheCtrl.currLUTIndex, LEDCh2.breatheCtrl.currLUTIndex);
+    TEST_ASSERT_EQUAL_UINT32(defaultLEDConfig.breatheCtrl.currWave, LEDCh2.breatheCtrl.currWave);
+    TEST_ASSERT_EQUAL_UINT32(defaultLEDConfig.breatheCtrl.periodms, LEDCh2.breatheCtrl.periodms);
+    TEST_ASSERT_EQUAL_UINT32(defaultLEDConfig.breatheCtrl.wavesPerSample, LEDCh2.breatheCtrl.wavesPerSample);
+
+    // Channel 3
+    TEST_ASSERT_EQUAL_UINT32(defaultLEDConfig.currAnimation, LEDCh3.currAnimation);
+
+    TEST_ASSERT_EQUAL_UINT32(defaultLEDConfig.brightnessCtrl.targetBrightness, LEDCh3.brightnessCtrl.targetBrightness);
+    TEST_ASSERT_EQUAL_UINT32(defaultLEDConfig.brightnessCtrl.delta, LEDCh3.brightnessCtrl.delta);
+    TEST_ASSERT_TRUE(LEDCh3.brightnessCtrl.brightChangeRequestedFlag);
+
+    TEST_ASSERT_EQUAL_UINT32(defaultLEDConfig.pmwPeriodms, LEDCh3.pmwPeriodms);
+
+    TEST_ASSERT_EQUAL_UINT32(defaultLEDConfig.breatheCtrl.currLUTIndex, LEDCh3.breatheCtrl.currLUTIndex);
+    TEST_ASSERT_EQUAL_UINT32(defaultLEDConfig.breatheCtrl.currWave, LEDCh3.breatheCtrl.currWave);
+    TEST_ASSERT_EQUAL_UINT32(defaultLEDConfig.breatheCtrl.periodms, LEDCh3.breatheCtrl.periodms);
+    TEST_ASSERT_EQUAL_UINT32(defaultLEDConfig.breatheCtrl.wavesPerSample, LEDCh3.breatheCtrl.wavesPerSample);
 }
 
 /**
@@ -147,7 +153,8 @@ void test_setLEDBrightness_Success(void) {
     efferr_t percentSet = setLEDBrightness(testChannel, testPercent);
 
     TEST_ASSERT_EQUAL_UINT32(expectedPercent, percentSet);
-    TEST_ASSERT_EQUAL_UINT32(testPercent, LEDCh1.targetBrightness);
+    TEST_ASSERT_EQUAL_UINT32(testPercent, LEDCh1.brightnessCtrl.targetBrightness);
+    TEST_ASSERT_TRUE(LEDCh1.brightnessCtrl.brightChangeRequestedFlag);
 }
 
 void test_setLEDBrightness_BrightnessOverflow(void) {
@@ -158,7 +165,8 @@ void test_setLEDBrightness_BrightnessOverflow(void) {
     uint32_t percentSet = setLEDBrightness(testChannel, testPercent);
 
     TEST_ASSERT_EQUAL_UINT32(expectedPercent, percentSet);
-    TEST_ASSERT_EQUAL_UINT32(expectedPercent, LEDCh1.targetBrightness);
+    TEST_ASSERT_EQUAL_UINT32(expectedPercent, LEDCh1.brightnessCtrl.targetBrightness);
+    TEST_ASSERT_TRUE(LEDCh1.brightnessCtrl.brightChangeRequestedFlag);
 }
 
 void test_setLEDBrightness_BrightnessUnderflow(void) {
@@ -169,7 +177,8 @@ void test_setLEDBrightness_BrightnessUnderflow(void) {
     uint32_t percentSet = setLEDBrightness(testChannel, testPercent);
 
     TEST_ASSERT_EQUAL_UINT32(expectedPercent, percentSet);
-    TEST_ASSERT_EQUAL_UINT32(expectedPercent, LEDCh1.targetBrightness);
+    TEST_ASSERT_EQUAL_UINT32(expectedPercent, LEDCh1.brightnessCtrl.targetBrightness);
+    TEST_ASSERT_TRUE(LEDCh1.brightnessCtrl.brightChangeRequestedFlag);
 }
 
 /**
@@ -178,8 +187,10 @@ void test_setLEDBrightness_BrightnessUnderflow(void) {
  */
 
 void test_getLEDBrightness_Success(void) {
-    uint32_t expectedBrightness = 5000UL;  // default brightness
+    uint32_t expectedBrightness = 1234UL;  // default brightness
     CCChannel_t testChannel = LED_CHANNEL_1;
+    // Prepare test
+    LEDCh1.brightnessCtrl.targetBrightness = expectedBrightness;
 
     uint32_t retVal = getLEDBrightness(testChannel);
 
@@ -206,20 +217,20 @@ void test_breatheSetPeriod_Succes(void) {
     efferr_t retVal = breatheSetPeriod(LED_CHANNEL_1, testNewPeriod);
 
     TEST_ASSERT_EQUAL_UINT32(expectedRetVal, retVal);
-    TEST_ASSERT_EQUAL_UINT32(testNewPeriod, LEDCh1.breathe_ptr->periodms);
-    TEST_ASSERT_EQUAL_UINT32(expectedWavesPerSample, LEDCh1.breathe_ptr->wavesPerSample);
+    TEST_ASSERT_EQUAL_UINT32(testNewPeriod, LEDCh1.breatheCtrl.periodms);
+    TEST_ASSERT_EQUAL_UINT32(expectedWavesPerSample, LEDCh1.breatheCtrl.wavesPerSample);
 
     retVal = breatheSetPeriod(LED_CHANNEL_2, testNewPeriod);
 
     TEST_ASSERT_EQUAL_UINT32(expectedRetVal, retVal);
-    TEST_ASSERT_EQUAL_UINT32(testNewPeriod, LEDCh1.breathe_ptr->periodms);
-    TEST_ASSERT_EQUAL_UINT32(expectedWavesPerSample, LEDCh1.breathe_ptr->wavesPerSample);
+    TEST_ASSERT_EQUAL_UINT32(testNewPeriod, LEDCh1.breatheCtrl.periodms);
+    TEST_ASSERT_EQUAL_UINT32(expectedWavesPerSample, LEDCh1.breatheCtrl.wavesPerSample);
 
     retVal = breatheSetPeriod(LED_CHANNEL_3, testNewPeriod);
 
     TEST_ASSERT_EQUAL_UINT32(expectedRetVal, retVal);
-    TEST_ASSERT_EQUAL_UINT32(testNewPeriod, LEDCh1.breathe_ptr->periodms);
-    TEST_ASSERT_EQUAL_UINT32(expectedWavesPerSample, LEDCh1.breathe_ptr->wavesPerSample);
+    TEST_ASSERT_EQUAL_UINT32(testNewPeriod, LEDCh1.breatheCtrl.periodms);
+    TEST_ASSERT_EQUAL_UINT32(expectedWavesPerSample, LEDCh1.breatheCtrl.wavesPerSample);
 }
 
 void test_breatheSetPeriod_PeriodIs0(void) {
@@ -244,8 +255,8 @@ void test_breatheSetPeriod_PeriodIsNotMultiplePWM(void) {
     efferr_t retVal = breatheSetPeriod(LED_CHANNEL_1, testPeriod);
 
     TEST_ASSERT_EQUAL_UINT32(expectedRetVal, retVal);
-    TEST_ASSERT_EQUAL_UINT32(testPeriod, LEDCh1.breathe_ptr->periodms);
-    TEST_ASSERT_EQUAL_UINT32(expectedwavesPerSample, LEDCh1.breathe_ptr->wavesPerSample);
+    TEST_ASSERT_EQUAL_UINT32(testPeriod, LEDCh1.breatheCtrl.periodms);
+    TEST_ASSERT_EQUAL_UINT32(expectedwavesPerSample, LEDCh1.breatheCtrl.wavesPerSample);
 
     // Number is always floored
     testPeriod = 11550;          // won't be a multiple of the PWM period: 10ms * 200 samples
@@ -254,8 +265,8 @@ void test_breatheSetPeriod_PeriodIsNotMultiplePWM(void) {
     retVal = breatheSetPeriod(LED_CHANNEL_1, testPeriod);
 
     TEST_ASSERT_EQUAL_UINT32(expectedRetVal, retVal);
-    TEST_ASSERT_EQUAL_UINT32(testPeriod, LEDCh1.breathe_ptr->periodms);
-    TEST_ASSERT_EQUAL_UINT32(expectedwavesPerSample, LEDCh1.breathe_ptr->wavesPerSample);
+    TEST_ASSERT_EQUAL_UINT32(testPeriod, LEDCh1.breatheCtrl.periodms);
+    TEST_ASSERT_EQUAL_UINT32(expectedwavesPerSample, LEDCh1.breatheCtrl.wavesPerSample);
 }
 
 ////
@@ -276,7 +287,8 @@ void test_effectControl_ChangeBrightness_IncreaseBrightness(void) {
     uint32_t expectedCompareToSet = testCurrentCompare + expectedDelta;
 
     // Prepare test
-    LEDCh1.targetBrightness = expectedLEDTargetBrightness;
+    LEDCh1.brightnessCtrl.targetBrightness = expectedLEDTargetBrightness;
+    LEDCh1.brightnessCtrl.brightChangeRequestedFlag = true;
 
     // Set Expectations
     TIMHW_getTimer0CompareValue_ExpectAndReturn(expectedChannel, testCurrentCompare);
@@ -289,6 +301,8 @@ void test_effectControl_ChangeBrightness_IncreaseBrightness(void) {
     // Paranoid test: check that it works when the compares are in the "high half"
     testCurrentCompare = UINT32_MAX - 1000;
     expectedTargetCompare = UINT32_MAX - 500;
+    LEDCh1.brightnessCtrl.targetBrightness = expectedLEDTargetBrightness;
+    LEDCh1.brightnessCtrl.brightChangeRequestedFlag = true;
     expectedDelta = (expectedTargetCompare - testCurrentCompare) / testPWMFreq;
     expectedCompareToSet = testCurrentCompare + expectedDelta;
 
@@ -313,7 +327,8 @@ void test_effectControl_ChangeBrightness_DecreaseBrightness(void) {
     uint32_t expectedCompareToSet = testCurrentCompare - expectedDelta;
 
     // Prepare test
-    LEDCh1.targetBrightness = expectedLEDTargetBrightness;
+    LEDCh1.brightnessCtrl.targetBrightness = expectedLEDTargetBrightness;
+    LEDCh1.brightnessCtrl.brightChangeRequestedFlag = true;
 
     // Set Expectations
     TIMHW_getTimer0CompareValue_ExpectAndReturn(expectedChannel, testCurrentCompare);
@@ -326,6 +341,8 @@ void test_effectControl_ChangeBrightness_DecreaseBrightness(void) {
     // Paranoid test: check that it works when the compares are in the "high half"
     testCurrentCompare = UINT32_MAX - 500;
     expectedTargetCompare = UINT32_MAX - 1000;
+    LEDCh1.brightnessCtrl.targetBrightness = expectedLEDTargetBrightness;
+    LEDCh1.brightnessCtrl.brightChangeRequestedFlag = true;
     expectedDelta = (testCurrentCompare - expectedTargetCompare) / testPWMFreq;
     expectedCompareToSet = testCurrentCompare - expectedDelta;
 
@@ -348,7 +365,7 @@ void test_effectControl_ChangeBrightness_DoNothingIfNoChangesRequired(void) {
     uint32_t testPWMFreq = 250;  // 250 updates of brightness per second
 
     // Prepare test
-    LEDCh1.targetBrightness = expectedLEDTargetBrightness;
+    LEDCh1.brightnessCtrl.targetBrightness = expectedLEDTargetBrightness;
 
     // Set Expectations
     TIMHW_getTimer0CompareValue_ExpectAndReturn(expectedChannel, testCurrentCompare);
@@ -371,7 +388,7 @@ void test_effectControl_ChangeBrightness_IncreaseBrightnessLessThanDelta(void) {
     uint32_t expectedCompareToSet = expectedTargetCompare;
 
     // Prepare test
-    LEDCh1.targetBrightness = expectedLEDTargetBrightness;
+    LEDCh1.brightnessCtrl.targetBrightness = expectedLEDTargetBrightness;
 
     // Set Expectations
     TIMHW_getTimer0CompareValue_ExpectAndReturn(expectedChannel, testCurrentCompare);
@@ -394,7 +411,7 @@ void test_effectControl_ChangeBrightness_DecreaseBrightnessLessThanDelta(void) {
     uint32_t expectedCompareToSet = expectedTargetCompare;
 
     // Prepare test
-    LEDCh1.targetBrightness = expectedLEDTargetBrightness;
+    LEDCh1.brightnessCtrl.targetBrightness = expectedLEDTargetBrightness;
 
     // Set Expectations
     TIMHW_getTimer0CompareValue_ExpectAndReturn(expectedChannel, testCurrentCompare);
@@ -417,7 +434,7 @@ void test_effectControl_ChangeBrightness_DeltaCantBe0(void) {
     uint32_t expectedCompareToSet = testCurrentCompare + expectedDelta;
 
     // Prepare test
-    LEDCh1.targetBrightness = expectedLEDTargetBrightness;
+    LEDCh1.brightnessCtrl.targetBrightness = expectedLEDTargetBrightness;
 
     // Set Expectations
     TIMHW_getTimer0CompareValue_ExpectAndReturn(expectedChannel, testCurrentCompare);
@@ -442,7 +459,7 @@ void test_effectControl_ChangeBrightness_ChangeDuringChange(void) {
     uint32_t expectedCompareToSet = testCurrentCompare + expectedDelta;
 
     // Prepare test
-    LEDCh1.targetBrightness = expectedLEDTargetBrightness;
+    setLEDBrightness(LED_CHANNEL_1, expectedLEDTargetBrightness);
 
     // Set Expectations
     TIMHW_getTimer0CompareValue_ExpectAndReturn(expectedChannel, testCurrentCompare);
@@ -453,16 +470,32 @@ void test_effectControl_ChangeBrightness_ChangeDuringChange(void) {
     effectControl_ChangeBrightness(CC_CHANNEL_0);
 
     // At this point, COMPARE is at 4
-
-    // New level of brightness
-    expectedTargetCompare = 10004;  // throw a 4 to make delta a round number
-    // Delta should be 10k4 - 4 / 250 = 40
-    expectedDelta = (expectedTargetCompare - 4) / testPWMFreq;
+    testCurrentCompare += expectedDelta;
     expectedCompareToSet = testCurrentCompare + expectedDelta;
 
     // Set Expectations
     TIMHW_getTimer0CompareValue_ExpectAndReturn(expectedChannel, testCurrentCompare);
     percentToCompare_ExpectAndReturn(expectedLEDTargetBrightness, expectedTargetCompare);
+    // getPWMFrequency_ExpectAndReturn(testPWMFreq);
+    TIMHW_setT0ChannelOutputCompareBuffered_ExpectAndReturn(expectedChannel, expectedCompareToSet, TIMER_OK);
+
+    effectControl_ChangeBrightness(CC_CHANNEL_0);
+
+    // At this point, COMPARE is at 8
+
+    // New level of brightness, 100008
+    testCurrentCompare += expectedDelta;
+    uint32_t newTargetBrightness = 1000;  // just some value
+    expectedTargetCompare =
+        10008;  // Made up compare value for new target brightness, throw a 4 to make delta a round number
+    setLEDBrightness(LED_CHANNEL_1, newTargetBrightness);
+    // Delta should be 10k4 - 4 / 250 = 40
+    expectedDelta = (expectedTargetCompare - 4) / testPWMFreq;
+    expectedCompareToSet = testCurrentCompare + expectedDelta;  // 48
+
+    // Set Expectations
+    TIMHW_getTimer0CompareValue_ExpectAndReturn(expectedChannel, testCurrentCompare);
+    percentToCompare_ExpectAndReturn(newTargetBrightness, expectedTargetCompare);
     getPWMFrequency_ExpectAndReturn(testPWMFreq);
     TIMHW_setT0ChannelOutputCompareBuffered_ExpectAndReturn(expectedChannel, expectedCompareToSet, TIMER_OK);
 

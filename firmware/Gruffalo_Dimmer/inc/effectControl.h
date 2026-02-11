@@ -2,6 +2,7 @@
 #define _EFFECT_CONTROL_H_
 
 #include <inttypes.h>
+#include <stdbool.h>
 #include <stdlib.h>
 
 /**
@@ -37,6 +38,16 @@ typedef enum anim {
     ANIM_BREATHE = 1  // Breathe Effect
 } anim_t;
 
+/*
+ * @brief Struct to control changes in brightness
+ *
+ */
+typedef struct brightnessControl {
+    uint32_t targetBrightness;       // The desired brightness we want to fade into
+    uint32_t delta;                  // Brightness  increase / decrease step
+    bool brightChangeRequestedFlag;  // Used as an aux to know when to update the delta
+} brightnessControl_t;
+
 /**
  * @brief Struct containing the parameters needed to define the Gaussian curve played on the breathe effect
  */
@@ -62,10 +73,10 @@ typedef struct breatheControl {
  * @brief
  */
 typedef struct LED {
-    anim_t currAnimation;           // The type of animation currently being played in the LED
-    uint32_t targetBrightness;      // brightness level in % with 2 decimal places [0-10000]
-    uint32_t pmwPeriodms;           // The PWM period in ms
-    breatheControl_t* breathe_ptr;  // Pointer to the parameters of the breathe effect for this LED
+    anim_t currAnimation;                // The type of animation currently being played in the LED
+    uint32_t pmwPeriodms;                // The PWM period in ms
+    brightnessControl_t brightnessCtrl;  // Brightness Control Parameters
+    breatheControl_t breatheCtrl;        // Parameters of the breathe effect for this LED
 } LED_t;
 
 // /**
