@@ -18,7 +18,6 @@
 
 // Our Libs
 #include "PWMControl.h"
-#include "timer_HW.h"
 
 // Little trick to test static stuff
 #ifdef TEST
@@ -111,15 +110,11 @@ efferr_t initLEDStrips(void) {
 /**
  * @brief Returns a pointer to the LED struct for the desired channel
  * @param channelNo the channel which LED struct we want to retrieve
- * @return a pointer to the LED_t struct of the channel passed as parameter or ASSERTS
+ * @return a pointer to the LED_t struct of the channel passed as parameter. On wrong channel, defaults to LED Ch 1
  */
 static LED_t* getLEDStruct(const LEDChannel_t channelNo) {
     LED_t* LED_ptr = NULL;
     switch (channelNo) {
-        case LED_CHANNEL_1: {
-            LED_ptr = &LEDCh1;
-            break;
-        }
         case LED_CHANNEL_2: {
             LED_ptr = &LEDCh2;
             break;
@@ -128,12 +123,32 @@ static LED_t* getLEDStruct(const LEDChannel_t channelNo) {
             LED_ptr = &LEDCh3;
             break;
         }
+        case LED_CHANNEL_1: /* fallthrough */
         default: {
-            // TODO: ASSERT!
+            // Default, on wrong channel, return Ch 1
+            LED_ptr = &LEDCh1;
             break;
         }
     }
     return LED_ptr;
+}
+
+/**
+ * @brief Helper to map LED channel to CC channel
+ *
+ * @param channel the LED Channel Number
+ * @return CCChannel_t with the CCChannel for that LEDChannel. On wrong LEDChannel, defaults to CC Ch 0
+ */
+static CCChannel_t getCCChannelFromLED(LEDChannel_t channel) {
+    switch (channel) {
+        case LED_CHANNEL_2:
+            return CC_CHANNEL_1;
+        case LED_CHANNEL_3:
+            return CC_CHANNEL_2;
+        case LED_CHANNEL_1:
+        default:
+            return CC_CHANNEL_0;
+    }
 }
 
 /**
@@ -203,72 +218,59 @@ efferr_t breatheSetPeriod(const LEDChannel_t channelNo, const uint32_t newPeriod
     return EFF_OK;
 }
 
-STATIC void effectControl_ChangeBrightness(CCChannel_t channel) {
-    // Get the LED channel from the CC channel, this maybe could go to a function?
-    const LEDChannel_t LEDChannels[] = {LED_CHANNEL_1, LED_CHANNEL_2, LED_CHANNEL_3};
-    uint32_t idx = 0;
-    switch (channel) {
-        case CC_CHANNEL_0: {
-            idx = 0;
-            break;
-        }
-        case CC_CHANNEL_1: {
-            idx = 1;
-            break;
-        }
-        case CC_CHANNEL_2: {
-            idx = 2;
-            break;
-        }
-        default: {
-            break;
-        }
-    }
-    LEDChannel_t ledChannel = LEDChannels[idx];
-    LED_t* LED_ptr = getLEDStruct(ledChannel);
-    uint32_t currentCompare = TIMHW_getTimer0CompareValue(channel);
-    uint32_t targetCompare = percentToCompare(getLEDBrightness(ledChannel));
+STATIC void effectControl_ChangeBrightness(LEDChannel_t LEDChannel) {
+    const CCChannel_t PWMchannel = getCCChannelFromLED(LEDChannel);
+    LED_t* LED_ptr = getLEDStruct(LEDChannel);
+
+    const uint32_t currentLevel = LED_ptr->brightnessCtrl.currentBrightness;
+    const uint32_t targetLevel = getLEDBrightness(LEDChannel);
+
+    if (targetLevel == currentLevel) {
+        return;  // nothing to do
+    }  // Else, change the brightness
 
     // Find the delta: the goal is to change brightness in ~1s. Because we call this loop after each overflow int,
     // we tick at ~PWM freq.
 
+    // Because the "compares" are uints, we can't simply take the absolute value of the difference, because of target is
+    // smaller than current, we get the abs of a "negative" which is MASSIVE parsed as uint. We do some casting trickery
+    // con control the result.
+    uint32_t diff = labs(((int32_t)targetLevel - (int32_t)currentLevel));  // we will use this result a couple of times
+
     if (LED_ptr->brightnessCtrl.brightChangeRequestedFlag) {
         // We want to calculate the delta only when there's a change in brightness
-        uint32_t PWMFreq = getPWMFrequency();
-        // Because the "compares" are uints, we can't simply take the absolute value of the difference, because of target is
-        // smaller than current, we get the abs of a "negative" which is MASSIVE parsed as uint. We do some casting trickery
-        // con control the result.
-        uint32_t diff =
-            labs(((int32_t)targetCompare - (int32_t)currentCompare));  // we will use this result a couple of times
 
-        uint32_t delta = diff / PWMFreq;
+        uint32_t delta = diff / getPWMFrequency();
         // If PWM freq is bigger than the difference between levels, then delta would be 0. In that case we would step at
-        // the minimum delta of 1
+        // the minimum delta of 1 (0.01%)
         delta = (delta == 0) ? 1 : delta;
         // Check if the delta is less than the difference between the current compare and the target.
-        if (diff < delta) {
-            delta = diff;  // difference is less than delta, so use difference to hit the target
-        }
         LED_ptr->brightnessCtrl.brightChangeRequestedFlag = false;
         LED_ptr->brightnessCtrl.delta = delta;
     }
 
-    if (currentCompare > targetCompare) {
+    uint32_t step = LED_ptr->brightnessCtrl.delta;
+    if (diff < step) {
+        step = diff;  // difference is less than delta, so use difference to hit the target
+    }
+
+    if (currentLevel > targetLevel) {
         // Decrease towards target
-        TIMHW_setT0ChannelOutputCompareBuffered(channel, currentCompare - LED_ptr->brightnessCtrl.delta);
-    } else if (currentCompare < targetCompare) {
+        LED_ptr->brightnessCtrl.currentBrightness -= step;
+    } else if (currentLevel < targetLevel) {
         // Increase towards target
-        TIMHW_setT0ChannelOutputCompareBuffered(channel, currentCompare + LED_ptr->brightnessCtrl.delta);
+        LED_ptr->brightnessCtrl.currentBrightness += step;
     }  // and if both are equal, don't do anything
+    setDutyCycle(PWMchannel, LED_ptr->brightnessCtrl.currentBrightness, true);
 }
 
 void effectControlLoop(void) {
     // NOTE: the effect Control Loop runs at the PWM frequency, as it's triggered by the timer overflow interrupt
     // Write OCB to update the duty cycle of the next waveform period
     // Ramp up/down from the current compare value to the target, increasing/decreasing by 1 on each PWM cycle
-    const CCChannel_t CCChannels[] = {CC_CHANNEL_0, CC_CHANNEL_1, CC_CHANNEL_2};
-    for (uint32_t i = 0; i < CC_MAX_CHANNELS; i++) {
-        effectControl_ChangeBrightness(CCChannels[i]);
+    const LEDChannel_t LEDChannels[] = {LED_CHANNEL_1, LED_CHANNEL_2, LED_CHANNEL_3};
+    for (uint32_t i = 0; i < CH_COUNT; i++) {
+        effectControl_ChangeBrightness(LEDChannels[i]);
     }
 }
 // do calculations

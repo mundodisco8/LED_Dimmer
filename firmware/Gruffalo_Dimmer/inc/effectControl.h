@@ -44,8 +44,9 @@ typedef enum anim {
  */
 typedef struct brightnessControl {
     uint32_t targetBrightness;       // The desired brightness we want to fade into
-    uint32_t delta;                  // Brightness  increase / decrease step
+    uint32_t currentBrightness;      // The brightness level we are currently at (used when fading in/out)
     bool brightChangeRequestedFlag;  // Used as an aux to know when to update the delta
+    uint32_t delta;                  // Brightness  increase / decrease step
 } brightnessControl_t;
 
 /**
@@ -74,7 +75,7 @@ typedef struct breatheControl {
  */
 typedef struct LED {
     anim_t currAnimation;                // The type of animation currently being played in the LED
-    uint32_t pmwPeriodms;                // The PWM period in ms
+    uint32_t pmwPeriodms;                // The PWM period in ms //TODO: I think this can safely go
     brightnessControl_t brightnessCtrl;  // Brightness Control Parameters
     breatheControl_t breatheCtrl;        // Parameters of the breathe effect for this LED
 } LED_t;

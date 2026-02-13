@@ -5,6 +5,7 @@ include_directories(
 )
 
 target_sources(Gruffalo_Dimmer PRIVATE
+	"../src/brightnessLUT.c"
 	"../src/buttonActions.c"
 	"../src/buttons.c"
 	"../src/debounce.c"

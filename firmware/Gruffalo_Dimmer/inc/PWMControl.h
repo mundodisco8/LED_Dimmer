@@ -25,6 +25,12 @@ extern volatile uint32_t dutyCycle2;
 #define MIN_BRIGHTNESS 0UL
 
 /**
+ * @brief
+ *
+ */
+extern const uint32_t PWM_FREQUENCY;
+
+/**
  * @brief Start TIMER0's HW in PWM mode
  */
 void initTimer0PWM(const uint32_t PWMFreqHz);
@@ -39,11 +45,6 @@ void initTimer0CCChannel(const CCChannel_t channel, const pinPort_t port, const 
  * @brief Gets the freq of the PWM signal, based on the current clock freq and the TOP value
  */
 uint32_t getPWMFrequency(void);
-
-/**
- * @brief Returns the Compare register value to get the expected duty cycle for percent
- */
-uint32_t percentToCompare(const uint32_t percent);
 
 /**
  * @brief Sets the Duty Cycle of the PWM signal on one of TIMER0's channels. Brightness is gamma-corrected

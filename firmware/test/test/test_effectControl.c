@@ -6,7 +6,6 @@
 // Our libraries
 #include "effectControl.h"
 #include "mock_PWMControl.h"
-#include "mock_timer_HW.h"
 
 /**
  * Extern bits to test
@@ -282,167 +281,99 @@ void test_breatheSetPeriod_PeriodIsNotMultiplePWM(void) {
 // This case tests that when the current brightness level is not the target level, the brightness is changed.
 void test_effectControl_ChangeBrightness_IncreaseBrightness(void) {
     CCChannel_t expectedChannel = CC_CHANNEL_0;
-    uint32_t testCurrentCompare = 0;
+    uint32_t testCurrentBrightness = 0;
     // Instead of dealing with LUTs, set an arbitrary target compare  for an arbitrary target percent
-    uint32_t expectedLEDTargetBrightness = 500;
-    uint32_t expectedTargetCompare = 1000;
+    uint32_t testTargetBrightness = 5000;
     uint32_t testPWMFreq = 250;  // 250 updates of brightness per second
-    uint32_t expectedDelta = (expectedTargetCompare - testCurrentCompare) / testPWMFreq;
-    uint32_t expectedCompareToSet = testCurrentCompare + expectedDelta;
+    uint32_t expectedDelta = (testTargetBrightness - testCurrentBrightness) / testPWMFreq;
+    uint32_t expectedPercentToSet = testCurrentBrightness + expectedDelta;
 
     // Prepare test
-    setLEDBrightness(LED_CHANNEL_1, expectedLEDTargetBrightness);
+    LEDCh1.brightnessCtrl.currentBrightness = testCurrentBrightness;
+    setLEDBrightness(LED_CHANNEL_1, testTargetBrightness);
 
     // Set Expectations
-    TIMHW_getTimer0CompareValue_ExpectAndReturn(expectedChannel, testCurrentCompare);
-    percentToCompare_ExpectAndReturn(expectedLEDTargetBrightness, expectedTargetCompare);
     getPWMFrequency_ExpectAndReturn(testPWMFreq);
-    TIMHW_setT0ChannelOutputCompareBuffered_ExpectAndReturn(expectedChannel, expectedCompareToSet, TIMER_OK);
+    setDutyCycle_Expect(expectedChannel, expectedPercentToSet, true);
 
-    effectControl_ChangeBrightness(CC_CHANNEL_0);
-
-    // Paranoid test: check that it works when the compares are in the "high half"
-    testCurrentCompare = UINT32_MAX - 1000;
-    expectedTargetCompare = UINT32_MAX - 500;
-    LEDCh1.brightnessCtrl.targetBrightness = expectedLEDTargetBrightness;
-    LEDCh1.brightnessCtrl.brightChangeRequestedFlag = true;
-    expectedDelta = (expectedTargetCompare - testCurrentCompare) / testPWMFreq;
-    expectedCompareToSet = testCurrentCompare + expectedDelta;
-
-    // Set Expectations
-    TIMHW_getTimer0CompareValue_ExpectAndReturn(expectedChannel, testCurrentCompare);
-    percentToCompare_ExpectAndReturn(expectedLEDTargetBrightness, expectedTargetCompare);
-    getPWMFrequency_ExpectAndReturn(testPWMFreq);
-    TIMHW_setT0ChannelOutputCompareBuffered_ExpectAndReturn(expectedChannel, expectedCompareToSet, TIMER_OK);
-
-    effectControl_ChangeBrightness(CC_CHANNEL_0);
+    effectControl_ChangeBrightness(expectedChannel);
 }
 
 // This test the case where the brightness is decreased
 void test_effectControl_ChangeBrightness_DecreaseBrightness(void) {
     CCChannel_t expectedChannel = CC_CHANNEL_0;
-    uint32_t testCurrentCompare = 2000;
+    uint32_t testCurrentBrightness = 8000;
     // Instead of dealing with LUTs, set an arbitrary target compare  for an arbitrary target percent
-    uint32_t expectedLEDTargetBrightness = 500;
-    uint32_t expectedTargetCompare = 1000;
+    uint32_t testTargetBrightness = 4000;
     uint32_t testPWMFreq = 250;  // 250 updates of brightness per second
-    uint32_t expectedDelta = (testCurrentCompare - expectedTargetCompare) / testPWMFreq;
-    uint32_t expectedCompareToSet = testCurrentCompare - expectedDelta;
+    uint32_t expectedDelta = (testCurrentBrightness - testTargetBrightness) / testPWMFreq;
+    uint32_t expectedPercentToSet = testCurrentBrightness - expectedDelta;
 
     // Prepare test
-    setLEDBrightness(LED_CHANNEL_1, expectedLEDTargetBrightness);
+    LEDCh1.brightnessCtrl.currentBrightness = testCurrentBrightness;
+    setLEDBrightness(LED_CHANNEL_1, testTargetBrightness);
 
     // Set Expectations
-    TIMHW_getTimer0CompareValue_ExpectAndReturn(expectedChannel, testCurrentCompare);
-    percentToCompare_ExpectAndReturn(expectedLEDTargetBrightness, expectedTargetCompare);
     getPWMFrequency_ExpectAndReturn(testPWMFreq);
-    TIMHW_setT0ChannelOutputCompareBuffered_ExpectAndReturn(expectedChannel, expectedCompareToSet, TIMER_OK);
+    setDutyCycle_Expect(expectedChannel, expectedPercentToSet, true);
 
-    effectControl_ChangeBrightness(CC_CHANNEL_0);
-
-    // Paranoid test: check that it works when the compares are in the "high half"
-    testCurrentCompare = UINT32_MAX - 500;
-    expectedTargetCompare = UINT32_MAX - 1000;
-    expectedDelta = (testCurrentCompare - expectedTargetCompare) / testPWMFreq;
-    expectedCompareToSet = testCurrentCompare - expectedDelta;
-
-    setLEDBrightness(LED_CHANNEL_1, expectedLEDTargetBrightness);
-
-    // Set Expectations
-    TIMHW_getTimer0CompareValue_ExpectAndReturn(expectedChannel, testCurrentCompare);
-    percentToCompare_ExpectAndReturn(expectedLEDTargetBrightness, expectedTargetCompare);
-    getPWMFrequency_ExpectAndReturn(testPWMFreq);
-    TIMHW_setT0ChannelOutputCompareBuffered_ExpectAndReturn(expectedChannel, expectedCompareToSet, TIMER_OK);
-
-    effectControl_ChangeBrightness(CC_CHANNEL_0);
+    effectControl_ChangeBrightness(expectedChannel);
 }
 
 // This test the case where the brightness is decreased
 void test_effectControl_ChangeBrightness_DoNothingIfNoChangesRequired(void) {
     CCChannel_t expectedChannel = CC_CHANNEL_0;
-    uint32_t testCurrentCompare = 2000;
+    uint32_t testCurrentBrightness = 2000;
     // Instead of dealing with LUTs, set an arbitrary target compare  for an arbitrary target percent
-    uint32_t expectedLEDTargetBrightness = 500;
-    uint32_t expectedTargetCompare = 2000;
+    uint32_t testTargetBrightness = 2000;
     uint32_t testPWMFreq = 250;  // 250 updates of brightness per second
 
     // Prepare test
-    setLEDBrightness(LED_CHANNEL_1, expectedLEDTargetBrightness);
+    LEDCh1.brightnessCtrl.currentBrightness = testCurrentBrightness;
+    setLEDBrightness(LED_CHANNEL_1, testTargetBrightness);
 
-    // Set Expectations
-    TIMHW_getTimer0CompareValue_ExpectAndReturn(expectedChannel, testCurrentCompare);
-    percentToCompare_ExpectAndReturn(expectedLEDTargetBrightness, expectedTargetCompare);
-    getPWMFrequency_ExpectAndReturn(testPWMFreq);
-    // NO expectation of SetCompare() of any type
-
-    effectControl_ChangeBrightness(CC_CHANNEL_0);
+    effectControl_ChangeBrightness(expectedChannel);
 }
 
-// Test the case where the change in brightness is lesser than the delta
-// This case tests that when the current brightness level is not the target level, the brightness is changed.
+// Test the case where the change in brightness is lesser than the delta. Normally the last update before getting to the
+// target
 void test_effectControl_ChangeBrightness_IncreaseBrightnessLessThanDelta(void) {
     CCChannel_t expectedChannel = CC_CHANNEL_0;
-    uint32_t testCurrentCompare = 998;
-    // Instead of dealing with LUTs, set an arbitrary target compare  for an arbitrary target percent
-    uint32_t expectedLEDTargetBrightness = 500;
-    uint32_t expectedTargetCompare = 1000;
-    uint32_t testPWMFreq = 1;  // set freq to 1 so we jump from current to target in one update
-    uint32_t expectedCompareToSet = expectedTargetCompare;
+
+    uint32_t testCurrentBrightness = 998;
+    uint32_t testTargetBrightness = 1000;
+    uint32_t testDelta = 100;  // delta is way more than the required change in brightness
+
+    uint32_t expectedPercentToSet = testTargetBrightness;
 
     // Prepare test
-    setLEDBrightness(LED_CHANNEL_1, expectedLEDTargetBrightness);
+    LEDCh1.brightnessCtrl.currentBrightness = testCurrentBrightness;
+    LEDCh1.brightnessCtrl.targetBrightness = testTargetBrightness;
+    LEDCh1.brightnessCtrl.delta = testDelta;
+    LEDCh1.brightnessCtrl.brightChangeRequestedFlag = false;  // make sure we don't recalculate the delta!
 
     // Set Expectations
-    TIMHW_getTimer0CompareValue_ExpectAndReturn(expectedChannel, testCurrentCompare);
-    percentToCompare_ExpectAndReturn(expectedLEDTargetBrightness, expectedTargetCompare);
-    getPWMFrequency_ExpectAndReturn(testPWMFreq);
-    TIMHW_setT0ChannelOutputCompareBuffered_ExpectAndReturn(expectedChannel, expectedCompareToSet, TIMER_OK);
+    setDutyCycle_Expect(expectedChannel, expectedPercentToSet, true);
 
-    effectControl_ChangeBrightness(CC_CHANNEL_0);
-}
-
-// Test the case where the change in brightness is lesser than the delta
-// This case tests that when the current brightness level is not the target level, the brightness is changed.
-void test_effectControl_ChangeBrightness_DecreaseBrightnessLessThanDelta(void) {
-    CCChannel_t expectedChannel = CC_CHANNEL_0;
-    uint32_t testCurrentCompare = 1005;
-    // Instead of dealing with LUTs, set an arbitrary target compare  for an arbitrary target percent
-    uint32_t expectedLEDTargetBrightness = 500;
-    uint32_t expectedTargetCompare = 1000;
-    uint32_t testPWMFreq = 1;  // set freq to 1 so we jump from current to target in one update
-    uint32_t expectedCompareToSet = expectedTargetCompare;
-
-    // Prepare test
-    setLEDBrightness(LED_CHANNEL_1, expectedLEDTargetBrightness);
-
-    // Set Expectations
-    TIMHW_getTimer0CompareValue_ExpectAndReturn(expectedChannel, testCurrentCompare);
-    percentToCompare_ExpectAndReturn(expectedLEDTargetBrightness, expectedTargetCompare);
-    getPWMFrequency_ExpectAndReturn(testPWMFreq);
-    TIMHW_setT0ChannelOutputCompareBuffered_ExpectAndReturn(expectedChannel, expectedCompareToSet, TIMER_OK);
-
-    effectControl_ChangeBrightness(CC_CHANNEL_0);
+    effectControl_ChangeBrightness(expectedChannel);
 }
 
 // Tests that, if the freq is too high for the difference, we step at the smallest delta, which is 1
 void test_effectControl_ChangeBrightness_DeltaCantBe0(void) {
     CCChannel_t expectedChannel = CC_CHANNEL_0;
-    uint32_t testCurrentCompare = 0;
-    // Instead of dealing with LUTs, set an arbitrary target compare  for an arbitrary target percent
-    uint32_t expectedLEDTargetBrightness = 500;
-    uint32_t expectedTargetCompare = 1000;
+    uint32_t testCurrentBrightness = 0;
+    uint32_t testTargetBrightness = 1000;
     uint32_t testPWMFreq = 10000;  // 10000 updates of brightness per second, way more than leves of difference
     uint32_t expectedDelta = 1;
-    uint32_t expectedCompareToSet = testCurrentCompare + expectedDelta;
+    uint32_t expectedPercentToSet = testCurrentBrightness + expectedDelta;
 
     // Prepare test
-    setLEDBrightness(LED_CHANNEL_1, expectedLEDTargetBrightness);
+    LEDCh1.brightnessCtrl.currentBrightness = testCurrentBrightness;
+    setLEDBrightness(LED_CHANNEL_1, testTargetBrightness);
 
     // Set Expectations
-    TIMHW_getTimer0CompareValue_ExpectAndReturn(expectedChannel, testCurrentCompare);
-    percentToCompare_ExpectAndReturn(expectedLEDTargetBrightness, expectedTargetCompare);
     getPWMFrequency_ExpectAndReturn(testPWMFreq);
-    TIMHW_setT0ChannelOutputCompareBuffered_ExpectAndReturn(expectedChannel, expectedCompareToSet, TIMER_OK);
+    setDutyCycle_Expect(expectedChannel, expectedPercentToSet, true);
 
     effectControl_ChangeBrightness(CC_CHANNEL_0);
 }
@@ -452,90 +383,60 @@ void test_effectControl_ChangeBrightness_DeltaCantBe0(void) {
 void test_effectControl_ChangeBrightness_ChangeDuringChange(void) {
     // First Change - Sets the delta to 4, so we do 250 updates at 4, reaching from 0 to 1000 in 250 updates
     CCChannel_t expectedChannel = CC_CHANNEL_0;
-    uint32_t testCurrentCompare = 0;
-    // Instead of dealing with LUTs, set an arbitrary target compare  for an arbitrary target percent
-    uint32_t expectedLEDTargetBrightness = 500;
-    uint32_t expectedTargetCompare = 1000;
+    uint32_t testCurrentBrightness = 0;
+    uint32_t testTargetBrightness = 500;
     uint32_t testPWMFreq = 250;  // 250 updates of brightness per second
-    uint32_t expectedDelta = (expectedTargetCompare - testCurrentCompare) / testPWMFreq;
-    uint32_t expectedCompareToSet = testCurrentCompare + expectedDelta;
+    uint32_t expectedDelta = (testTargetBrightness - testCurrentBrightness) / testPWMFreq;  // 500 / 250 = 4
+    uint32_t expectedPercentToSet = testCurrentBrightness + expectedDelta;
 
     // Prepare test
-    setLEDBrightness(LED_CHANNEL_1, expectedLEDTargetBrightness);
+    LEDCh1.brightnessCtrl.currentBrightness = testCurrentBrightness;
+    setLEDBrightness(LED_CHANNEL_1, testTargetBrightness);
 
     // Set Expectations
-    TIMHW_getTimer0CompareValue_ExpectAndReturn(expectedChannel, testCurrentCompare);
-    percentToCompare_ExpectAndReturn(expectedLEDTargetBrightness, expectedTargetCompare);
     getPWMFrequency_ExpectAndReturn(testPWMFreq);
-    TIMHW_setT0ChannelOutputCompareBuffered_ExpectAndReturn(expectedChannel, expectedCompareToSet, TIMER_OK);
+    setDutyCycle_Expect(expectedChannel, expectedPercentToSet, true);
 
     effectControl_ChangeBrightness(expectedChannel);
 
-    // At this point, COMPARE is at 4
-    testCurrentCompare += expectedDelta;
-    expectedCompareToSet = testCurrentCompare + expectedDelta;
+    // At this point, currentBrightness is at 4, delta remains at 4
+    expectedPercentToSet = LEDCh1.brightnessCtrl.currentBrightness + expectedDelta;
 
     // Set Expectations
-    TIMHW_getTimer0CompareValue_ExpectAndReturn(expectedChannel, testCurrentCompare);
-    percentToCompare_ExpectAndReturn(expectedLEDTargetBrightness, expectedTargetCompare);
-    // getPWMFrequency_ExpectAndReturn(testPWMFreq);
-    TIMHW_setT0ChannelOutputCompareBuffered_ExpectAndReturn(expectedChannel, expectedCompareToSet, TIMER_OK);
+    setDutyCycle_Expect(expectedChannel, expectedPercentToSet, true);
 
     effectControl_ChangeBrightness(expectedChannel);
 
-    // At this point, COMPARE is at 8
-
-    // New level of brightness, 100008
-    testCurrentCompare += expectedDelta;
-    uint32_t newTargetBrightness = 1000;  // just some value
-    expectedTargetCompare =
-        10008;  // Made up compare value for new target brightness, throw a 4 to make delta a round number
+    // At this point, currentBrightness is at 8
+    // New level of brightness, 8008, delta must change
+    uint32_t newTargetBrightness = 8008;  // the 8 at the end is just so delta is a round number
     setLEDBrightness(LED_CHANNEL_1, newTargetBrightness);
-    // Delta should be 10k4 - 4 / 250 = 40
-    expectedDelta = (expectedTargetCompare - 4) / testPWMFreq;
-    expectedCompareToSet = testCurrentCompare + expectedDelta;  // 48
+    // Delta should be 8008 - 8 / 250 = 32
+    expectedDelta = (newTargetBrightness - LEDCh1.brightnessCtrl.currentBrightness) / testPWMFreq;
+    expectedPercentToSet = LEDCh1.brightnessCtrl.currentBrightness + expectedDelta;
 
     // Set Expectations
-    TIMHW_getTimer0CompareValue_ExpectAndReturn(expectedChannel, testCurrentCompare);
-    percentToCompare_ExpectAndReturn(newTargetBrightness, expectedTargetCompare);
     getPWMFrequency_ExpectAndReturn(testPWMFreq);
-    TIMHW_setT0ChannelOutputCompareBuffered_ExpectAndReturn(expectedChannel, expectedCompareToSet, TIMER_OK);
+    setDutyCycle_Expect(expectedChannel, expectedPercentToSet, true);
 
     effectControl_ChangeBrightness(expectedChannel);
 }
 
 // This just increases coverage by testing the rest of the channels
 void test_effectControl_ChangeBrightness_CoverageTestAllChannels(void) {
-    CCChannel_t expectedChannel = CC_CHANNEL_1;
-    uint32_t testCurrentCompare = 0;
-    // Instead of dealing with LUTs, set an arbitrary target compare  for an arbitrary target percent
-    uint32_t expectedLEDTargetBrightness = 500;
-    uint32_t expectedTargetCompare = 1000;
-    uint32_t testPWMFreq = 250;  // 250 updates of brightness per second
-    uint32_t expectedDelta = (expectedTargetCompare - testCurrentCompare) / testPWMFreq;
-    uint32_t expectedCompareToSet = testCurrentCompare + expectedDelta;
+    // Set target and current to same value so _ChangeBrightness leaves at the earliest
+    uint32_t testCurrentBrightness = 500;
+    uint32_t testTargetBrightness = 500;
 
     // Prepare test
-    setLEDBrightness(LED_CHANNEL_2, expectedLEDTargetBrightness);
+    LEDCh2.brightnessCtrl.currentBrightness = testCurrentBrightness;
+    setLEDBrightness(LED_CHANNEL_2, testTargetBrightness);
 
-    // Set Expectations
-    TIMHW_getTimer0CompareValue_ExpectAndReturn(expectedChannel, testCurrentCompare);
-    percentToCompare_ExpectAndReturn(expectedLEDTargetBrightness, expectedTargetCompare);
-    getPWMFrequency_ExpectAndReturn(testPWMFreq);
-    TIMHW_setT0ChannelOutputCompareBuffered_ExpectAndReturn(expectedChannel, expectedCompareToSet, TIMER_OK);
-
-    effectControl_ChangeBrightness(expectedChannel);
-
-    expectedChannel = CC_CHANNEL_2;
+    effectControl_ChangeBrightness(LED_CHANNEL_2);
 
     // Prepare test
-    setLEDBrightness(LED_CHANNEL_3, expectedLEDTargetBrightness);
+    LEDCh3.brightnessCtrl.currentBrightness = testCurrentBrightness;
+    setLEDBrightness(LED_CHANNEL_3, testTargetBrightness);
 
-    // Set Expectations
-    TIMHW_getTimer0CompareValue_ExpectAndReturn(expectedChannel, testCurrentCompare);
-    percentToCompare_ExpectAndReturn(expectedLEDTargetBrightness, expectedTargetCompare);
-    getPWMFrequency_ExpectAndReturn(testPWMFreq);
-    TIMHW_setT0ChannelOutputCompareBuffered_ExpectAndReturn(expectedChannel, expectedCompareToSet, TIMER_OK);
-
-    effectControl_ChangeBrightness(expectedChannel);
+    effectControl_ChangeBrightness(LED_CHANNEL_3);
 }
