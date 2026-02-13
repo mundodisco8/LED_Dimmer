@@ -139,6 +139,30 @@ void test_initEDStripts_success(void) {
 }
 
 /**
+ * getLEDStruct
+ * - Trivial to test, see we get the correct pointer
+ */
+
+void test_getLEDStruct_Success(void) {
+    LED_t* retVal = getLEDStruct(LED_CHANNEL_1);
+
+    TEST_ASSERT_EQUAL_PTR(&LEDCh1, retVal);
+
+    retVal = getLEDStruct(LED_CHANNEL_2);
+
+    TEST_ASSERT_EQUAL_PTR(&LEDCh2, retVal);
+
+    retVal = getLEDStruct(LED_CHANNEL_3);
+
+    TEST_ASSERT_EQUAL_PTR(&LEDCh3, retVal);
+
+    // Bad channel, returns 1
+    retVal = getLEDStruct((LEDChannel_t)150);
+
+    TEST_ASSERT_EQUAL_PTR(&LEDCh1, retVal);
+}
+
+/**
  * setLEDBrightness()
  * - Set the brightness for the channel
  * - Requested brightness is out of bounds
@@ -178,6 +202,18 @@ void test_setLEDBrightness_BrightnessUnderflow(void) {
     TEST_ASSERT_EQUAL_UINT32(expectedPercent, percentSet);
     TEST_ASSERT_EQUAL_UINT32(expectedPercent, LEDCh1.brightnessCtrl.targetBrightness);
     TEST_ASSERT_TRUE(LEDCh1.brightnessCtrl.brightChangeRequestedFlag);
+}
+
+/**
+ * getEffectName
+ */
+
+void test_getEffectName_Success(void) {
+    char* name = getEffectName(ANIM_FIXED);
+    TEST_ASSERT_EQUAL_STRING("Fixed Brightness", name);
+
+    name = getEffectName(ANIM_BREATHE);
+    TEST_ASSERT_EQUAL_STRING("Breathe Effect", name);
 }
 
 /**

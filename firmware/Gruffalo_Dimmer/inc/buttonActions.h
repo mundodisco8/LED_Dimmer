@@ -12,6 +12,11 @@ void button0Released(void* ctx);
 void quad0ClockWise(void* ctx);
 void quad0CounterClockWise(void* ctx);
 
+void button1Pressed(void* ctx);
+void button1Released(void* ctx);
+void quad1ClockWise(void* ctx);
+void quad1CounterClockWise(void* ctx);
+
 uint32_t getRotary(void);
 uint32_t getButton(void);
 

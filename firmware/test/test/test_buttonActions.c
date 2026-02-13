@@ -2,6 +2,7 @@
 
 #include "buttonActions.h"
 #include "mock_PWMControl.h"
+#include "mock_app_log.h"
 #include "mock_buttons.h"
 #include "mock_debounce.h"
 #include "mock_effectControl.h"
@@ -106,6 +107,7 @@ void test_button0Released_LongPress(void) {
 
     // Set Expectations
     SLP_getSystemTickInMs_ExpectAndReturn(timeOfRelease);
+    // app_log_debug_expec();
     button0Released(&testBtn);
 }
 
@@ -177,4 +179,44 @@ void test_quad0CounterClockWise_MinBrightness(void) {
     getLEDBrightness_ExpectAndReturn(expectedChannel, expectedInitialBrightness);
 
     quad0CounterClockWise(NULL);
+}
+
+/**
+ * button1Released
+ * - Shortpress changes from fixed to breathe
+ * - Shortpress changes from breathe to fixed
+ */
+
+void test_button1Released_FixedToBreathe(void) {
+    // Shortpress, current lastPressMs is 0
+    button_t testBtn = {.lastPressMs = 0};
+    uint32_t expectedReleaseTime = 1;
+    LEDChannel_t testChannel = LED_CHANNEL_1;
+    anim_t testCurrAnimation = ANIM_FIXED;
+    anim_t expectedNewAnimation = ANIM_BREATHE;
+    LED_t testLED = {.currAnimation = testCurrAnimation};
+
+    // Set Expectations
+    SLP_getSystemTickInMs_ExpectAndReturn(expectedReleaseTime);
+    getLEDStruct_ExpectAndReturn(testChannel, &testLED);
+
+    button1Released(&testBtn);
+    TEST_ASSERT_EQUAL_UINT32(expectedNewAnimation, testLED.currAnimation);
+}
+
+void test_button1Released_BreatheToFixed(void) {
+    // Shortpress, current lastPressMs is 0
+    button_t testBtn = {.lastPressMs = 0};
+    uint32_t expectedReleaseTime = 1;
+    LEDChannel_t testChannel = LED_CHANNEL_1;
+    anim_t testCurrAnimation = ANIM_BREATHE;
+    anim_t expectedNewAnimation = ANIM_FIXED;
+    LED_t testLED = {.currAnimation = testCurrAnimation};
+
+    // Set Expectations
+    SLP_getSystemTickInMs_ExpectAndReturn(expectedReleaseTime);
+    getLEDStruct_ExpectAndReturn(testChannel, &testLED);
+
+    button1Released(&testBtn);
+    TEST_ASSERT_EQUAL_UINT32(expectedNewAnimation, testLED.currAnimation);
 }

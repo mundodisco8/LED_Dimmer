@@ -102,7 +102,7 @@ void quad0ClockWise(void* ctx) {
         const uint32_t newBrightness = currBrightness + BRIGHTNESS_DELTA;
         // No need to check return
         uint32_t setValue = setLEDBrightness(channelIdx, newBrightness);
-        app_log_info("Set Ch%d PWM to %" PRIu32 "\r\n", channelIdx, setValue);
+        app_log_degub("Set Ch%d PWM to %" PRIu32 "\r\n", channelIdx, setValue);
     }
 }
 
@@ -115,6 +115,36 @@ void quad0CounterClockWise(void* ctx) {
         // No need to check return
         uint32_t setValue = setLEDBrightness(channelIdx, newBrightness);
 
-        app_log_info("Set Ch%d PWM to %" PRIu32 "\r\n", channelIdx, setValue);
+        app_log_debug("Set Ch%d PWM to %" PRIu32 "\r\n", channelIdx, setValue);
     }
 }
+
+void button1Pressed(void* ctx) {
+    (void)ctx;
+    // app_log_debug("Btn1 Pressed\r\n");
+}
+
+void button1Released(void* ctx) {
+    // app_log_debug("Btn1 Released\r\n");
+    // Cast the context as a button_t pointer
+    button_t* btnPtr = (button_t*)ctx;
+    uint64_t currTime = SLP_getSystemTickInMs();
+    if ((currTime - btnPtr->lastPressMs) > LONG_PRESS_DELTA) {
+        // Long Press
+        app_log_debug("IT WAS A LONGPRESS\r\n");
+    } else {
+        // Short Press
+        LED_t* LED_ptr = getLEDStruct(currChannel[channelIdx]);
+        // "increase" the current animation
+        LED_ptr->currAnimation++;
+        if (LED_ptr->currAnimation == ANIM_MAX_EFFECTS) {
+            // reset on overflow
+            LED_ptr->currAnimation = ANIM_FIXED;
+        }
+        app_log_info("Ch %d set to Mode %s\r\n", channelIdx, getEffectName(LED_ptr->currAnimation));
+    }
+}
+
+void quad1ClockWise(void* ctx) { (void)ctx; }
+
+void quad1CounterClockWise(void* ctx) { (void)ctx; }

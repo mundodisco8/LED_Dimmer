@@ -113,9 +113,9 @@ void app_init(void) {
     initButton(&button0, (pinPort_t)btn0_PORT, btn0_PIN, button0Pressed, button0Released);
     initQuadEncoder(&quad0, (pinPort_t)quad0_0_PORT, quad0_0_PIN, (pinPort_t)quad0_1_PORT, quad0_1_PIN, quad0ClockWise,
                     quad0CounterClockWise);
-    initButton(&button1, (pinPort_t)btn1_PORT, btn1_PIN, button0Pressed, button0Released);
-    initQuadEncoder(&quad1, (pinPort_t)quad1_0_PORT, quad1_0_PIN, (pinPort_t)quad1_1_PORT, quad1_1_PIN, quad0ClockWise,
-                    quad0CounterClockWise);
+    initButton(&button1, (pinPort_t)btn1_PORT, btn1_PIN, button1Pressed, button1Released);
+    initQuadEncoder(&quad1, (pinPort_t)quad1_0_PORT, quad1_0_PIN, (pinPort_t)quad1_1_PORT, quad1_1_PIN, quad1ClockWise,
+                    quad1CounterClockWise);
     btnError_t retVal = configureButtonInterrupts(&button0, gpioCallbackButton, &button0GPIOIntNo);
     app_assert_status_f((retVal != BTN_OK), "Error configuring Btn 0 interrupts\r\n");
     retVal = configureQuadratureInterrupts(&quad0, gpioCallbackQuad, &quad0GPIOIntNo);

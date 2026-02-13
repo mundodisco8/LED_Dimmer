@@ -112,7 +112,7 @@ efferr_t initLEDStrips(void) {
  * @param channelNo the channel which LED struct we want to retrieve
  * @return a pointer to the LED_t struct of the channel passed as parameter. On wrong channel, defaults to LED Ch 1
  */
-static LED_t* getLEDStruct(const LEDChannel_t channelNo) {
+LED_t* getLEDStruct(const LEDChannel_t channelNo) {
     LED_t* LED_ptr = NULL;
     switch (channelNo) {
         case LED_CHANNEL_2: {
@@ -148,6 +148,23 @@ static CCChannel_t getCCChannelFromLED(LEDChannel_t channel) {
         case LED_CHANNEL_1:
         default:
             return CC_CHANNEL_0;
+    }
+}
+
+/**
+ * @brief Get the name of the current Effect as a string
+ * @param effectType a type of effect
+ * @return char* a null terminated string with the name of the effect
+ */
+char* getEffectName(const anim_t effectType) {
+    switch (effectType) {
+        case ANIM_BREATHE: {
+            return "Breathe Effect";
+        }
+        case ANIM_FIXED: /* fall-through */
+        default: {
+            return "Fixed Brightness";
+        }
     }
 }
 

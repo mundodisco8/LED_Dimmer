@@ -34,8 +34,9 @@ typedef enum channelNo { LED_CHANNEL_1 = 0, LED_CHANNEL_2, LED_CHANNEL_3, CH_COU
  * @brief Type with the valid animation effects for an LED
  */
 typedef enum anim {
-    ANIM_FIXED = 0,   // Constant Brightness
-    ANIM_BREATHE = 1  // Breathe Effect
+    ANIM_FIXED = 0,    // Constant Brightness
+    ANIM_BREATHE = 1,  // Breathe Effect
+    ANIM_MAX_EFFECTS
 } anim_t;
 
 /*
@@ -111,6 +112,16 @@ efferr_t initLEDStrips(void);
 
 uint32_t setLEDBrightness(const LEDChannel_t channel, uint32_t percent);
 uint32_t getLEDBrightness(const LEDChannel_t channel);
+
+/**
+ * @brief Returns a pointer to the LED struct for the desired channel
+ */
+LED_t* getLEDStruct(const LEDChannel_t channelNo);
+
+/**
+ * @brief Get the name of the current Effect as a string
+ */
+char* getEffectName(const anim_t effectType);
 
 efferr_t breatheSetPeriod(const LEDChannel_t channelNo, const uint32_t newPeriodms);
 
