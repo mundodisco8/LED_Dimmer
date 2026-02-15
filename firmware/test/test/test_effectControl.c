@@ -97,6 +97,7 @@ void test_initEDStripts_success(void) {
     // just for this test to pass, so I'm going to test individual members... grrrrr
     // TEST_ASSERT_EQUAL_MEMORY(&expectedLED1Ch, &LEDCh1, sizeof(LED_t));
     TEST_ASSERT_EQUAL_UINT32(defaultLEDConfig.currAnimation, LEDCh1.currAnimation);
+    TEST_ASSERT_EQUAL_UINT32(CC_CHANNEL_0, LEDCh1.CCChannel);
 
     TEST_ASSERT_EQUAL_UINT32(defaultLEDConfig.brightnessCtrl.targetBrightness, LEDCh1.brightnessCtrl.targetBrightness);
     TEST_ASSERT_EQUAL_UINT32(defaultLEDConfig.brightnessCtrl.delta, LEDCh1.brightnessCtrl.delta);
@@ -111,6 +112,7 @@ void test_initEDStripts_success(void) {
 
     // Channel 2
     TEST_ASSERT_EQUAL_UINT32(defaultLEDConfig.currAnimation, LEDCh2.currAnimation);
+    TEST_ASSERT_EQUAL_UINT32(CC_CHANNEL_1, LEDCh2.CCChannel);
 
     TEST_ASSERT_EQUAL_UINT32(defaultLEDConfig.brightnessCtrl.targetBrightness, LEDCh2.brightnessCtrl.targetBrightness);
     TEST_ASSERT_EQUAL_UINT32(defaultLEDConfig.brightnessCtrl.delta, LEDCh2.brightnessCtrl.delta);
@@ -125,6 +127,7 @@ void test_initEDStripts_success(void) {
 
     // Channel 3
     TEST_ASSERT_EQUAL_UINT32(defaultLEDConfig.currAnimation, LEDCh3.currAnimation);
+    TEST_ASSERT_EQUAL_UINT32(CC_CHANNEL_2, LEDCh3.CCChannel);
 
     TEST_ASSERT_EQUAL_UINT32(defaultLEDConfig.brightnessCtrl.targetBrightness, LEDCh3.brightnessCtrl.targetBrightness);
     TEST_ASSERT_EQUAL_UINT32(defaultLEDConfig.brightnessCtrl.delta, LEDCh3.brightnessCtrl.delta);

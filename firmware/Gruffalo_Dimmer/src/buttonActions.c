@@ -102,7 +102,7 @@ void quad0ClockWise(void* ctx) {
         const uint32_t newBrightness = currBrightness + BRIGHTNESS_DELTA;
         // No need to check return
         uint32_t setValue = setLEDBrightness(channelIdx, newBrightness);
-        app_log_degub("Set Ch%d PWM to %" PRIu32 "\r\n", channelIdx, setValue);
+        app_log_debug("Set Ch%d PWM to %" PRIu32 "\r\n", channelIdx, setValue);
     }
 }
 

@@ -104,6 +104,11 @@ efferr_t initLEDStrips(void) {
         currChannel_ptr->breatheCtrl.currLUTIndex = 0;
     }
 
+    // Link LEDs and PWM channels
+    LEDCh1.CCChannel = CC_CHANNEL_0;
+    LEDCh2.CCChannel = CC_CHANNEL_1;
+    LEDCh3.CCChannel = CC_CHANNEL_2;
+
     return EFF_OK;
 }
 
@@ -131,24 +136,6 @@ LED_t* getLEDStruct(const LEDChannel_t channelNo) {
         }
     }
     return LED_ptr;
-}
-
-/**
- * @brief Helper to map LED channel to CC channel
- *
- * @param channel the LED Channel Number
- * @return CCChannel_t with the CCChannel for that LEDChannel. On wrong LEDChannel, defaults to CC Ch 0
- */
-static CCChannel_t getCCChannelFromLED(LEDChannel_t channel) {
-    switch (channel) {
-        case LED_CHANNEL_2:
-            return CC_CHANNEL_1;
-        case LED_CHANNEL_3:
-            return CC_CHANNEL_2;
-        case LED_CHANNEL_1:
-        default:
-            return CC_CHANNEL_0;
-    }
 }
 
 /**
@@ -236,7 +223,6 @@ efferr_t breatheSetPeriod(const LEDChannel_t channelNo, const uint32_t newPeriod
 }
 
 STATIC void effectControl_ChangeBrightness(LEDChannel_t LEDChannel) {
-    const CCChannel_t PWMchannel = getCCChannelFromLED(LEDChannel);
     LED_t* LED_ptr = getLEDStruct(LEDChannel);
 
     const uint32_t currentLevel = LED_ptr->brightnessCtrl.currentBrightness;
@@ -278,7 +264,7 @@ STATIC void effectControl_ChangeBrightness(LEDChannel_t LEDChannel) {
         // Increase towards target
         LED_ptr->brightnessCtrl.currentBrightness += step;
     }  // and if both are equal, don't do anything
-    setDutyCycle(PWMchannel, LED_ptr->brightnessCtrl.currentBrightness, true);
+    setDutyCycle(LED_ptr->CCChannel, LED_ptr->brightnessCtrl.currentBrightness, true);
 }
 
 void effectControlLoop(void) {

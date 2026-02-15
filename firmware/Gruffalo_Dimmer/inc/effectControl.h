@@ -5,6 +5,9 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+// Our libs
+#include "timer_HW_types.h"
+
 /**
   * @brief Size of the Breathe Effect brightness LUT. 100 samples ascending + 100% + 99 samples descending
   * Is not entirely symmetrical but helps keeping the effect periof being a nice round number
@@ -77,6 +80,7 @@ typedef struct breatheControl {
 typedef struct LED {
     anim_t currAnimation;                // The type of animation currently being played in the LED
     uint32_t pmwPeriodms;                // The PWM period in ms //TODO: I think this can safely go
+    CCChannel_t CCChannel;               // The PWM channel associated to this LED
     brightnessControl_t brightnessCtrl;  // Brightness Control Parameters
     breatheControl_t breatheCtrl;        // Parameters of the breathe effect for this LED
 } LED_t;
