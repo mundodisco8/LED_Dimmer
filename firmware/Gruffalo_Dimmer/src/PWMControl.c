@@ -61,8 +61,11 @@ const float GAMMA_VALUE = 2.3;
 // PWM Parameters
 // never set a PWM frequency that results in less than 12 bits of resolution
 const uint32_t MIN_PWM_LEVELS = 4096UL;
+
 // Never set a PWM frequency of less than 250Hz.
 const uint32_t MIN_PWM_FREQ = 250UL;
+// TODO: We can't get over 1KHz, as we are using ms to do some maths. We would have to change to μs to avoid this.
+const uint32_t MAX_PWM_FREQ = 1000UL;
 
 /**
  * @brief The frequency at which the PWM runs
@@ -70,9 +73,9 @@ const uint32_t MIN_PWM_FREQ = 250UL;
  */
 const uint32_t PWM_FREQUENCY = 1000UL;
 
-// With a 32 bit register and a clock at 38400000
-// Min PWM Freq -> 250Hz -> TOP is 153599
-// Max PWM Freq -> TOP to 4096 -> 38400000 / 4096 = 9375Hz
+// With a 32 bit register and a clock at 38400000 and up-down count
+// Min PWM Freq -> 250Hz -> TOP is 76800
+// Max PWM Freq -> TOP to 4096 -> 38400000 / (4096 * 2) = 4687.5Hz
 
 typedef struct LEDChannel {
     uint8_t brightness;      // in % [0-100UL]
@@ -111,12 +114,16 @@ STATIC void configureTimerPWMFrequency(uint32_t frequencyHz) {
     uint32_t timerFreq = TIMHW_getTimer0Frequency();
     // Check that frequency is not too low for LEDs
     if (frequencyHz < MIN_PWM_FREQ) {
-        // Set freq to the minimum, MIN_PWM_FREQ
-        frequencyHz = MIN_PWM_FREQ;
+        app_assert(frequencyHz < MIN_PWM_FREQ, "\r\nFrequency (%" PRIu32 "Hz) is too low!", frequencyHz);
     } else if (frequencyHz > (timerFreq / MIN_PWM_LEVELS)) {
         // Freq is so high we are losing resolution
+        app_assert(frequencyHz > (timerFreq / MIN_PWM_LEVELS),
+                   "\r\nFrequency (%" PRIu32 "Hz) is too high! Resolution would be too low", frequencyHz);
         frequencyHz = timerFreq / MIN_PWM_LEVELS;
-    }  // Else, frequencyHz is within range (>4096 quantization levels AND >250Hz)
+    } else if (frequencyHz > MAX_PWM_FREQ) {
+        app_assert(frequencyHz > MAX_PWM_FREQ, "\r\nFrequency (%" PRIu32 "Hz) is too high!", frequencyHz);
+    }
+    // Else, frequencyHz is within range (>4096 quantization levels AND >250Hz)
     // Configure TIMER frequency
     uint32_t top = (timerFreq / (2 * frequencyHz));
     TIMHW_setTimer0TopValue(top);

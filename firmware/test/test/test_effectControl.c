@@ -3,6 +3,10 @@
 // StdLib libraries
 #include <string.h>
 
+// Silabs libs
+#define PRINT_ENABLED 1
+#include "app_assert.h"
+
 // Our libraries
 #include "effectControl.h"
 #include "mock_PWMControl.h"
@@ -49,7 +53,8 @@ void tearDown(void) {}
  */
 
 void test_fillBreatheLUT_passedParams(void) {
-    breatheParams_t testParams = {.maxBrightness = 100, .minBrightness = 10, .beta = .8, .gamma = .2, .LUTSize = 20};
+    breatheParams_t testParams = {
+        .maxBrightness = 10000, .minBrightness = 1000, .beta = .8, .gamma = .2, .LUTSize = 20};
 
     // Got this values from the Jupiter Notebook on docs
     uint16_t expectedValues[20] = {1003, 1008, 1020, 1046, 1100, 1205, 1395,  1716, 2218, 2946,
@@ -72,7 +77,7 @@ void test_fillBreatheLUT_passedNull(void) {
  * Init LED Strips
  */
 
-void test_initEDStripts_success(void) {
+void test_initLEDStrips_success(void) {
     efferr_t expectedRetVal = EFF_OK;
 
     // Expectations
@@ -140,6 +145,28 @@ void test_initEDStripts_success(void) {
     TEST_ASSERT_EQUAL_UINT32(defaultLEDConfig.breatheCtrl.currWave, LEDCh3.breatheCtrl.currWave);
     TEST_ASSERT_EQUAL_UINT32(defaultLEDConfig.breatheCtrl.periodms, LEDCh3.breatheCtrl.periodms);
     TEST_ASSERT_EQUAL_UINT32(defaultLEDConfig.breatheCtrl.wavesPerSample, LEDCh3.breatheCtrl.wavesPerSample);
+}
+
+void test_initLEDStrips_assert(void) {
+    efferr_t expectedRetVal = EFF_OK;
+
+    // Expectations
+    LED_t defaultLEDConfig = {.currAnimation = ANIM_FIXED,
+                              .brightnessCtrl.targetBrightness = 5000UL,
+                              .brightnessCtrl.delta = 0UL,
+                              .brightnessCtrl.brightChangeRequestedFlag = true,
+                              .pmwPeriodms = 1UL,
+                              .breatheCtrl.currLUTIndex = 0UL,
+                              .breatheCtrl.currWave = 0UL,
+                              .breatheCtrl.periodms = 0UL,
+                              .breatheCtrl.wavesPerSample = 0UL};
+
+    // Expectations
+    getPWMFrequency_ExpectAndReturn(5000);
+    getPWMFrequency_ExpectAndReturn(1);
+    getPWMFrequency_ExpectAndReturn(1);
+
+    efferr_t retVal = initLEDStrips();
 }
 
 /**
