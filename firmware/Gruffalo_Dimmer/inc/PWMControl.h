@@ -22,7 +22,7 @@ extern volatile uint32_t dutyCycle2;
  * @brief Max and min brightness  (in the case of overflow)
  */
 #define MAX_BRIGHTNESS 10000UL
-#define MIN_BRIGHTNESS 0UL
+#define MIN_BRIGHTNESS 1000UL
 
 /**
  * @brief

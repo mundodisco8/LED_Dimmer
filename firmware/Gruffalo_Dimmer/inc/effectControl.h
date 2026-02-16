@@ -9,8 +9,7 @@
 #include "timer_HW_types.h"
 
 /**
-  * @brief Size of the Breathe Effect brightness LUT. 100 samples ascending + 100% + 99 samples descending
-  * Is not entirely symmetrical but helps keeping the effect periof being a nice round number
+  * @brief Size of the Breathe Effect brightness LUT. 0% + 99 samples ascending + 100% + 99 samples descending
   */
 #define BREATHE_LUT_SIZE 200U
 
@@ -91,10 +90,11 @@ typedef struct LED {
 //  */
 // extern uint16_t gausianBreatheLUT[BREATHE_LUT_SIZE];
 
-// /**
-//  * @brief Default parameters for the Breathe effect, in case you don't want to tweak them
-//  */
-// extern breatheParams_t defaultParams;
+/**
+ * @brief Default parameters of the breathe effect, in case none are provided
+ *
+ */
+extern const breatheParams_t DEFAULT_BREATHE_PARAMS;
 
 // /**
 //  * @brief

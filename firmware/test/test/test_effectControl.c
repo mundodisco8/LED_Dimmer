@@ -25,7 +25,8 @@ extern LED_t LEDCh1;
 extern LED_t LEDCh2;
 extern LED_t LEDCh3;
 
-extern void effectControl_ChangeBrightness(CCChannel_t channel);
+extern void effectControl_FadeBrightness(CCChannel_t channel);
+extern void effectControl_Breathe(CCChannel_t channel);
 
 /*
  * Unit tests for "effectControl.h"
@@ -318,7 +319,7 @@ void test_breatheSetPeriod_PeriodIsNotMultiplePWM(void) {
 ////
 
 // This case tests that when the current brightness level is not the target level, the brightness is changed.
-void test_effectControl_ChangeBrightness_IncreaseBrightness(void) {
+void test_effectControl_FadeBrightness_IncreaseBrightness(void) {
     CCChannel_t expectedChannel = CC_CHANNEL_0;
     uint32_t testCurrentBrightness = 0;
     // Instead of dealing with LUTs, set an arbitrary target compare  for an arbitrary target percent
@@ -335,11 +336,11 @@ void test_effectControl_ChangeBrightness_IncreaseBrightness(void) {
     getPWMFrequency_ExpectAndReturn(testPWMFreq);
     setDutyCycle_Expect(expectedChannel, expectedPercentToSet, true);
 
-    effectControl_ChangeBrightness(expectedChannel);
+    effectControl_FadeBrightness(expectedChannel);
 }
 
 // This test the case where the brightness is decreased
-void test_effectControl_ChangeBrightness_DecreaseBrightness(void) {
+void test_effectControl_FadeBrightness_DecreaseBrightness(void) {
     CCChannel_t expectedChannel = CC_CHANNEL_0;
     uint32_t testCurrentBrightness = 8000;
     // Instead of dealing with LUTs, set an arbitrary target compare  for an arbitrary target percent
@@ -356,11 +357,11 @@ void test_effectControl_ChangeBrightness_DecreaseBrightness(void) {
     getPWMFrequency_ExpectAndReturn(testPWMFreq);
     setDutyCycle_Expect(expectedChannel, expectedPercentToSet, true);
 
-    effectControl_ChangeBrightness(expectedChannel);
+    effectControl_FadeBrightness(expectedChannel);
 }
 
 // This test the case where the brightness is decreased
-void test_effectControl_ChangeBrightness_DoNothingIfNoChangesRequired(void) {
+void test_effectControl_FadeBrightness_DoNothingIfNoChangesRequired(void) {
     CCChannel_t expectedChannel = CC_CHANNEL_0;
     uint32_t testCurrentBrightness = 2000;
     // Instead of dealing with LUTs, set an arbitrary target compare  for an arbitrary target percent
@@ -371,12 +372,12 @@ void test_effectControl_ChangeBrightness_DoNothingIfNoChangesRequired(void) {
     LEDCh1.brightnessCtrl.currentBrightness = testCurrentBrightness;
     setLEDBrightness(LED_CHANNEL_1, testTargetBrightness);
 
-    effectControl_ChangeBrightness(expectedChannel);
+    effectControl_FadeBrightness(expectedChannel);
 }
 
 // Test the case where the change in brightness is lesser than the delta. Normally the last update before getting to the
 // target
-void test_effectControl_ChangeBrightness_IncreaseBrightnessLessThanDelta(void) {
+void test_effectControl_FadeBrightness_IncreaseBrightnessLessThanDelta(void) {
     CCChannel_t expectedChannel = CC_CHANNEL_0;
 
     uint32_t testCurrentBrightness = 998;
@@ -394,11 +395,11 @@ void test_effectControl_ChangeBrightness_IncreaseBrightnessLessThanDelta(void) {
     // Set Expectations
     setDutyCycle_Expect(expectedChannel, expectedPercentToSet, true);
 
-    effectControl_ChangeBrightness(expectedChannel);
+    effectControl_FadeBrightness(expectedChannel);
 }
 
 // Tests that, if the freq is too high for the difference, we step at the smallest delta, which is 1
-void test_effectControl_ChangeBrightness_DeltaCantBe0(void) {
+void test_effectControl_FadeBrightness_DeltaCantBe0(void) {
     CCChannel_t expectedChannel = CC_CHANNEL_0;
     uint32_t testCurrentBrightness = 0;
     uint32_t testTargetBrightness = 1000;
@@ -414,12 +415,12 @@ void test_effectControl_ChangeBrightness_DeltaCantBe0(void) {
     getPWMFrequency_ExpectAndReturn(testPWMFreq);
     setDutyCycle_Expect(expectedChannel, expectedPercentToSet, true);
 
-    effectControl_ChangeBrightness(CC_CHANNEL_0);
+    effectControl_FadeBrightness(CC_CHANNEL_0);
 }
 
 // Check that, if brightness is changed AGAIN while we are triggering a change, the delta changes accordingly so the
 // target brightness is still reached a second after the last change (not the first change)
-void test_effectControl_ChangeBrightness_ChangeDuringChange(void) {
+void test_effectControl_FadeBrightness_ChangeDuringChange(void) {
     // First Change - Sets the delta to 4, so we do 250 updates at 4, reaching from 0 to 1000 in 250 updates
     CCChannel_t expectedChannel = CC_CHANNEL_0;
     uint32_t testCurrentBrightness = 0;
@@ -436,7 +437,7 @@ void test_effectControl_ChangeBrightness_ChangeDuringChange(void) {
     getPWMFrequency_ExpectAndReturn(testPWMFreq);
     setDutyCycle_Expect(expectedChannel, expectedPercentToSet, true);
 
-    effectControl_ChangeBrightness(expectedChannel);
+    effectControl_FadeBrightness(expectedChannel);
 
     // At this point, currentBrightness is at 4, delta remains at 4
     expectedPercentToSet = LEDCh1.brightnessCtrl.currentBrightness + expectedDelta;
@@ -444,7 +445,7 @@ void test_effectControl_ChangeBrightness_ChangeDuringChange(void) {
     // Set Expectations
     setDutyCycle_Expect(expectedChannel, expectedPercentToSet, true);
 
-    effectControl_ChangeBrightness(expectedChannel);
+    effectControl_FadeBrightness(expectedChannel);
 
     // At this point, currentBrightness is at 8
     // New level of brightness, 8008, delta must change
@@ -458,11 +459,11 @@ void test_effectControl_ChangeBrightness_ChangeDuringChange(void) {
     getPWMFrequency_ExpectAndReturn(testPWMFreq);
     setDutyCycle_Expect(expectedChannel, expectedPercentToSet, true);
 
-    effectControl_ChangeBrightness(expectedChannel);
+    effectControl_FadeBrightness(expectedChannel);
 }
 
 // This just increases coverage by testing the rest of the channels
-void test_effectControl_ChangeBrightness_CoverageTestAllChannels(void) {
+void test_effectControl_FadeBrightness_CoverageTestAllChannels(void) {
     // Set target and current to same value so _ChangeBrightness leaves at the earliest
     uint32_t testCurrentBrightness = 500;
     uint32_t testTargetBrightness = 500;
@@ -471,11 +472,133 @@ void test_effectControl_ChangeBrightness_CoverageTestAllChannels(void) {
     LEDCh2.brightnessCtrl.currentBrightness = testCurrentBrightness;
     setLEDBrightness(LED_CHANNEL_2, testTargetBrightness);
 
-    effectControl_ChangeBrightness(LED_CHANNEL_2);
+    effectControl_FadeBrightness(LED_CHANNEL_2);
 
     // Prepare test
     LEDCh3.brightnessCtrl.currentBrightness = testCurrentBrightness;
     setLEDBrightness(LED_CHANNEL_3, testTargetBrightness);
 
-    effectControl_ChangeBrightness(LED_CHANNEL_3);
+    effectControl_FadeBrightness(LED_CHANNEL_3);
+}
+
+/**
+ * effectControl_Breathe
+ * -
+ * - Increase sample
+ * - No light if period is 0
+ * - Period has decreased and wavesPerSample is now below currWave
+ * - LUT index overflows to 0
+ */
+
+void test_effectControl_Breathe_setsBrightness(void) {
+    LEDChannel_t testLEDChannel = LED_CHANNEL_1;
+    uint32_t testCurrWave = 0;         // played n waves...
+    uint32_t testWavesPerSample = 10;  // ... and we reset in the next
+    LEDCh1.breatheCtrl.currWave = testCurrWave;
+    LEDCh1.breatheCtrl.wavesPerSample = testWavesPerSample;
+
+    CCChannel_t expectedPWMChannel = CC_CHANNEL_0;
+    uint32_t expectedSampleToPlay = 0;
+    uint32_t expectedPercentToSet = gausianBreatheLUT[expectedSampleToPlay];
+    uint32_t expectedCurrWave = getLEDStruct(testLEDChannel)->breatheCtrl.currWave + 1;
+
+    // Set Expectations
+    setDutyCycle_Expect(expectedPWMChannel, expectedPercentToSet, true);
+
+    effectControl_Breathe(testLEDChannel);
+    // Check the current wave counter has increased
+    TEST_ASSERT_EQUAL_UINT32(expectedCurrWave, getLEDStruct(testLEDChannel)->breatheCtrl.currWave);
+}
+
+void test_effectControl_Breathe_MoveToNextSample(void) {
+    LEDChannel_t testLEDChannel = LED_CHANNEL_1;
+    uint32_t testCurrWave = 4;                       // played n waves...
+    uint32_t testWavesPerSample = testCurrWave + 1;  // ... and we reset in the next
+    LEDCh1.breatheCtrl.currWave = testCurrWave;
+    LEDCh1.breatheCtrl.wavesPerSample = testWavesPerSample;
+
+    CCChannel_t expectedPWMChannel = CC_CHANNEL_0;
+    uint32_t expectedSampleToPlay = 0;
+    uint32_t expectedPercentToSet = gausianBreatheLUT[expectedSampleToPlay];
+    uint32_t expectedCurrWave = 0;  // currWave should reset
+    uint32_t expectedLUTIdx = getLEDStruct(testLEDChannel)->breatheCtrl.currLUTIndex + 1;
+
+    // Set Expectations
+    setDutyCycle_Expect(expectedPWMChannel, expectedPercentToSet, true);
+
+    effectControl_Breathe(testLEDChannel);
+    // Check the current wave counter has reset
+    TEST_ASSERT_EQUAL_UINT32(expectedCurrWave, getLEDStruct(testLEDChannel)->breatheCtrl.currWave);
+    // Check the LUT index has increased
+    TEST_ASSERT_EQUAL_UINT32(expectedLUTIdx, getLEDStruct(testLEDChannel)->breatheCtrl.currLUTIndex);
+}
+
+void test_effectControl_Breathe_CurrWaveOverWavesPerSample(void) {
+    LEDChannel_t testLEDChannel = LED_CHANNEL_1;
+    uint32_t testLUTIndex = 5;
+    uint32_t testCurrWave = 10;  // supose our current wave is 10
+    // And we reduce period so that we only play...
+    uint32_t testWavesPerSample = 5;  // 5 waves per sample
+
+    LEDCh1.breatheCtrl.currLUTIndex = testLUTIndex;
+    LEDCh1.breatheCtrl.currWave = testCurrWave;
+    LEDCh1.breatheCtrl.wavesPerSample = testWavesPerSample;
+
+    CCChannel_t expectedPWMChannel = CC_CHANNEL_0;
+    uint32_t expectedSampleToPlay = 0;
+    uint32_t expectedPercentToSet = gausianBreatheLUT[expectedSampleToPlay];
+    uint32_t expectedCurrWave = 0;  // currWave should reset
+    uint32_t expectedLUTIdx = getLEDStruct(testLEDChannel)->breatheCtrl.currLUTIndex + 1;
+
+    // Set Expectations
+    setDutyCycle_Expect(expectedPWMChannel, expectedPercentToSet, true);
+
+    effectControl_Breathe(testLEDChannel);
+    // Check the current wave counter has reset
+    TEST_ASSERT_EQUAL_UINT32(expectedCurrWave, getLEDStruct(testLEDChannel)->breatheCtrl.currWave);
+    // Check the LUT index has increased
+    TEST_ASSERT_EQUAL_UINT32(expectedLUTIdx, getLEDStruct(testLEDChannel)->breatheCtrl.currLUTIndex);
+}
+
+void test_effectControl_Breathe_LUTIndexOverflow(void) {
+    LEDChannel_t testLEDChannel = LED_CHANNEL_1;
+    uint32_t testCurrWave = 4;                       // played n waves...
+    uint32_t testWavesPerSample = testCurrWave + 1;  // ... and we reset in the next
+    uint32_t testLUTIdx = BREATHE_LUT_SIZE;
+    LEDCh1.breatheCtrl.currLUTIndex = testLUTIdx;
+    LEDCh1.breatheCtrl.currWave = testCurrWave;
+    LEDCh1.breatheCtrl.wavesPerSample = testWavesPerSample;
+
+    CCChannel_t expectedPWMChannel = CC_CHANNEL_0;
+    uint32_t expectedSampleToPlay = 0;
+    uint32_t expectedPercentToSet = gausianBreatheLUT[expectedSampleToPlay];
+    uint32_t expectedCurrWave = 0;  // currWave should reset
+    uint32_t expectedLUTIdx = 0;    // lutIndex should reset
+
+    // Set Expectations
+    setDutyCycle_Expect(expectedPWMChannel, expectedPercentToSet, true);
+
+    effectControl_Breathe(testLEDChannel);
+    // Check the current wave counter has reset
+    TEST_ASSERT_EQUAL_UINT32(expectedCurrWave, getLEDStruct(testLEDChannel)->breatheCtrl.currWave);
+    // Check the LUT index has increased
+    TEST_ASSERT_EQUAL_UINT32(expectedLUTIdx, getLEDStruct(testLEDChannel)->breatheCtrl.currLUTIndex);
+}
+
+void test_effectControl_Breathe_WavesPerSampleIs0(void) {
+    LEDChannel_t testLEDChannel = LED_CHANNEL_1;
+    uint32_t testWavesPerSample = 0;         //
+    uint32_t testCurrWave = 4;               // just put some values here to see that they don't change
+    uint32_t testLUTIdx = BREATHE_LUT_SIZE;  // same here
+    LEDCh1.breatheCtrl.currLUTIndex = testLUTIdx;
+    LEDCh1.breatheCtrl.currWave = testCurrWave;
+    LEDCh1.breatheCtrl.wavesPerSample = testWavesPerSample;
+
+    // Set Expectations - expectation is that setDutyCycle is not called!
+
+    effectControl_Breathe(testLEDChannel);
+    // Check the current wave counter has reset
+    TEST_ASSERT_EQUAL_UINT32(testCurrWave, getLEDStruct(testLEDChannel)->breatheCtrl.currWave);
+    // Check the LUT index has increased
+    TEST_ASSERT_EQUAL_UINT32(testLUTIdx, getLEDStruct(testLEDChannel)->breatheCtrl.currLUTIndex);
 }

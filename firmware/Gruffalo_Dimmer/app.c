@@ -131,6 +131,10 @@ void app_init(void) {
     initTimer0CCChannel(CC_CHANNEL_1, (pinPort_t)pwm1_PORT, pwm1_PIN, PWM_ACTIVE_HIGH);
     initTimer0CCChannel(CC_CHANNEL_2, (pinPort_t)pwm2_PORT, pwm2_PIN, PWM_ACTIVE_HIGH);
 
+    breatheParams_t breatheEffectParams = DEFAULT_BREATHE_PARAMS;
+
+    fillBreatheEffectLUT(&breatheEffectParams);
+
     initLEDStrips();
 }
 

@@ -14,6 +14,7 @@
 #include <math.h>
 
 // SiLabs headers
+#include "app_assert.h"
 #include "app_log.h"
 
 // Our Libs
@@ -46,12 +47,15 @@ const uint32_t DEFAULT_LED_BRIGHTNESS = 5000UL;
  */
 STATIC uint16_t gausianBreatheLUT[BREATHE_LUT_SIZE] = {0UL};
 
-// Default parameters of the breathe effect, in case none are provided
-breatheParams_t defaultParams = {.maxBrightness = MAX_BRIGHTNESS,
-                                 .minBrightness = MIN_BRIGHTNESS,
-                                 .beta = .5L,  // set the breathe effect peak at half the period
-                                 .gamma = .15L,
-                                 .LUTSize = BREATHE_LUT_SIZE};
+/**
+ * @brief Default parameters of the breathe effect, in case none are provided
+ *
+ */
+const breatheParams_t DEFAULT_BREATHE_PARAMS = {.maxBrightness = MAX_BRIGHTNESS,
+                                                .minBrightness = MIN_BRIGHTNESS,
+                                                .beta = .5L,  // set the breathe effect peak at half the period
+                                                .gamma = .15L,
+                                                .LUTSize = BREATHE_LUT_SIZE};
 
 // Instances of LED Strips
 STATIC LED_t LEDCh1 = {.currAnimation = ANIM_FIXED};
@@ -69,7 +73,7 @@ void fillBreatheEffectLUT(const breatheParams_t* effectParams_ptr) {
                         (effectParams_ptr->maxBrightness - effectParams_ptr->minBrightness) *
                             exp(-(pow(((float)i / effectParams_ptr->LUTSize) - effectParams_ptr->beta, 2.0L) /
                                   (2 * pow(effectParams_ptr->gamma, 2.0L))));
-            gausianBreatheLUT[i] = (uint16_t)lroundf(aux * 100UL);
+            gausianBreatheLUT[i] = (uint16_t)lroundf(aux);
         }
     }
 }
@@ -97,6 +101,8 @@ efferr_t initLEDStrips(void) {
         currChannel_ptr->brightnessCtrl.brightChangeRequestedFlag = true;
         // Set PWM period from clock. multiplied by 1000 to get ms
         currChannel_ptr->pmwPeriodms = 1000UL / (getPWMFrequency());
+        // Assert if the PWM period is 0, as that we use it as  a divisor!
+        app_assert(currChannel_ptr->pmwPeriodms != 0, "\r\nPWM Period is %" PRIu32 "!", currChannel_ptr->pmwPeriodms);
         // Init breatheControl_t for that LED, set to 0 as we are starting with fixed brightness
         currChannel_ptr->breatheCtrl.periodms = 0;
         currChannel_ptr->breatheCtrl.wavesPerSample = 0;
@@ -222,7 +228,7 @@ efferr_t breatheSetPeriod(const LEDChannel_t channelNo, const uint32_t newPeriod
     return EFF_OK;
 }
 
-STATIC void effectControl_ChangeBrightness(LEDChannel_t LEDChannel) {
+STATIC void effectControl_FadeBrightness(LEDChannel_t LEDChannel) {
     LED_t* LED_ptr = getLEDStruct(LEDChannel);
 
     const uint32_t currentLevel = LED_ptr->brightnessCtrl.currentBrightness;
@@ -267,23 +273,36 @@ STATIC void effectControl_ChangeBrightness(LEDChannel_t LEDChannel) {
     setDutyCycle(LED_ptr->CCChannel, LED_ptr->brightnessCtrl.currentBrightness, true);
 }
 
+STATIC void effectControl_Breathe(LEDChannel_t LEDChannel) {
+    LED_t* LED_ptr = getLEDStruct(LEDChannel);
+    if (LED_ptr->breatheCtrl.wavesPerSample == 0) {
+        return;
+    }
+    // Get the brightess for this sample
+    uint32_t brightness = gausianBreatheLUT[LED_ptr->breatheCtrl.currLUTIndex];
+    // Increase currentWave counter
+    LED_ptr->breatheCtrl.currWave++;
+    // Check if we need to move to the next sample
+    if (LED_ptr->breatheCtrl.currWave >= LED_ptr->breatheCtrl.wavesPerSample) {
+        LED_ptr->breatheCtrl.currLUTIndex++;
+        if (LED_ptr->breatheCtrl.currLUTIndex >= BREATHE_LUT_SIZE) {
+            LED_ptr->breatheCtrl.currLUTIndex = 0;
+            app_log_debug("Overflowing LUT %" PRIu32 "\r\n", LED_ptr->breatheCtrl.wavesPerSample);
+        }
+        LED_ptr->breatheCtrl.currWave = 0;
+    }
+    setDutyCycle(LED_ptr->CCChannel, brightness, true);
+}
+const LEDChannel_t LEDChannels[] = {LED_CHANNEL_1, LED_CHANNEL_2, LED_CHANNEL_3};
 void effectControlLoop(void) {
     // NOTE: the effect Control Loop runs at the PWM frequency, as it's triggered by the timer overflow interrupt
     // Write OCB to update the duty cycle of the next waveform period
     // Ramp up/down from the current compare value to the target, increasing/decreasing by 1 on each PWM cycle
-    const LEDChannel_t LEDChannels[] = {LED_CHANNEL_1, LED_CHANNEL_2, LED_CHANNEL_3};
     for (uint32_t i = 0; i < CH_COUNT; i++) {
-        effectControl_ChangeBrightness(LEDChannels[i]);
+        anim_t currEffect = getLEDStruct(LEDChannels[i])->currAnimation;
+        if (currEffect == ANIM_FIXED) {
+            effectControl_FadeBrightness(LEDChannels[i]);
+        } else if (currEffect == ANIM_BREATHE) {
+            effectControl_Breathe(LEDChannels[i]);
+        }
     }
-}
-// do calculations
-//      if currWave is wavesPerSample
-//          get currBrightness
-//          get nextBrightness
-//          reset currWave
-//          set currBrightness as level to set
-//      if not
-//          interpolate curr and nextBrightness based on currWave and wavesPerSample
-//          set interpolated value as level to set
-// apply attenuation and gamma to level to set
-// set brightness level
