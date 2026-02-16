@@ -51,7 +51,7 @@ static TIMER_Init_TypeDef timerInit = {
     /** Action on rising input edge. */
     .riseAction = timerInputActionNone, /* No action on rising input edge. */
     /** Counting mode. */
-    .mode = timerModeUp, /* Up-counting. */
+    .mode = timerModeUpDown, /* Up-Down counting. */
     /** DMA request clear on active. */
     .dmaClrAct = false, /* Do not clear DMA requests when DMA channel is active. */
     /** Select X2 or X4 quadrature decode mode (if used). */
@@ -120,6 +120,10 @@ timerStatus_t TIMHW_setTimer0TopValue(const uint32_t top) {
         return TIMER_DISBLED_BEFORE_WRITING_SYNC;
     }  // else, timer module is enabled, we can proceed
     TIMER_TopSet(TIMER0, top);
+    uint32_t newTop = 0;
+    do {
+        newTop = TIMER_TopGet(TIMER0);
+    } while (newTop != top);
     return TIMER_OK;
 }
 
@@ -319,26 +323,30 @@ void TIMHW_configCCChannelPWM(CCChannel_t channel, polarity_t polarity) {
     // Timer is disabled, but TIMER_InitCC() leaves it enabled.
     TIMHW_setT0ChannelOutputCompare(channel, 0);
 
-    // Enable CC interrupts for the channel
-    switch (channel) {
-        case CC_CHANNEL_0: {
-            // TODO: this should be a TIMER_HW
-            TIMER_IntEnable(TIMER0, TIMER_IEN_CC0);
-            break;
-        }
-        case CC_CHANNEL_1: {
-            // TODO: this should be a TIMER_HW
-            TIMER_IntEnable(TIMER0, TIMER_IEN_CC1);
-            break;
-        }
-        case CC_CHANNEL_2: {
-            // TODO: this should be a TIMER_HW
-            TIMER_IntEnable(TIMER0, TIMER_IEN_CC2);
-            break;
-        }
-        default:
-            break;
-    }
+    // // Enable CC interrupts for the channel -> NOTE: this is cool because I can check which timer has compared, but
+    // if we do up-down counts, then I get two.
+    // With the up count, I liked the idea of loading the buffered compare register before the overflow, but with up-down
+    // count, I get to do that... I think up-down count with overflow is better...
+    // switch (channel) {
+    //     case CC_CHANNEL_0: {
+    //         // TODO: this should be a TIMER_HW
+    //         TIMER_IntEnable(TIMER0, TIMER_IEN_CC0);
+    //         break;
+    //     }
+    //     case CC_CHANNEL_1: {
+    //         // TODO: this should be a TIMER_HW
+    //         TIMER_IntEnable(TIMER0, TIMER_IEN_CC1);
+    //         break;
+    //     }
+    //     case CC_CHANNEL_2: {
+    //         // TODO: this should be a TIMER_HW
+    //         TIMER_IntEnable(TIMER0, TIMER_IEN_CC2);
+    //         break;
+    //     }
+    //     default:
+    //         break;
+    // Init Overflow Interrups - TODO: A bit redundant to do it thrice. Maybe we could do a TIMHW_enableInts()?
+    TIMER_IntEnable(TIMER0, TIMER_IEN_OF);
     enableTIMER0Int();
 }
 

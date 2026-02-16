@@ -118,8 +118,9 @@ STATIC void configureTimerPWMFrequency(uint32_t frequencyHz) {
         frequencyHz = timerFreq / MIN_PWM_LEVELS;
     }  // Else, frequencyHz is within range (>4096 quantization levels AND >250Hz)
     // Configure TIMER frequency
-    uint32_t top = (timerFreq / (frequencyHz)) - 1UL;  // -1 because the counter "counts" 0
+    uint32_t top = (timerFreq / (2 * frequencyHz));
     TIMHW_setTimer0TopValue(top);
+    app_log_debug("Freq %" PRIu32 " / Top set to %" PRIu32 "\r\n", timerFreq, TIMHW_getTimer0TopValue());
     // A change in the frequency will require a rebuild of the lookup tables
     // NOTE: I moved to a const table stored in flash, but if I were to change the frequency on-the-fly, the LUT would
     // have to be updated here
@@ -148,7 +149,7 @@ void initTimer0CCChannel(const CCChannel_t channel, const pinPort_t port, const 
  * @brief Gets the freq of the PWM signal, based on the current clock freq and the TOP value
  * @return a uint32_t with the frequency of the PWM signal.
  */
-uint32_t getPWMFrequency(void) { return (TIMHW_getTimer0Frequency() / TIMHW_getTimer0TopValue()); }
+uint32_t getPWMFrequency(void) { return (TIMHW_getTimer0Frequency() / (2 * TIMHW_getTimer0TopValue())); }
 
 /**
  * @brief Sets the Duty Cycle of the PWM signal on one of TIMER0's channels. Brightness is gamma-corrected
