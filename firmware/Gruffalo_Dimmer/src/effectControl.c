@@ -306,3 +306,4 @@ void effectControlLoop(void) {
             effectControl_Breathe(LEDChannels[i]);
         }
     }
+}
