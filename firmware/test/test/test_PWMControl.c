@@ -2,6 +2,7 @@
 #include <unity.h>
 
 #include "PWMControl.h"
+#include "app_assert.h"
 #include "brightnessLUT.h"
 #include "mock_timer_HW.h"
 /*
@@ -13,9 +14,15 @@
 ////
 extern void configureTimerPWMFrequency(uint32_t frequencyHz);
 
-void setUp(void) {}
+void setUp(void) {
+    // Assertions setup
+    assertSetUp();
+}
 
-void tearDown(void) {}
+void tearDown(void) {
+    // Check assertions
+    assertTearDownCheck();
+}
 
 ////
 // initTimer0HW and initTimer0CCChannel
@@ -26,7 +33,7 @@ void tearDown(void) {}
 void test_initTimer0PWM_Success(void) {
     uint32_t testClockFreq = 32000000;
     uint32_t testFreq = 250;
-    uint32_t ExpectedTimerTopValue = (testClockFreq / testFreq) - 1;
+    uint32_t ExpectedTimerTopValue = (testClockFreq / (2 * testFreq));  // top value formula for up-down count
     TIMHW_initTimer0Clock_Expect();
     TIMHW_initTimer0_Expect(false);
     TIMHW_getTimer0Frequency_ExpectAndReturn(testClockFreq);
@@ -63,33 +70,29 @@ extern const uint32_t MIN_PWM_LEVELS;
 
 void test_configureTimerPWMFrequency_TopValueIsSet(void) {
     uint32_t clockFreq = 38400000;
-    uint32_t testFreq = 6249;
+    uint32_t testFreq = 800;
     TIMHW_getTimer0Frequency_ExpectAndReturn(clockFreq);
     // There's no way to test the freq was correct, except checking that TOP is set to the right value
-    uint32_t expectedTop = (clockFreq / (testFreq)) - 1U;
+    uint32_t expectedTop = (clockFreq / (2 * testFreq));
     TIMHW_setTimer0TopValue_ExpectAndReturn(expectedTop, TIMER_OK);
 
     configureTimerPWMFrequency(testFreq);
 }
 
 void test_configureTimerPWMFrequency_Freq_is_less_than_MIN_PWM_FREQ(void) {
-    uint32_t clockFreq = 38400000;
     uint32_t testFreq = 0;
-    TIMHW_getTimer0Frequency_ExpectAndReturn(clockFreq);
-    // Requested freq is too low, set TOP to get the minimum freq of 250Hz
-    uint32_t expectedTop = (clockFreq / (MIN_PWM_FREQ)) - 1U;
-    TIMHW_setTimer0TopValue_ExpectAndReturn(expectedTop, TIMER_OK);
+
+    // Set expectations
+    assertExpectFailure();
 
     configureTimerPWMFrequency(testFreq);
 }
 
 void test_configureTimerPWMFrequency_Freq_is_too_high(void) {
-    uint32_t clockFreq = 38400000;
     uint32_t testFreq = 38400000;  // would give 1 level of quantization: 0 or 100%
-    TIMHW_getTimer0Frequency_ExpectAndReturn(clockFreq);
-    // requested freq is too hihg, Set the TOP value for the fastest signal achievable with 4096 levels
-    uint32_t expectedTop = MIN_PWM_LEVELS - 1;
-    TIMHW_setTimer0TopValue_ExpectAndReturn(expectedTop, TIMER_OK);
+
+    // Set expectations
+    assertExpectFailure();
 
     configureTimerPWMFrequency(testFreq);
 }
@@ -103,7 +106,7 @@ void test_configureTimerPWMFrequency_Freq_is_too_high(void) {
 void test_getPWMFrequency(void) {
     uint32_t expectedTimerClock = 1000;
     uint32_t expectedTop = 10;
-    uint32_t expectedFreq = 100;
+    uint32_t expectedFreq = 50;  // (1000 / (2 * 10))
 
     // expectations
     TIMHW_getTimer0Frequency_ExpectAndReturn(expectedTimerClock);

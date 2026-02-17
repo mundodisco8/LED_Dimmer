@@ -1,10 +1,9 @@
 #include <unity.h>
 
-// StdLib libraries
+// StdLib librarie
 #include <string.h>
 
 // Silabs libs
-#define PRINT_ENABLED 1
 #include "app_assert.h"
 
 // Our libraries
@@ -23,6 +22,7 @@ extern breatheControl_t breatheCh3;
 
 // Default parameters of the breathe effect, in case none are provided
 extern breatheParams_t defaultParams;
+extern const uint32_t BREATHE_DEFAULT_PERIOD_MS;
 
 // Instances of LED Strips
 extern LED_t LEDCh1;
@@ -36,6 +36,9 @@ extern void effectControl_Breathe(CCChannel_t channel);
  * Unit tests for "effectControl.h"
  */
 void setUp(void) {
+    // Enable testable asserts
+    assertSetUp();
+
     memset(gausianBreatheLUT, 0, sizeof(gausianBreatheLUT));
     // Expectation for initLEDStrips()
     getPWMFrequency_ExpectAndReturn(1000UL);
@@ -44,7 +47,7 @@ void setUp(void) {
     initLEDStrips();
 }
 
-void tearDown(void) {}
+void tearDown(void) { assertTearDownCheck(); }
 
 /**
  * fillBreatheLUT
@@ -95,6 +98,10 @@ void test_initLEDStrips_success(void) {
     getPWMFrequency_ExpectAndReturn(1000);
     getPWMFrequency_ExpectAndReturn(1000);
     getPWMFrequency_ExpectAndReturn(1000);
+
+    setBreathePeriod(LED_CHANNEL_1, BREATHE_DEFAULT_PERIOD_MS);
+    setBreathePeriod(LED_CHANNEL_2, BREATHE_DEFAULT_PERIOD_MS);
+    setBreathePeriod(LED_CHANNEL_3, BREATHE_DEFAULT_PERIOD_MS);
 
     efferr_t retVal = initLEDStrips();
 
@@ -150,7 +157,6 @@ void test_initLEDStrips_success(void) {
 void test_initLEDStrips_assert(void) {
     efferr_t expectedRetVal = EFF_OK;
 
-    // Expectations
     LED_t defaultLEDConfig = {.currAnimation = ANIM_FIXED,
                               .brightnessCtrl.targetBrightness = 5000UL,
                               .brightnessCtrl.delta = 0UL,
@@ -162,9 +168,9 @@ void test_initLEDStrips_assert(void) {
                               .breatheCtrl.wavesPerSample = 0UL};
 
     // Expectations
+    assertExpectFailure();
     getPWMFrequency_ExpectAndReturn(5000);
-    getPWMFrequency_ExpectAndReturn(1);
-    getPWMFrequency_ExpectAndReturn(1);
+    // and there are no more calls to getPWMFrequency because the test will end there
 
     efferr_t retVal = initLEDStrips();
 }
@@ -281,11 +287,11 @@ void test_getLEDBrightness_Success(void) {
 }
 
 /**
- * BreatheSetPeriod
+ * setBreathePeriod
  * - New period is set and
  */
 
-void test_breatheSetPeriod_Succes(void) {
+void test_setBreathePeriod_Succes(void) {
     efferr_t expectedRetVal = EFF_OK;
 
     // Set up
@@ -296,23 +302,23 @@ void test_breatheSetPeriod_Succes(void) {
 
     LEDCh1.pmwPeriodms = 1000 / expectedPWMFreq;
 
-    efferr_t retVal = breatheSetPeriod(LED_CHANNEL_1, testNewPeriod);
+    efferr_t retVal = setBreathePeriod(LED_CHANNEL_1, testNewPeriod);
 
     TEST_ASSERT_EQUAL_UINT32(expectedRetVal, retVal);
     TEST_ASSERT_EQUAL_UINT32(testNewPeriod, LEDCh1.breatheCtrl.periodms);
     TEST_ASSERT_EQUAL_UINT32(expectedWavesPerSample, LEDCh1.breatheCtrl.wavesPerSample);
 }
 
-void test_breatheSetPeriod_PeriodIs0(void) {
+void test_setBreathePeriod_PeriodIs0(void) {
     efferr_t expectedRetVal = EFF_BADPERIOD;
     uint32_t testPeriod = 0;
 
-    efferr_t retVal = breatheSetPeriod(LED_CHANNEL_1, testPeriod);
+    efferr_t retVal = setBreathePeriod(LED_CHANNEL_1, testPeriod);
 
     TEST_ASSERT_EQUAL_UINT32(expectedRetVal, retVal);
 }
 
-void test_breatheSetPeriod_PeriodIsNotMultiplePWM(void) {
+void test_setBreathePeriod_PeriodIsNotMultiplePWM(void) {
     // Set up
     efferr_t expectedRetVal = EFF_OK;
     uint32_t testPWMFreq = 100;  // 100Hz, period is 10ms
@@ -322,7 +328,7 @@ void test_breatheSetPeriod_PeriodIsNotMultiplePWM(void) {
 
     LEDCh1.pmwPeriodms = 1000 / testPWMFreq;
 
-    efferr_t retVal = breatheSetPeriod(LED_CHANNEL_1, testPeriod);
+    efferr_t retVal = setBreathePeriod(LED_CHANNEL_1, testPeriod);
 
     TEST_ASSERT_EQUAL_UINT32(expectedRetVal, retVal);
     TEST_ASSERT_EQUAL_UINT32(testPeriod, LEDCh1.breatheCtrl.periodms);
@@ -332,7 +338,7 @@ void test_breatheSetPeriod_PeriodIsNotMultiplePWM(void) {
     testPeriod = 11550;          // won't be a multiple of the PWM period: 10ms * 200 samples
     expectedwavesPerSample = 6;  // number must be rounded up this time
 
-    retVal = breatheSetPeriod(LED_CHANNEL_1, testPeriod);
+    retVal = setBreathePeriod(LED_CHANNEL_1, testPeriod);
 
     TEST_ASSERT_EQUAL_UINT32(expectedRetVal, retVal);
     TEST_ASSERT_EQUAL_UINT32(testPeriod, LEDCh1.breatheCtrl.periodms);

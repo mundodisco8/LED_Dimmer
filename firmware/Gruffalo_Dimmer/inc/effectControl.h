@@ -14,6 +14,11 @@
 #define BREATHE_LUT_SIZE 200U
 
 /**
+ * @brief The minimum value for the breathe period, in ms
+ */
+extern const uint32_t BREATHE_MIN_PERIOD_MS;
+
+/**
  * @brief The number of independent LED channels in the board
  */
 extern const uint32_t NUM_LED_CHANNELS;
@@ -84,38 +89,39 @@ typedef struct LED {
     breatheControl_t breatheCtrl;        // Parameters of the breathe effect for this LED
 } LED_t;
 
-// /**
-//  * @brief Contains the pre-calculated values for the breathe effect brightness levels. uint16_t as it contains a percent value
-//  * with 2 significative numbers (10000 = 100.00%)
-//  */
-// extern uint16_t gausianBreatheLUT[BREATHE_LUT_SIZE];
-
 /**
  * @brief Default parameters of the breathe effect, in case none are provided
  *
  */
 extern const breatheParams_t DEFAULT_BREATHE_PARAMS;
 
-// /**
-//  * @brief
-//  */
-// extern LED_t LEDCh1;
-// extern LED_t LEDCh2;
-// extern LED_t LEDCh3;
-
 /**
- * GETTERS
- */
-
-/**
- * @brief get a pointer to the breathe effect LUT
+ * @brief Fills the breateh effect LUT with the correct parameters as specified by effectParams
  */
 void fillBreatheEffectLUT(const breatheParams_t* effectParams_ptr);
 
+/**
+ * @brief Initialises the LED structs. Because the HW is fixed, we can also fix the memory and do everything inside
+ */
 efferr_t initLEDStrips(void);
 
+/**
+ * @brief Sets the brightness of one of the LED Channels.
+ */
 uint32_t setLEDBrightness(const LEDChannel_t channel, uint32_t percent);
+/**
+ * @brief Returns a pointer to the LED struct for the desired channel
+ */
 uint32_t getLEDBrightness(const LEDChannel_t channel);
+
+/**
+ * @brief Sets the brightness of one of the LED Channels.
+ */
+efferr_t setBreathePeriod(const LEDChannel_t channelNo, const uint32_t newPeriodms);
+/**
+ * @brief Get the Breathe Period for the requested LED channel
+ */
+uint32_t getBreathePeriod(const LEDChannel_t channelNo);
 
 /**
  * @brief Returns a pointer to the LED struct for the desired channel
@@ -127,7 +133,9 @@ LED_t* getLEDStruct(const LEDChannel_t channelNo);
  */
 char* getEffectName(const anim_t effectType);
 
-efferr_t breatheSetPeriod(const LEDChannel_t channelNo, const uint32_t newPeriodms);
-
+/**
+ * @brief Function triggered by an overflow interrupt in TIME0. Controls the brightness of the LEDs and the effects
+ * played on them
+ */
 void effectControlLoop(void);
 #endif  // _EFFECT_CONTROL_H_

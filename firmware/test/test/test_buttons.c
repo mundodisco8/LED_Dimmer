@@ -1,6 +1,7 @@
 #include <string.h>
 #include <unity.h>
 
+#include "app_assert.h"
 #include "buttons.h"
 #include "inttypes.h"
 #include "mock_gpio_HW.h"
@@ -16,8 +17,14 @@ void tearDown() {}
 ////
 
 // Check that buttons are initialised correctly
-void fakePressedAction(void) {}
-void fakeReleasedAction(void) {}
+void fakePressedAction(void) {
+    // test assertions
+    assertSetUp();
+}
+void fakeReleasedAction(void) {
+    // check assertions
+    assertTearDownCheck();
+}
 
 void test_initButtonsDoesItsJob(void) {
     button_t testBtn = {0};
@@ -51,6 +58,33 @@ void test_initButtonsDoesItsJob(void) {
     TEST_ASSERT_EQUAL_PTR(fakeReleasedAction, testBtn.releasedAction);
     TEST_ASSERT_NOT_NULL(testBtn.debounceTimerPtr);
     TEST_ASSERT_NOT_NULL(testBtn.samplingTimerPtr);
+}
+
+void test_initButtons_AssertionsFirstAsser(void) {
+    button_t testBtn = {0};
+
+    // Set expectations
+    setPinMode_Ignore();
+    // Expect assert
+    assertExpectFailure();
+    SLP_reserveTimer_ExpectAnyArgsAndReturn(SLPTIMER_NO_TIMERS_AVAILABLE);
+    // Only one call to SLP_reserveTimer
+
+    initButton(&testBtn, 0, 0, NULL, NULL);
+}
+
+void test_initButtons_AssertionsSecondAsser(void) {
+    button_t testBtn = {0};
+
+    // Test second assert
+    // Set expectations
+    setPinMode_Ignore();
+    // Expect assert
+    assertExpectFailure();
+    SLP_reserveTimer_ExpectAnyArgsAndReturn(SLPTIMER_OK);
+    SLP_reserveTimer_ExpectAnyArgsAndReturn(SLPTIMER_NO_TIMERS_AVAILABLE);
+
+    initButton(&testBtn, 0, 0, NULL, NULL);
 }
 
 // Protection against null pointers: because of shortcircuiting in OR comparisons, there's only need to test the three
@@ -91,7 +125,8 @@ void test_initQuadratureDoesItsJob(void) {
     setPinMode_Expect(expectedPortPin0, expectedPin0No, expectedPinMode, expectedDout);
     setPinMode_Expect(expectedPortPin1, expectedPin1No, expectedPinMode, expectedDout);
 
-    uint32_t retVal = initQuadEncoder(&testQuad, expectedPortPin0, expectedPin0No, expectedPortPin1, expectedPin1No, fakeCWAction, fakeCCWAction);
+    uint32_t retVal = initQuadEncoder(&testQuad, expectedPortPin0, expectedPin0No, expectedPortPin1, expectedPin1No,
+                                      fakeCWAction, fakeCCWAction);
     TEST_ASSERT_EQUAL_UINT32(BTN_OK, retVal);
     TEST_ASSERT_EQUAL_UINT32(expectedPin0No, testQuad.pin0No);
     TEST_ASSERT_EQUAL_UINT32(expectedPortPin0, testQuad.pin0Port);

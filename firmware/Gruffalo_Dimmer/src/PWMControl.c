@@ -16,6 +16,7 @@
 #include <math.h>
 
 // SDK includes
+#include "app_assert.h"
 // Ignore a cast-align warning in some cmsis header and a sign conversion in
 // sl_sleeptimer.h
 #pragma GCC diagnostic push
@@ -111,23 +112,24 @@ void initTimer0PWM(uint32_t PWMFreqHz) {
  */
 STATIC void configureTimerPWMFrequency(uint32_t frequencyHz) {
     // Check the input parameter
-    uint32_t timerFreq = TIMHW_getTimer0Frequency();
     // Check that frequency is not too low for LEDs
     if (frequencyHz < MIN_PWM_FREQ) {
-        app_assert(frequencyHz < MIN_PWM_FREQ, "\r\nFrequency (%" PRIu32 "Hz) is too low!", frequencyHz);
-    } else if (frequencyHz > (timerFreq / MIN_PWM_LEVELS)) {
+        app_assert(frequencyHz > MIN_PWM_FREQ, "\r\nFrequency (%" PRIu32 "Hz) is too low!", frequencyHz);
+    } else if (frequencyHz > MAX_PWM_FREQ) {
+        app_assert(frequencyHz < MAX_PWM_FREQ, "\r\nFrequency (%" PRIu32 "Hz) is too high!", frequencyHz);
+    }
+
+    uint32_t timerFreq = TIMHW_getTimer0Frequency();
+    // Else, frequencyHz is within range (>4096 quantization levels AND >250Hz)
+    if (frequencyHz > (timerFreq / MIN_PWM_LEVELS)) {
         // Freq is so high we are losing resolution
         app_assert(frequencyHz > (timerFreq / MIN_PWM_LEVELS),
                    "\r\nFrequency (%" PRIu32 "Hz) is too high! Resolution would be too low", frequencyHz);
         frequencyHz = timerFreq / MIN_PWM_LEVELS;
-    } else if (frequencyHz > MAX_PWM_FREQ) {
-        app_assert(frequencyHz > MAX_PWM_FREQ, "\r\nFrequency (%" PRIu32 "Hz) is too high!", frequencyHz);
     }
-    // Else, frequencyHz is within range (>4096 quantization levels AND >250Hz)
     // Configure TIMER frequency
     uint32_t top = (timerFreq / (2 * frequencyHz));
     TIMHW_setTimer0TopValue(top);
-    app_log_debug("Freq %" PRIu32 " / Top set to %" PRIu32 "\r\n", timerFreq, TIMHW_getTimer0TopValue());
     // A change in the frequency will require a rebuild of the lookup tables
     // NOTE: I moved to a const table stored in flash, but if I were to change the frequency on-the-fly, the LUT would
     // have to be updated here

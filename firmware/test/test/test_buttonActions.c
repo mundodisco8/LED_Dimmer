@@ -16,6 +16,10 @@
 // externs to test some static variables in the module
 extern uint8_t channelIdx;
 
+// Provide values for some globals whose definitions are lost when using mocks
+const uint32_t PWM_FREQUENCY = 1000UL;
+const uint32_t BREATHE_MIN_PERIOD_MS = BREATHE_LUT_SIZE;
+
 void setUp(void) {
     // reset globals
     channelIdx = 0;
@@ -120,7 +124,7 @@ void test_button0Pressed(void) { button0Pressed(NULL); }
 void test_quad0ClockWise(void) {
     uint32_t expectedInitialBrightness = 1000;
     uint32_t expectedFinalBrightness = 1500;
-    CCChannel_t expectedChannel = LED_CHANNEL_1;
+    LEDChannel_t expectedChannel = LED_CHANNEL_1;
 
     // Set Expectations
     getLEDBrightness_ExpectAndReturn(expectedChannel, expectedInitialBrightness);
@@ -141,7 +145,7 @@ void test_quad0ClockWise(void) {
 
 void test_quad0ClockWise_MaxBrightness(void) {
     uint32_t expectedInitialBrightness = MAX_BRIGHTNESS;
-    CCChannel_t expectedChannel = LED_CHANNEL_1;
+    LEDChannel_t expectedChannel = LED_CHANNEL_1;
 
     // Set Expectations
     getLEDBrightness_ExpectAndReturn(expectedChannel, expectedInitialBrightness);
@@ -152,7 +156,7 @@ void test_quad0ClockWise_MaxBrightness(void) {
 void test_quad0CounterClockWise(void) {
     uint32_t expectedInitialBrightness = 9000;
     uint32_t expectedFinalBrightness = 8500;
-    CCChannel_t expectedChannel = LED_CHANNEL_1;
+    LEDChannel_t expectedChannel = LED_CHANNEL_1;
 
     // Set Expectations
     getLEDBrightness_ExpectAndReturn(expectedChannel, expectedInitialBrightness);
@@ -173,7 +177,7 @@ void test_quad0CounterClockWise(void) {
 
 void test_quad0CounterClockWise_MinBrightness(void) {
     uint32_t expectedInitialBrightness = MIN_BRIGHTNESS;
-    CCChannel_t expectedChannel = LED_CHANNEL_1;
+    LEDChannel_t expectedChannel = LED_CHANNEL_1;
 
     // Set Expectations
     getLEDBrightness_ExpectAndReturn(expectedChannel, expectedInitialBrightness);
@@ -219,4 +223,53 @@ void test_button1Released_BreatheToFixed(void) {
 
     button1Released(&testBtn);
     TEST_ASSERT_EQUAL_UINT32(expectedNewAnimation, testLED.currAnimation);
+}
+
+/**
+ * quad1Clockwise
+ *
+ */
+
+void test_quad1Clockwise_IncreaseBreathePeriod(void) {
+    uint32_t currentPeriod = 1000;
+    LEDChannel_t expectedChannel = LED_CHANNEL_1;
+
+    uint32_t expectedPeriod = currentPeriod + (BREATHE_LUT_SIZE * 1000UL / PWM_FREQUENCY);
+
+    // Set expecations
+    getBreathePeriod_ExpectAndReturn(expectedChannel, currentPeriod);
+    setBreathePeriod_ExpectAndReturn(expectedChannel, expectedPeriod, EFF_OK);
+
+    quad1ClockWise(NULL);
+}
+
+/**
+ * quad1CounterClockwise
+ *
+ */
+
+void test_quad1CounterClockwise_DecreaseBreathePeriod(void) {
+    uint32_t currentPeriod = 1000;
+    LEDChannel_t expectedChannel = LED_CHANNEL_1;
+
+    uint32_t expectedPeriod = currentPeriod - (BREATHE_LUT_SIZE * 1000UL / PWM_FREQUENCY);
+
+    // Set expecations
+    getBreathePeriod_ExpectAndReturn(expectedChannel, currentPeriod);
+    setBreathePeriod_ExpectAndReturn(expectedChannel, expectedPeriod, EFF_OK);
+
+    quad1CounterClockWise(NULL);
+}
+
+void test_quad1CounterClockwise_DontGoBelowMinimum(void) {
+    uint32_t currentPeriod = BREATHE_MIN_PERIOD_MS;
+    LEDChannel_t expectedChannel = LED_CHANNEL_1;
+
+    uint32_t expectedPeriod = BREATHE_MIN_PERIOD_MS;
+
+    // Set expecations
+    getBreathePeriod_ExpectAndReturn(expectedChannel, currentPeriod);
+    setBreathePeriod_ExpectAndReturn(expectedChannel, expectedPeriod, EFF_OK);
+
+    quad1CounterClockWise(NULL);
 }

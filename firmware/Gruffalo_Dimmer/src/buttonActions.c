@@ -145,6 +145,28 @@ void button1Released(void* ctx) {
     }
 }
 
-void quad1ClockWise(void* ctx) { (void)ctx; }
+void quad1ClockWise(void* ctx) {
+    (void)ctx;
+    // The breathe period increases / decreases by sizeOfTheBreatheLUT * PWMPeriod, so each tick changes the number of
+    // times each sample is played by one
+    const uint32_t BREATHE_PERIOD_MS_DELTA = BREATHE_LUT_SIZE * 1000UL / PWM_FREQUENCY;  // can't be a global :S
 
-void quad1CounterClockWise(void* ctx) { (void)ctx; }
+    uint32_t currentPeriod = getBreathePeriod(currChannel[channelIdx]);
+    setBreathePeriod(currChannel[channelIdx], currentPeriod + BREATHE_PERIOD_MS_DELTA);
+    app_log_debug("Set Ch%d Breathe Period to %" PRIu32 "ms\r\n", channelIdx, currentPeriod + BREATHE_PERIOD_MS_DELTA);
+}
+
+void quad1CounterClockWise(void* ctx) {
+    (void)ctx;
+    // The breathe period increases / decreases by sizeOfTheBreatheLUT * PWMPeriod, so each tick changes the number of
+    // times each sample is played by one
+    const uint32_t BREATHE_PERIOD_MS_DELTA = BREATHE_LUT_SIZE * 1000UL / PWM_FREQUENCY;  // can't be a global :S
+
+    uint32_t currentPeriod = getBreathePeriod(currChannel[channelIdx]);
+    uint32_t newPeriod = currentPeriod - BREATHE_PERIOD_MS_DELTA;
+    if (newPeriod < BREATHE_MIN_PERIOD_MS) {
+        newPeriod = BREATHE_MIN_PERIOD_MS;
+    }
+    setBreathePeriod(currChannel[channelIdx], newPeriod);
+    app_log_debug("Set Ch%d Breathe Period to %" PRIu32 "ms\r\n", channelIdx, newPeriod);
+}

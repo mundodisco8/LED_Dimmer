@@ -55,14 +55,13 @@ btnError_t initButton(button_t* btnPtr, pinPort_t pinPort, uint8_t pinNo, action
     btnPtr->releasedAction = releasedAction;
     slpTimerStatus_t retVal = SLP_reserveTimer(&(btnPtr->debounceTimerPtr));
     //TODO: Test Asserts on error
-    app_assert_status_f((retVal == SLPTIMER_NO_TIMERS_AVAILABLE),
-                        "No timer available. Increase the number of timers\r\n");
+    app_assert((retVal == SLPTIMER_OK), "No timer available. Increase the number of timers\r\n");
     retVal = SLP_reserveTimer(&(btnPtr->samplingTimerPtr));
-    app_assert_status_f((retVal == SLPTIMER_NO_TIMERS_AVAILABLE),
-                        "No timer available. Increase the number of timers\r\n");
+    app_assert((retVal == SLPTIMER_OK), "No timer available. Increase the number of timers\r\n");
 
     return BTN_OK;
 }
+
 // Initialises the quad_encoder_t struct with the default values and associates the CW and CCW actions.
 // Parameters: quadPtr: a pointer to a quad_encoder_t object which will be initialised
 //             pin0Port: the port of the GPIO Pin of the A signal of the quaa

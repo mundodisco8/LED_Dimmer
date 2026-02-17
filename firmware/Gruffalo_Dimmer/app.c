@@ -117,13 +117,13 @@ void app_init(void) {
     initQuadEncoder(&quad1, (pinPort_t)quad1_0_PORT, quad1_0_PIN, (pinPort_t)quad1_1_PORT, quad1_1_PIN, quad1ClockWise,
                     quad1CounterClockWise);
     btnError_t retVal = configureButtonInterrupts(&button0, gpioCallbackButton, &button0GPIOIntNo);
-    app_assert_status_f((retVal != BTN_OK), "Error configuring Btn 0 interrupts\r\n");
+    app_assert((retVal == BTN_OK), "Error configuring Btn 0 interrupts\r\n");
     retVal = configureQuadratureInterrupts(&quad0, gpioCallbackQuad, &quad0GPIOIntNo);
-    app_assert_status_f((retVal != BTN_OK), "Error configuring Quad 0 interrupts\r\n");
+    app_assert((retVal == BTN_OK), "Error configuring Quad 0 interrupts\r\n");
     retVal = configureButtonInterrupts(&button1, gpioCallbackButton, &button1GPIOIntNo);
-    app_assert_status_f((retVal != BTN_OK), "Error configuring Btn 1 interrupts\r\n");
+    app_assert((retVal == BTN_OK), "Error configuring Btn 1 interrupts\r\n");
     retVal = configureQuadratureInterrupts(&quad1, gpioCallbackQuad, &quad1GPIOIntNo);
-    app_assert_status_f((retVal != BTN_OK), "Error configuring Quad 1 interrupts\r\n");
+    app_assert((retVal == BTN_OK), "Error configuring Quad 1 interrupts\r\n");
 
     // Init PWM on TIMER0
     initTimer0PWM(PWM_FREQUENCY);
@@ -148,18 +148,21 @@ void app_process_action(void) {
     // Do not call blocking functions from here!                               //
     /////////////////////////////////////////////////////////////////////////////
 
-    // NOTE: Prints "../app.c:105 :app_process_action: Status: 40 = 0x0028 (?) Assertion failed"
-    //     app_assert_status(40);
-    // NOTE: Prints "../app.c:107 :app_process_action: Status: 40 = 0x0028 (?) Assertion failed: Hey 60"
-    // app_assert_status_f(40, "Hey %d\r\n", 60);
-    // NOTE: Prints "../app.c:111 :app_process_action: Assertion 'a == b' failed: 1 is not 2"
-    // uint32_t a = 1;
-    // uint32_t b = 2;
-    // app_assert( a == b, "1 is not 2");
     // NOTE: Prints "../app.c:115 :app_process_action: Assertion 'a == b' failed"
     // uint32_t a = 1;
     // uint32_t b = 2;
     // app_assert_s(a == b);
+
+    // NOTE: Prints "../app.c:105 :app_process_action: Status: 40 = 0x0028 (?) Assertion failed"
+    // app_assert_status(40);
+
+    // NOTE: Prints "../app.c:107 :app_process_action: Status: 40 = 0x0028 (?) Assertion failed: Hey 60"
+    // app_assert_status_f(40, "Hey %d\r\n", 60);
+
+    // NOTE: Prints "../app.c:111 :app_process_action: Assertion 'a == b' failed: 1 is not 2"
+    // uint32_t a = 1;
+    // uint32_t b = 2;
+    // app_assert( a == b, "%d is not %d", a , b);
 
     if (processLEDEffects) {
         processLEDEffects = false;

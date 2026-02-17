@@ -156,6 +156,7 @@
         - -Wall
         - -Wextra
         - -fdiagnostics-color
+        - -std=c17
 # Configuration Options specific to CMock. See CMock docs for details
 :cmock:
   # Core conffiguration

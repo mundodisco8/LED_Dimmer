@@ -42,6 +42,20 @@ const uint32_t NUM_LED_CHANNELS = 3UL;
 const uint32_t DEFAULT_LED_BRIGHTNESS = 5000UL;
 
 /**
+ * @brief The minimum and default values for the breathe period, in ms
+ */
+const uint32_t BREATHE_MIN_PERIOD_MS = BREATHE_LUT_SIZE;
+const uint32_t BREATHE_DEFAULT_PERIOD_MS = 5000;
+
+/**
+ * @brief Default values for the breathe effect
+ */
+const uint32_t BREATHE_MAX_BRIGHTNESS = MAX_BRIGHTNESS;
+const uint32_t BREATHE_MIN_BRIGHTNESS = 1000;  // 10%
+const double BREATHE_BETA = 0.5L;              // peak at half the period
+const double BREATHE_GAMMA = .15L;
+
+/**
  * @brief Contains the pre-calculated values for the breathe effect brightness levels. uint16_t as it contains a percent value
  * with 2 significative numbers (10000 = 100.00%)
  */
@@ -51,10 +65,10 @@ STATIC uint16_t gausianBreatheLUT[BREATHE_LUT_SIZE] = {0UL};
  * @brief Default parameters of the breathe effect, in case none are provided
  *
  */
-const breatheParams_t DEFAULT_BREATHE_PARAMS = {.maxBrightness = MAX_BRIGHTNESS,
-                                                .minBrightness = MIN_BRIGHTNESS,
-                                                .beta = .5L,  // set the breathe effect peak at half the period
-                                                .gamma = .15L,
+const breatheParams_t DEFAULT_BREATHE_PARAMS = {.maxBrightness = BREATHE_MAX_BRIGHTNESS,
+                                                .minBrightness = BREATHE_MIN_BRIGHTNESS,
+                                                .beta = BREATHE_BETA,  // set the breathe effect peak at half the period
+                                                .gamma = BREATHE_GAMMA,
                                                 .LUTSize = BREATHE_LUT_SIZE};
 
 // Instances of LED Strips
@@ -63,8 +77,8 @@ STATIC LED_t LEDCh2 = {.currAnimation = ANIM_FIXED};
 STATIC LED_t LEDCh3 = {.currAnimation = ANIM_FIXED};
 
 /**
- * @brief
- * @param effectParams
+ * @brief Fills the breateh effect LUT with the correct parameters as specified by effectParams
+ * @param effectParams_ptr a pointer to a breatheParams_t struct with the parameters of the breathe effect
  */
 void fillBreatheEffectLUT(const breatheParams_t* effectParams_ptr) {
     if (effectParams_ptr != NULL) {
@@ -109,6 +123,10 @@ efferr_t initLEDStrips(void) {
         currChannel_ptr->breatheCtrl.currWave = 0;
         currChannel_ptr->breatheCtrl.currLUTIndex = 0;
     }
+
+    setBreathePeriod(LED_CHANNEL_1, BREATHE_DEFAULT_PERIOD_MS);
+    setBreathePeriod(LED_CHANNEL_2, BREATHE_DEFAULT_PERIOD_MS);
+    setBreathePeriod(LED_CHANNEL_3, BREATHE_DEFAULT_PERIOD_MS);
 
     // Link LEDs and PWM channels
     LEDCh1.CCChannel = CC_CHANNEL_0;
@@ -186,6 +204,12 @@ uint32_t setLEDBrightness(const LEDChannel_t channel, uint32_t percent) {
     return percent;
 }
 
+/**
+ * @brief Get the LED brightness for the requested LED channel
+ *
+ * @param channel the LED channel to get the brightness level
+ * @return uint32_t the brigtness as a integer percent with two decimal places (9895 is 98.95%)
+ */
 uint32_t getLEDBrightness(const LEDChannel_t channel) {
     // No need to check valid return because it asserts on invalid channel
     return getLEDStruct(channel)->brightnessCtrl.targetBrightness;
@@ -197,7 +221,7 @@ uint32_t getLEDBrightness(const LEDChannel_t channel) {
  * @param newPeriodms the new period, in ms
  * @return EFF_OK on success, EFF_BADPERIOD if the new period is 0, asserts through getLEDStruct on bad channel
  */
-efferr_t breatheSetPeriod(const LEDChannel_t channelNo, const uint32_t newPeriodms) {
+efferr_t setBreathePeriod(const LEDChannel_t channelNo, const uint32_t newPeriodms) {
     // No need to check valid return because it asserts on invalid channel
     LED_t* LED_ptr = getLEDStruct(channelNo);
 
@@ -228,6 +252,21 @@ efferr_t breatheSetPeriod(const LEDChannel_t channelNo, const uint32_t newPeriod
     return EFF_OK;
 }
 
+/**
+ * @brief Get the Breathe Period for the requested LED channel
+ *
+ * @param channelNo the LED channel to get the breathe period
+ * @return uint32_t the set breathe period in ms
+ */
+uint32_t getBreathePeriod(const LEDChannel_t channelNo) {
+    // No need to check valid return because it asserts on invalid channel
+    return getLEDStruct(channelNo)->breatheCtrl.periodms;
+}
+
+/**
+ * @brief Tracks the current brightness of a LED channel and fades it progressively towards the intended target level
+ * @param LEDChannel the channel that needs its brightness adjusted
+ */
 STATIC void effectControl_FadeBrightness(LEDChannel_t LEDChannel) {
     LED_t* LED_ptr = getLEDStruct(LEDChannel);
 
@@ -273,6 +312,10 @@ STATIC void effectControl_FadeBrightness(LEDChannel_t LEDChannel) {
     setDutyCycle(LED_ptr->CCChannel, LED_ptr->brightnessCtrl.currentBrightness, true);
 }
 
+/**
+ * @brief plays a breathe effect on the desirec LED channel
+ * @param LEDChannel the LED channel to play the effect.
+ */
 STATIC void effectControl_Breathe(LEDChannel_t LEDChannel) {
     LED_t* LED_ptr = getLEDStruct(LEDChannel);
     if (LED_ptr->breatheCtrl.wavesPerSample == 0) {
@@ -287,13 +330,18 @@ STATIC void effectControl_Breathe(LEDChannel_t LEDChannel) {
         LED_ptr->breatheCtrl.currLUTIndex++;
         if (LED_ptr->breatheCtrl.currLUTIndex >= BREATHE_LUT_SIZE) {
             LED_ptr->breatheCtrl.currLUTIndex = 0;
-            app_log_debug("Overflowing LUT %" PRIu32 "\r\n", LED_ptr->breatheCtrl.wavesPerSample);
         }
         LED_ptr->breatheCtrl.currWave = 0;
     }
     setDutyCycle(LED_ptr->CCChannel, brightness, true);
 }
+
 const LEDChannel_t LEDChannels[] = {LED_CHANNEL_1, LED_CHANNEL_2, LED_CHANNEL_3};
+
+/**
+ * @brief Function triggered by an overflow interrupt in TIME0. Controls the brightness of the LEDs and the effects
+ * played on them
+ */
 void effectControlLoop(void) {
     // NOTE: the effect Control Loop runs at the PWM frequency, as it's triggered by the timer overflow interrupt
     // Write OCB to update the duty cycle of the next waveform period
