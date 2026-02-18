@@ -1,8 +1,8 @@
 #include <unity.h>
 
+#include "app_log.h"
 #include "buttonActions.h"
 #include "mock_PWMControl.h"
-#include "mock_app_log.h"
 #include "mock_buttons.h"
 #include "mock_debounce.h"
 #include "mock_effectControl.h"
@@ -203,6 +203,7 @@ void test_button1Released_FixedToBreathe(void) {
     // Set Expectations
     SLP_getSystemTickInMs_ExpectAndReturn(expectedReleaseTime);
     getLEDStruct_ExpectAndReturn(testChannel, &testLED);
+    getEffectName_ExpectAndReturn(expectedNewAnimation, "Breathe Effect");
 
     button1Released(&testBtn);
     TEST_ASSERT_EQUAL_UINT32(expectedNewAnimation, testLED.currAnimation);
@@ -220,10 +221,25 @@ void test_button1Released_BreatheToFixed(void) {
     // Set Expectations
     SLP_getSystemTickInMs_ExpectAndReturn(expectedReleaseTime);
     getLEDStruct_ExpectAndReturn(testChannel, &testLED);
+    getEffectName_ExpectAndReturn(expectedNewAnimation, "Fixed Brightness");
 
     button1Released(&testBtn);
     TEST_ASSERT_EQUAL_UINT32(expectedNewAnimation, testLED.currAnimation);
 }
+
+// button0 on long press. does nothing, for now
+void test_button1Released_LongPress(void) {
+    button_t testBtn = {.lastPressMs = 1000};
+    uint64_t timeOfRelease = 3000;  // mimicks a short press
+
+    // Set Expectations
+    SLP_getSystemTickInMs_ExpectAndReturn(timeOfRelease);
+    // app_log_debug_expec();
+    button1Released(&testBtn);
+}
+
+// Button 1 Pressed does nothing for now
+void test_button1Pressed(void) { button1Pressed(NULL); }
 
 /**
  * quad1Clockwise

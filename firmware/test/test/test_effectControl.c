@@ -296,7 +296,7 @@ void test_getLEDBrightness_Success(void) {
  * - New period is set and
  */
 
-void test_setBreathePeriod_Succes(void) {
+void test_setBreathePeriod_Success(void) {
     efferr_t expectedRetVal = EFF_OK;
 
     // Set up
@@ -348,6 +348,23 @@ void test_setBreathePeriod_PeriodIsNotMultiplePWM(void) {
     TEST_ASSERT_EQUAL_UINT32(expectedRetVal, retVal);
     TEST_ASSERT_EQUAL_UINT32(testPeriod, LEDCh1.breatheCtrl.periodms);
     TEST_ASSERT_EQUAL_UINT32(expectedwavesPerSample, LEDCh1.breatheCtrl.wavesPerSample);
+}
+
+/**
+ * getBreathePeriod
+ */
+
+void test_getBreathePeriod_Success(void) {
+    // Test conditions
+    LEDChannel_t testLEDChannel = LED_CHANNEL_3;
+
+    // Set Expectations
+    uint32_t expectedPeriod = 1000;
+    getLEDStruct(testLEDChannel)->breatheCtrl.periodms = expectedPeriod;
+
+    uint32_t breathePeriod = getBreathePeriod(testLEDChannel);
+
+    TEST_ASSERT_EQUAL_UINT32(expectedPeriod, breathePeriod);
 }
 
 ////
@@ -643,4 +660,75 @@ void test_effectControl_Breathe_WavesPerSampleIs0(void) {
     TEST_ASSERT_EQUAL_UINT32(testCurrWave, getLEDStruct(testLEDChannel)->breatheCtrl.currWave);
     // Check the LUT index has increased
     TEST_ASSERT_EQUAL_UINT32(testLUTIdx, getLEDStruct(testLEDChannel)->breatheCtrl.currLUTIndex);
+}
+
+/**
+ * effectControlLoop
+ */
+
+void test_effectControlLoop_Success(void) {
+    // Test Conditions
+    anim_t testAnimationCh1 = ANIM_FIXED;
+    anim_t testAnimationCh2 = ANIM_BREATHE;
+    anim_t testAnimationCh3 = ANIM_FIXED;
+
+    // Channel 1 brigtness levels
+    uint32_t testCh1CurrBrightness = 1000;
+    uint32_t testCh1TargetBrightness = 9000;
+    uint32_t testCh1Delta = 50;
+    bool testCh1ChangeReqFlag = false;
+
+    // Channel 2 breathe params
+    uint32_t testCh2TargetBrightness = 8000;
+    uint32_t testCh2CurrLUTIdx = 10;
+
+    // Channel 1 brigtness levels
+    uint32_t testCh3CurrBrightness = 2000;
+    uint32_t testCh3TargetBrightness = 8000;
+    uint32_t testCh3Delta = 20;
+    bool testCh3ChangeReqFlag = false;
+
+    // Set Expectations
+    getLEDStruct(LED_CHANNEL_1)->currAnimation = testAnimationCh1;
+    getLEDStruct(LED_CHANNEL_1)->brightnessCtrl.currentBrightness = testCh1CurrBrightness;
+    getLEDStruct(LED_CHANNEL_1)->brightnessCtrl.targetBrightness = testCh1TargetBrightness;
+    getLEDStruct(LED_CHANNEL_1)->brightnessCtrl.delta = testCh1Delta;
+    getLEDStruct(LED_CHANNEL_1)->brightnessCtrl.brightChangeRequestedFlag = testCh1ChangeReqFlag;
+
+    uint32_t expectedCh2BrightnessLevel =
+        gausianBreatheLUT[testCh2CurrLUTIdx] * testCh2TargetBrightness / MAX_BRIGHTNESS;
+    getLEDStruct(LED_CHANNEL_2)->currAnimation = testAnimationCh2;
+    getLEDStruct(LED_CHANNEL_2)->breatheCtrl.currLUTIndex = testCh2CurrLUTIdx;
+    getLEDStruct(LED_CHANNEL_2)->brightnessCtrl.targetBrightness = testCh2TargetBrightness;
+
+    getLEDStruct(LED_CHANNEL_3)->currAnimation = testAnimationCh3;
+    getLEDStruct(LED_CHANNEL_3)->brightnessCtrl.currentBrightness = testCh3CurrBrightness;
+    getLEDStruct(LED_CHANNEL_3)->brightnessCtrl.targetBrightness = testCh3TargetBrightness;
+    getLEDStruct(LED_CHANNEL_3)->brightnessCtrl.delta = testCh3Delta;
+    getLEDStruct(LED_CHANNEL_3)->brightnessCtrl.brightChangeRequestedFlag = testCh3ChangeReqFlag;
+
+    // Expectations for Channel 1 - fixed brightness
+    setDutyCycle_Expect(CC_CHANNEL_0, testCh1CurrBrightness + testCh1Delta, true);
+    // Expectations for Channel 2 - breathe Effect
+    setDutyCycle_Expect(CC_CHANNEL_1, expectedCh2BrightnessLevel, true);
+    // Expectations for Channel 3 - fixed brightness
+    setDutyCycle_Expect(CC_CHANNEL_2, testCh3CurrBrightness + testCh3Delta, true);
+
+    // Run the code
+    effectControlLoop();
+}
+
+void test_effectControlLoop_WrongAnimTypeNoAction(void) {
+    // Test Conditions
+    anim_t testAnimationCh1 = ANIM_MAX_EFFECTS;
+    anim_t testAnimationCh2 = ANIM_MAX_EFFECTS;
+    anim_t testAnimationCh3 = ANIM_MAX_EFFECTS;
+
+    // Set Expectations
+    getLEDStruct(LED_CHANNEL_1)->currAnimation = testAnimationCh1;
+    getLEDStruct(LED_CHANNEL_2)->currAnimation = testAnimationCh2;
+    getLEDStruct(LED_CHANNEL_3)->currAnimation = testAnimationCh3;
+
+    // Run the code
+    effectControlLoop();
 }

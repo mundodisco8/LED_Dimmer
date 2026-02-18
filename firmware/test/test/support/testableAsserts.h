@@ -87,11 +87,11 @@ extern char bufferino[256];
 #define app_assert(expr, msg, ...)                          \
     if (!(expr)) {                                          \
         sprintf(bufferino, msg __VA_OPT__(, ) __VA_ARGS__); \
-        testable_appAssert(expr, #expr, bufferino);         \
+        testable_appAssert(#expr, bufferino);               \
     }
 
 /** @brief A function to test asserts
  */
-void testable_appAssert(bool pass, char* expr, char* msg);
+void testable_appAssert(char* expr, char* msg);
 
 #endif  // _TESTABLE_ASSERTIONS_H_

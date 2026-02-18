@@ -4,25 +4,26 @@
 /*****************************************************************************************
  *
  * FAKE APP_LOG.H USED IN TESTS. CONTAINS THE MINIMUM AMOUNT OF IT TO RUN THEM
+ * You will need to enable --verbosity=obnoxious to see the stdout paired with the test
+ * that generated (otherwise is bundled together in the TEST OUTPUT section)
  *
  ****************************************************************************************/
 
-#ifdef PRINT_ENABLED
-#define app_log_level(LEVEL, ...) \
-    do {                          \
-        printf("%s: ", LEVEL);    \
-        printf(__VA_ARGS__);      \
-    } while (0);
+#include "unity.h"
 
-#define app_log_error(...) app_log_level("ERROR", __VA_ARGS__);
-#define app_log_warning(...) app_log_level("WARNING", __VA_ARGS__);
-#define app_log_info(...) app_log_level("INFO", __VA_ARGS__);
-#define app_log_debug(...) app_log_level("DEBUG", __VA_ARGS__);
-#else
-#define app_log_error(...)
-#define app_log_warning(...)
-#define app_log_info(...)
-#define app_log_debug(...)
-#endif  // PRINT_ENABLED
+// #define app_log_error(msg, ...) testPrint("💣 ERROR", msg __VA_OPT(, ) __VA_ARGS__);
+// #define app_log_warning(msg, ...) testPrint("⚠️ WARNING", msg __VA_OPT(, ) __VA_ARGS__);
+#define app_log_error(msg, ...) \
+    printf("💣 - ");            \
+    printf(msg __VA_OPT__(, ) __VA_ARGS__);
+#define app_log_debug(msg, ...) \
+    printf("⚠️ - ");             \
+    printf(msg __VA_OPT__(, ) __VA_ARGS__);
+#define app_log_info(msg, ...) \
+    printf("ℹ️ - ");            \
+    printf(msg __VA_OPT__(, ) __VA_ARGS__);
+#define app_log_debug(msg, ...) \
+    printf("🐞 - ");            \
+    printf(msg __VA_OPT__(, ) __VA_ARGS__);
 
 #endif  // APP_LOG_H

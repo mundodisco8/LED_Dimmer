@@ -46,11 +46,10 @@ char bufferino[256] = {0};
  * successfully when it should, and also it triggers a test error when the assertion is not expected, to let you correct
  * the mistake without needing to run the code.
  *
- * @param pass a boolean with the assertion's expession's result
  * @param expr the expression evaluated, as a string, so it can be printed
  * @param msg the message passed to app_assert to print in case of assertion
  */
-void testable_appAssert(bool pass, char* expr, char* msg) {
+void testable_appAssert(char* expr, char* msg) {
     if (!plannedAssertsFlag) {
         printf("ASSERTING!\r\n");
         printf("Expression \"%s -> %s\" failed ", expr, msg);
