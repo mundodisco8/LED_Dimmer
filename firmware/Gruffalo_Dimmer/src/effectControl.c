@@ -59,7 +59,7 @@ const double BREATHE_GAMMA = .15L;
  * @brief Contains the pre-calculated values for the breathe effect brightness levels. uint16_t as it contains a percent value
  * with 2 significative numbers (10000 = 100.00%)
  */
-STATIC uint16_t gausianBreatheLUT[BREATHE_LUT_SIZE] = {0UL};
+STATIC uint32_t gausianBreatheLUT[BREATHE_LUT_SIZE] = {0UL};
 
 /**
  * @brief Default parameters of the breathe effect, in case none are provided
@@ -321,8 +321,9 @@ STATIC void effectControl_Breathe(LEDChannel_t LEDChannel) {
     if (LED_ptr->breatheCtrl.wavesPerSample == 0) {
         return;
     }
-    // Get the brightess for this sample
-    uint32_t brightness = gausianBreatheLUT[LED_ptr->breatheCtrl.currLUTIndex];
+    // Get the brightess for this sample, scaled by the target Brightness of brightnessCtrl
+    uint32_t brightness = gausianBreatheLUT[LED_ptr->breatheCtrl.currLUTIndex] *
+                          LED_ptr->brightnessCtrl.targetBrightness / MAX_BRIGHTNESS;
     // Increase currentWave counter
     LED_ptr->breatheCtrl.currWave++;
     // Check if we need to move to the next sample

@@ -13,7 +13,7 @@
 /**
  * Extern bits to test
  */
-extern uint16_t gausianBreatheLUT[BREATHE_LUT_SIZE];
+extern uint32_t gausianBreatheLUT[BREATHE_LUT_SIZE];
 
 // Instances of breathe effects for each channel
 extern breatheControl_t breatheCh1;
@@ -40,6 +40,7 @@ void setUp(void) {
     assertSetUp();
 
     memset(gausianBreatheLUT, 0, sizeof(gausianBreatheLUT));
+    fillBreatheEffectLUT(&DEFAULT_BREATHE_PARAMS);
     // Expectation for initLEDStrips()
     getPWMFrequency_ExpectAndReturn(1000UL);
     getPWMFrequency_ExpectAndReturn(1000UL);
@@ -60,20 +61,24 @@ void test_fillBreatheLUT_passedParams(void) {
         .maxBrightness = 10000, .minBrightness = 1000, .beta = .8, .gamma = .2, .LUTSize = 20};
 
     // Got this values from the Jupiter Notebook on docs
-    uint16_t expectedValues[20] = {1003, 1008, 1020, 1046, 1100, 1205, 1395,  1716, 2218, 2946,
+    uint32_t expectedValues[20] = {1003, 1008, 1020, 1046, 1100, 1205, 1395,  1716, 2218, 2946,
                                    3922, 5121, 6459, 7794, 8942, 9723, 10000, 9723, 8942, 7794};
 
     fillBreatheEffectLUT(&testParams);
 
-    TEST_ASSERT_EQUAL_UINT16_ARRAY(expectedValues, gausianBreatheLUT, testParams.LUTSize);
+    TEST_ASSERT_EQUAL_UINT32_ARRAY(expectedValues, gausianBreatheLUT, testParams.LUTSize);
 }
 
 void test_fillBreatheLUT_passedNull(void) {
-    uint16_t expectedValues[BREATHE_LUT_SIZE] = {0};
+    // Paint the LUT, which was initialised during setup, so we can test that it was not touched by fillBreatheEffectLUT
+    memset(gausianBreatheLUT, 0xAB, sizeof(gausianBreatheLUT));
+    uint32_t expectedValues[BREATHE_LUT_SIZE] = {0};
+    // Paint the expectedValues array with the same value
+    memset(expectedValues, 0xAB, sizeof(expectedValues));
 
     fillBreatheEffectLUT(NULL);
 
-    TEST_ASSERT_EQUAL_UINT16_ARRAY(expectedValues, gausianBreatheLUT, BREATHE_LUT_SIZE);
+    TEST_ASSERT_EQUAL_UINT32_ARRAY(expectedValues, gausianBreatheLUT, BREATHE_LUT_SIZE);
 }
 
 /**
@@ -91,8 +96,8 @@ void test_initLEDStrips_success(void) {
                               .pmwPeriodms = 1UL,
                               .breatheCtrl.currLUTIndex = 0UL,
                               .breatheCtrl.currWave = 0UL,
-                              .breatheCtrl.periodms = 0UL,
-                              .breatheCtrl.wavesPerSample = 0UL};
+                              .breatheCtrl.periodms = BREATHE_DEFAULT_PERIOD_MS,
+                              .breatheCtrl.wavesPerSample = BREATHE_DEFAULT_PERIOD_MS / BREATHE_LUT_SIZE};
 
     // Expectations - Use 38400
     getPWMFrequency_ExpectAndReturn(1000);
@@ -525,15 +530,19 @@ void test_effectControl_FadeBrightness_CoverageTestAllChannels(void) {
 
 void test_effectControl_Breathe_setsBrightness(void) {
     LEDChannel_t testLEDChannel = LED_CHANNEL_1;
-    uint32_t testCurrWave = 0;         // played n waves...
-    uint32_t testWavesPerSample = 10;  // ... and we reset in the next
-    LEDCh1.breatheCtrl.currWave = testCurrWave;
-    LEDCh1.breatheCtrl.wavesPerSample = testWavesPerSample;
+    uint32_t testCurrWave = 0;            // played n waves...
+    uint32_t testWavesPerSample = 10;     // ... and we reset in the next
+    uint32_t testBrightnessScale = 8000;  // scale brightness to 80%
+    uint32_t testSampleToPlay = 10;
 
     CCChannel_t expectedPWMChannel = CC_CHANNEL_0;
-    uint32_t expectedSampleToPlay = 0;
-    uint32_t expectedPercentToSet = gausianBreatheLUT[expectedSampleToPlay];
+    uint32_t expectedPercentToSet = (gausianBreatheLUT[testSampleToPlay] * testBrightnessScale) / MAX_BRIGHTNESS;
     uint32_t expectedCurrWave = getLEDStruct(testLEDChannel)->breatheCtrl.currWave + 1;
+
+    getLEDStruct(testLEDChannel)->breatheCtrl.currWave = testCurrWave;
+    getLEDStruct(testLEDChannel)->breatheCtrl.wavesPerSample = testWavesPerSample;
+    getLEDStruct(testLEDChannel)->breatheCtrl.currLUTIndex = testSampleToPlay;
+    getLEDStruct(testLEDChannel)->brightnessCtrl.targetBrightness = testBrightnessScale;
 
     // Set Expectations
     setDutyCycle_Expect(expectedPWMChannel, expectedPercentToSet, true);
@@ -547,17 +556,21 @@ void test_effectControl_Breathe_MoveToNextSample(void) {
     LEDChannel_t testLEDChannel = LED_CHANNEL_1;
     uint32_t testCurrWave = 4;                       // played n waves...
     uint32_t testWavesPerSample = testCurrWave + 1;  // ... and we reset in the next
-    LEDCh1.breatheCtrl.currWave = testCurrWave;
-    LEDCh1.breatheCtrl.wavesPerSample = testWavesPerSample;
+    uint32_t testSampleToPlay = 10;
+    uint32_t testBrightnessScale = 1234;  // scale brightness to 80%
 
     CCChannel_t expectedPWMChannel = CC_CHANNEL_0;
-    uint32_t expectedSampleToPlay = 0;
-    uint32_t expectedPercentToSet = gausianBreatheLUT[expectedSampleToPlay];
     uint32_t expectedCurrWave = 0;  // currWave should reset
-    uint32_t expectedLUTIdx = getLEDStruct(testLEDChannel)->breatheCtrl.currLUTIndex + 1;
+    uint32_t expectedLUTIdx = testSampleToPlay + 1;
+    uint32_t expectedPercentToSet = (gausianBreatheLUT[testSampleToPlay] * testBrightnessScale) / MAX_BRIGHTNESS;
 
+    getLEDStruct(testLEDChannel)->breatheCtrl.currLUTIndex = testSampleToPlay;
+    getLEDStruct(testLEDChannel)->breatheCtrl.currWave = testCurrWave;
+    getLEDStruct(testLEDChannel)->breatheCtrl.wavesPerSample = testWavesPerSample;
+    getLEDStruct(testLEDChannel)->brightnessCtrl.targetBrightness = testBrightnessScale;
     // Set Expectations
-    setDutyCycle_Expect(expectedPWMChannel, expectedPercentToSet, true);
+    setDutyCycle_Expect(expectedPWMChannel, expectedPercentToSet,
+                        true);  // make sure we play the correct sample and not "the next"
 
     effectControl_Breathe(testLEDChannel);
     // Check the current wave counter has reset
@@ -573,18 +586,16 @@ void test_effectControl_Breathe_CurrWaveOverWavesPerSample(void) {
     // And we reduce period so that we only play...
     uint32_t testWavesPerSample = 5;  // 5 waves per sample
 
-    LEDCh1.breatheCtrl.currLUTIndex = testLUTIndex;
-    LEDCh1.breatheCtrl.currWave = testCurrWave;
-    LEDCh1.breatheCtrl.wavesPerSample = testWavesPerSample;
+    getLEDStruct(testLEDChannel)->breatheCtrl.currLUTIndex = testLUTIndex;
+    getLEDStruct(testLEDChannel)->breatheCtrl.currWave = testCurrWave;
+    getLEDStruct(testLEDChannel)->breatheCtrl.wavesPerSample = testWavesPerSample;
 
     CCChannel_t expectedPWMChannel = CC_CHANNEL_0;
-    uint32_t expectedSampleToPlay = 0;
-    uint32_t expectedPercentToSet = gausianBreatheLUT[expectedSampleToPlay];
     uint32_t expectedCurrWave = 0;  // currWave should reset
     uint32_t expectedLUTIdx = getLEDStruct(testLEDChannel)->breatheCtrl.currLUTIndex + 1;
 
     // Set Expectations
-    setDutyCycle_Expect(expectedPWMChannel, expectedPercentToSet, true);
+    setDutyCycle_ExpectAnyArgs();  // No need to check args of this in this test, it's out of its scope
 
     effectControl_Breathe(testLEDChannel);
     // Check the current wave counter has reset
@@ -598,18 +609,16 @@ void test_effectControl_Breathe_LUTIndexOverflow(void) {
     uint32_t testCurrWave = 4;                       // played n waves...
     uint32_t testWavesPerSample = testCurrWave + 1;  // ... and we reset in the next
     uint32_t testLUTIdx = BREATHE_LUT_SIZE;
-    LEDCh1.breatheCtrl.currLUTIndex = testLUTIdx;
-    LEDCh1.breatheCtrl.currWave = testCurrWave;
-    LEDCh1.breatheCtrl.wavesPerSample = testWavesPerSample;
+    getLEDStruct(testLEDChannel)->breatheCtrl.currLUTIndex = testLUTIdx;
+    getLEDStruct(testLEDChannel)->breatheCtrl.currWave = testCurrWave;
+    getLEDStruct(testLEDChannel)->breatheCtrl.wavesPerSample = testWavesPerSample;
 
     CCChannel_t expectedPWMChannel = CC_CHANNEL_0;
-    uint32_t expectedSampleToPlay = 0;
-    uint32_t expectedPercentToSet = gausianBreatheLUT[expectedSampleToPlay];
     uint32_t expectedCurrWave = 0;  // currWave should reset
     uint32_t expectedLUTIdx = 0;    // lutIndex should reset
 
     // Set Expectations
-    setDutyCycle_Expect(expectedPWMChannel, expectedPercentToSet, true);
+    setDutyCycle_ExpectAnyArgs();
 
     effectControl_Breathe(testLEDChannel);
     // Check the current wave counter has reset
@@ -623,9 +632,9 @@ void test_effectControl_Breathe_WavesPerSampleIs0(void) {
     uint32_t testWavesPerSample = 0;         //
     uint32_t testCurrWave = 4;               // just put some values here to see that they don't change
     uint32_t testLUTIdx = BREATHE_LUT_SIZE;  // same here
-    LEDCh1.breatheCtrl.currLUTIndex = testLUTIdx;
-    LEDCh1.breatheCtrl.currWave = testCurrWave;
-    LEDCh1.breatheCtrl.wavesPerSample = testWavesPerSample;
+    getLEDStruct(testLEDChannel)->breatheCtrl.currLUTIndex = testLUTIdx;
+    getLEDStruct(testLEDChannel)->breatheCtrl.currWave = testCurrWave;
+    getLEDStruct(testLEDChannel)->breatheCtrl.wavesPerSample = testWavesPerSample;
 
     // Set Expectations - expectation is that setDutyCycle is not called!
 

@@ -51,7 +51,8 @@ typedef enum anim {
  *
  */
 typedef struct brightnessControl {
-    uint32_t targetBrightness;       // The desired brightness we want to fade into
+    uint32_t targetBrightness;       // The desired brightness we want to fade into.
+                                     // also used to scale the brethe effect brightness.
     uint32_t currentBrightness;      // The brightness level we are currently at (used when fading in/out)
     bool brightChangeRequestedFlag;  // Used as an aux to know when to update the delta
     uint32_t delta;                  // Brightness  increase / decrease step
