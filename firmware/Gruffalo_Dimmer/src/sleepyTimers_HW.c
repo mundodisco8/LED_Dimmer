@@ -33,6 +33,7 @@ slpTimerStatus_t SLP_reserveTimer(timerHandlePtr_t* handlePtr) {
     // Check current number of given timers
     if (timersUsed >= SL_BT_CONFIG_MAX_SOFTWARE_TIMERS) {
         *handlePtr = NULL;
+        // TODO: assert?
         return SLPTIMER_NO_TIMERS_AVAILABLE;
     }
     // Else, we can still give a timer. Make handlePtr point to the next available timer.

@@ -53,6 +53,7 @@ STATIC uint8_t channelIdx = 0UL;  // currently selected channel, used to know wh
 
 void gpioCallbackButton(uint8_t intNo, void* ctx) {
     (void)intNo;
+    // TODO: could get rid of this timer if I count ticks of the TIMER_SAMPLE instead
     // set debounce timer
     startButtonTimer((button_t*)ctx, TIMER_DEBOUNCE);
     // set sampling timer
