@@ -9812,6 +9812,17 @@
 		)
 		(uuid "43c720c5-46e2-48ea-8858-607c734dec58")
 	)
+	(text "Linking PC4 and 5 to use\nBTN1 as wakeup source from EM4"
+		(exclude_from_sim no)
+		(at 64.008 49.53 0)
+		(effects
+			(font
+				(size 1.016 1.016)
+			)
+			(justify left)
+		)
+		(uuid "79858a47-af5e-4280-97b6-671d256deb84")
+	)
 	(text "Encoders"
 		(exclude_from_sim no)
 		(at 99.06 17.145 0)
@@ -9846,6 +9857,17 @@
 			(justify right bottom)
 		)
 		(uuid "859a5fc8-24c8-474b-9a21-5820b121051e")
+	)
+	(text "Linking PA5 and PB1 to use\nBTN1 as wakeup source from EM4"
+		(exclude_from_sim no)
+		(at 56.134 92.456 0)
+		(effects
+			(font
+				(size 1.016 1.016)
+			)
+			(justify left)
+		)
+		(uuid "89b3272e-435c-4a61-9494-782a7e1d1395")
 	)
 	(text "Two 1x16, 0.05\" pitch headers are needed to connect\nthe BGM220 breakout, but they don't need a component\nassociated with them (this is just so it appears on the BOM)"
 		(exclude_from_sim no)
@@ -9980,6 +10002,12 @@
 		(uuid "dc2f0ed5-6e91-44ff-9cef-ee74262cb817")
 	)
 	(junction
+		(at 68.58 44.45)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "ee65a830-d674-49f9-af54-785dd91f6098")
+	)
+	(junction
 		(at 187.96 82.55)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -10008,10 +10036,6 @@
 	(no_connect
 		(at 66.04 26.67)
 		(uuid "1b183983-52ac-4137-af18-16b3708f77ee")
-	)
-	(no_connect
-		(at 66.04 46.99)
-		(uuid "1b183983-52ac-4137-af18-16b3708f77ef")
 	)
 	(no_connect
 		(at 66.04 29.21)
@@ -10074,7 +10098,7 @@
 		(uuid "533f02f1-8486-4945-a2c2-36d31a2ba2c9")
 	)
 	(no_connect
-		(at 63.5 87.63)
+		(at 29.21 97.79)
 		(uuid "533f02f1-8486-4945-a2c2-36d31a2ba2ca")
 	)
 	(no_connect
@@ -10100,10 +10124,6 @@
 	(no_connect
 		(at 67.31 181.61)
 		(uuid "9459fa83-2134-4cc4-9756-a6dadd063fe2")
-	)
-	(no_connect
-		(at 29.21 97.79)
-		(uuid "9c6f1624-b643-439a-adf3-29433c12b400")
 	)
 	(no_connect
 		(at 29.21 100.33)
@@ -10263,6 +10283,16 @@
 	)
 	(wire
 		(pts
+			(xy 68.58 46.99) (xy 68.58 44.45)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "101818fc-9f43-47f1-90cc-b459a49741df")
+	)
+	(wire
+		(pts
 			(xy 63.5 105.41) (xy 66.04 105.41)
 		)
 		(stroke
@@ -10350,6 +10380,16 @@
 			(type default)
 		)
 		(uuid "40335c9a-cb95-456f-b1da-4af2d4c46c32")
+	)
+	(wire
+		(pts
+			(xy 68.58 44.45) (xy 72.39 44.45)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "41f5dbe8-716a-4622-89c7-ba2e91822289")
 	)
 	(wire
 		(pts
@@ -10883,6 +10923,16 @@
 	)
 	(wire
 		(pts
+			(xy 66.04 46.99) (xy 68.58 46.99)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c8328c70-83eb-40af-a360-8ba4f28a6c6c")
+	)
+	(wire
+		(pts
 			(xy 214.63 41.91) (xy 217.17 41.91)
 		)
 		(stroke
@@ -11153,7 +11203,7 @@
 	)
 	(global_label "BTN1"
 		(shape input)
-		(at 68.58 44.45 0)
+		(at 72.39 44.45 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -11163,7 +11213,7 @@
 		)
 		(uuid "03975ee5-ff73-4e93-86b5-f16a2c459784")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 75.7707 44.5294 0)
+			(at 79.5807 44.5294 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11538,6 +11588,28 @@
 		(uuid "9a4dabe0-8654-4fa3-8890-7a0cff18d4cd")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 189.7802 93.9006 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "BTN0"
+		(shape input)
+		(at 63.5 87.63 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "ade426ae-3f11-4942-a418-3ed644137d57")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 56.3093 87.5506 0)
 			(effects
 				(font
 					(size 1.27 1.27)
