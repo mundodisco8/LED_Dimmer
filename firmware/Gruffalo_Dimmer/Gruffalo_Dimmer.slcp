@@ -51,6 +51,7 @@ component:
   vendor: silabs
   id: iostream_eusart
 - {package: simplicity_sdk, vendor: silabs, id: mpu}
+- {package: simplicity_sdk, vendor: silabs, id: power_manager_deepsleep_blocking_hfxo_restore}
 - {package: simplicity_sdk, vendor: silabs, id: rail_util_pti}
 - {package: simplicity_sdk, vendor: silabs, id: sl_system}
 other_file:

@@ -3,7 +3,7 @@
   "specVersion" : "1.6",
   "version" : 1,
   "metadata" : {
-    "timestamp" : "2026-02-05T13:20:43Z",
+    "timestamp" : "2026-02-19T12:28:46Z",
     "authors" : [ {
       "name" : "Silicon Laboratories, Inc."
     } ],
@@ -1395,18 +1395,6 @@
     }, {
       "scope" : "required",
       "type" : "library",
-      "bom-ref" : "silabs.simplicity_sdk:2025.12.0:power_manager_deepsleep_blocking_hfxo_restore",
-      "name" : "Power Manager: Deepsleep with blocking on HFXO restore",
-      "version" : "2025.12.0",
-      "supplier" : {
-        "name" : "Silicon Laboratories, Inc."
-      },
-      "licenses" : [ {
-        "expression" : "Zlib"
-      } ]
-    }, {
-      "scope" : "required",
-      "type" : "library",
       "bom-ref" : "silabs.simplicity_sdk:2025.12.0:interrupt_manager_cortexm",
       "name" : "Interrupt Manager Cortex-M",
       "version" : "2025.12.0",
@@ -1921,6 +1909,18 @@
       "type" : "library",
       "bom-ref" : "silabs.simplicity_sdk:2025.12.0:gpio",
       "name" : "GPIO Driver",
+      "version" : "2025.12.0",
+      "supplier" : {
+        "name" : "Silicon Laboratories, Inc."
+      },
+      "licenses" : [ {
+        "expression" : "Zlib"
+      } ]
+    }, {
+      "scope" : "required",
+      "type" : "library",
+      "bom-ref" : "silabs.simplicity_sdk:2025.12.0:power_manager_deepsleep_blocking_hfxo_restore",
+      "name" : "Power Manager: Deepsleep with blocking on HFXO restore",
       "version" : "2025.12.0",
       "supplier" : {
         "name" : "Silicon Laboratories, Inc."

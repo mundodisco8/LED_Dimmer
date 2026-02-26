@@ -305,10 +305,13 @@ STATIC void effectControl_FadeBrightness(LEDChannel_t LEDChannel) {
     if (currentLevel > targetLevel) {
         // Decrease towards target
         LED_ptr->brightnessCtrl.currentBrightness -= step;
-    } else if (currentLevel < targetLevel) {
+    } else if (currentLevel < targetLevel) {  // GCOVR_EXCL_BR_LINE
+        // and if both are equal, don't do anything
         // Increase towards target
         LED_ptr->brightnessCtrl.currentBrightness += step;
-    }  // and if both are equal, don't do anything
+    } else {                                                 // GCOVR_EXCL_BR_LINE
+        app_assert(false, "Didn't expected to reach here");  // GCOVR_EXCL_LINE
+    }
     setDutyCycle(LED_ptr->CCChannel, LED_ptr->brightnessCtrl.currentBrightness, true);
 }
 

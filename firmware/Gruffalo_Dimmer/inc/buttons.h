@@ -37,6 +37,7 @@ typedef struct button {
     actionCallback_t pressedAction;     // action to perform when the state changes to BUTTON_PRESSED
     actionCallback_t releasedAction;    // action to perform when the state changes to BUTTON_RELEASED
     timerHandlePtr_t debounceTimerPtr;  // a handler to the timer that checks the debouncing
+    uint32_t debounceCycles;            // Number of times we have sampled during debounce so far
     timerHandlePtr_t samplingTimerPtr;  // a handler to the timer that checks the button state sampling
 } button_t;
 

@@ -1,4 +1,4 @@
-#eyJzdGF0ZSI6eyJidWlsZFByZXNldHMiOnsiZGVmYXVsdF9jb25maWciOnsibmFtZSI6ImRlZmF1bHRfY29uZmlnIiwiY29uZmlndXJhdGlvbiI6ImJhc2UiLCJkZWZpbml0aW9ucyI6W10sInJlbW92ZWRGbGFncyI6eyJDIjpbIi1PcyIsIi1nIl0sIkNYWCI6W10sIkFTTSI6W119LCJhZGRpdGlvbmFsRmxhZ3MiOnsiQyI6WyItT2ciLCItZ2dkYjMiXSwiQ1hYIjpbXSwiQVNNIjpbXX19fSwiY3VycmVudENvbmZJbmRleCI6MH0sImZvbGRlcnMiOlsiaW5jIiwic3JjIl0sImZpbGVzIjpbXX0=
+#eyJzdGF0ZSI6eyJidWlsZFByZXNldHMiOnsiZGVmYXVsdF9jb25maWciOnsibmFtZSI6ImRlZmF1bHRfY29uZmlnIiwiY29uZmlndXJhdGlvbiI6ImJhc2UiLCJkZWZpbml0aW9ucyI6W3sia2V5IjoiU0xfUE9XRVJfTUFOQUdFUl9ERUJVRyIsInZhbCI6IjEifV0sInJlbW92ZWRGbGFncyI6eyJDIjpbIi1PcyIsIi1nIl0sIkNYWCI6W10sIkFTTSI6W119LCJhZGRpdGlvbmFsRmxhZ3MiOnsiQyI6WyItT2ciLCItZ2dkYjMiXSwiQ1hYIjpbXSwiQVNNIjpbXX19fSwiY3VycmVudENvbmZJbmRleCI6MH0sImZvbGRlcnMiOlsiaW5jIiwic3JjIl0sImZpbGVzIjpbXX0=
 include_directories(
 	"../inc"
 	"../src"
@@ -15,6 +15,10 @@ target_sources(Gruffalo_Dimmer PRIVATE
 	"../src/PWMControl.c"
 	"../src/sleepyTimers_HW.c"
 	"../src/timer_HW.c"
+)
+
+add_compile_definitions(
+	$<$<CONFIG:base>:SL_POWER_MANAGER_DEBUG=1>
 )
 
 target_compile_options(slc PRIVATE

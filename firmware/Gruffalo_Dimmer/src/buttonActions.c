@@ -76,7 +76,7 @@ void button0Pressed(void* ctx) {
     (void)ctx;
     // app_log_debug("Btn0 Pressed\r\n");
 }
-
+bool sleepFlag = false;
 void button0Released(void* ctx) {
     // app_log_debug("Btn0 Released\r\n");
     // Cast the context as a button_t pointer
@@ -85,6 +85,7 @@ void button0Released(void* ctx) {
     if ((currTime - btnPtr->lastPressMs) > LONG_PRESS_DELTA) {
         // Long Press
         app_log_debug("IT WAS A LONGPRESS\r\n");
+        sleepFlag = true;
     } else {
         // Short Press
         channelIdx++;

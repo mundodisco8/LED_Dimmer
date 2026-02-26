@@ -5,7 +5,7 @@
   "name" : "Silicon-Laboratories",
   "documentNamespace" : "https://silabs.com",
   "creationInfo" : {
-    "created" : "2026-02-05T13:20:43Z",
+    "created" : "2026-02-19T12:28:46Z",
     "creators" : [ "Tool: Silicon Labs Configuration Tooling" ]
   },
   "comment" : "TERMS OF USE - SILICON LABORATORIES INC.\n(With respect to Silicon Labs software components, this Software Bill of Materials (SBOM) is based upon Silicon Labs'\nreview and analysis of the code version when released.  It is provided \"AS IS\" and does not modify, change or alter\nthe terms or conditions of your use of Silicon Labs' software and/or SDKs based upon license terms and/or agreements\nassociated with this software or SDKs when distributed to you, received by you, or installed by you.  Further, no\nwarranties or obligations are created by this SBOM.  It is your obligation to comply with the terms of licenses\nreferenced in this SBOM.)",
@@ -931,14 +931,6 @@
     "supplier" : "Organization: Silicon Laboratories, Inc.",
     "licenseConcluded" : "Zlib"
   }, {
-    "SPDXID" : "SPDXRef-silabs.simplicity_sdk-2025.12.0-power_manager_deepsleep_blocking_hfxo_restore",
-    "name" : "Power Manager: Deepsleep with blocking on HFXO restore",
-    "versionInfo" : "2025.12.0",
-    "primaryPackagePurpose" : "LIBRARY",
-    "downloadLocation" : "NOASSERTION",
-    "supplier" : "Organization: Silicon Laboratories, Inc.",
-    "licenseConcluded" : "Zlib"
-  }, {
     "SPDXID" : "SPDXRef-silabs.simplicity_sdk-2025.12.0-interrupt_manager_cortexm",
     "name" : "Interrupt Manager Cortex-M",
     "versionInfo" : "2025.12.0",
@@ -1284,6 +1276,14 @@
   }, {
     "SPDXID" : "SPDXRef-silabs.simplicity_sdk-2025.12.0-gpio",
     "name" : "GPIO Driver",
+    "versionInfo" : "2025.12.0",
+    "primaryPackagePurpose" : "LIBRARY",
+    "downloadLocation" : "NOASSERTION",
+    "supplier" : "Organization: Silicon Laboratories, Inc.",
+    "licenseConcluded" : "Zlib"
+  }, {
+    "SPDXID" : "SPDXRef-silabs.simplicity_sdk-2025.12.0-power_manager_deepsleep_blocking_hfxo_restore",
+    "name" : "Power Manager: Deepsleep with blocking on HFXO restore",
     "versionInfo" : "2025.12.0",
     "primaryPackagePurpose" : "LIBRARY",
     "downloadLocation" : "NOASSERTION",
@@ -1752,10 +1752,6 @@
     "relationshipType" : "CONTAINS"
   }, {
     "spdxElementId" : "SPDXRef-silabs.simplicity_sdk-2025.12.0",
-    "relatedSpdxElement" : "SPDXRef-silabs.simplicity_sdk-2025.12.0-power_manager_deepsleep_blocking_hfxo_restore",
-    "relationshipType" : "CONTAINS"
-  }, {
-    "spdxElementId" : "SPDXRef-silabs.simplicity_sdk-2025.12.0",
     "relatedSpdxElement" : "SPDXRef-silabs.simplicity_sdk-2025.12.0-interrupt_manager_cortexm",
     "relationshipType" : "CONTAINS"
   }, {
@@ -1925,6 +1921,10 @@
   }, {
     "spdxElementId" : "SPDXRef-silabs.simplicity_sdk-2025.12.0",
     "relatedSpdxElement" : "SPDXRef-silabs.simplicity_sdk-2025.12.0-gpio",
+    "relationshipType" : "CONTAINS"
+  }, {
+    "spdxElementId" : "SPDXRef-silabs.simplicity_sdk-2025.12.0",
+    "relatedSpdxElement" : "SPDXRef-silabs.simplicity_sdk-2025.12.0-power_manager_deepsleep_blocking_hfxo_restore",
     "relationshipType" : "CONTAINS"
   } ]
 }

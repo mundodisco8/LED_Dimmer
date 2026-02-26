@@ -121,11 +121,13 @@ STATIC void configureTimerPWMFrequency(uint32_t frequencyHz) {
 
     uint32_t timerFreq = TIMHW_getTimer0Frequency();
     // Else, frequencyHz is within range (>4096 quantization levels AND >250Hz)
-    if (frequencyHz > (timerFreq / MIN_PWM_LEVELS)) {
+    if (frequencyHz > (timerFreq / MIN_PWM_LEVELS)) {  // GCOVR_EXCL_BR_LINE
+        // TODO: CAN'T BE HIT AS LONG AS WE USE MS FOR PWM PERIOD, AS THAT SETS THE MAX PWM FREQ TO 1KHz
         // Freq is so high we are losing resolution
         app_assert(frequencyHz > (timerFreq / MIN_PWM_LEVELS),
-                   "\r\nFrequency (%" PRIu32 "Hz) is too high! Resolution would be too low", frequencyHz);
-        frequencyHz = timerFreq / MIN_PWM_LEVELS;
+                   "\r\nFrequency (%" PRIu32 "Hz) is too high! Resolution would be too low",
+                   frequencyHz);                   // GCOVR_EXCL_LINE
+        frequencyHz = timerFreq / MIN_PWM_LEVELS;  // GCOVR_EXCL_LINE
     }
     // Configure TIMER frequency
     uint32_t top = (timerFreq / (2 * frequencyHz));

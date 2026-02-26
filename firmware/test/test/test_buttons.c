@@ -17,11 +17,13 @@ void tearDown() {}
 ////
 
 // Check that buttons are initialised correctly
-void fakePressedAction(void) {
+void fakePressedAction(void* ctx) {
+    (void)ctx;
     // test assertions
     assertSetUp();
 }
-void fakeReleasedAction(void) {
+void fakeReleasedAction(void* ctx) {
+    (void)ctx;
     // check assertions
     assertTearDownCheck();
 }
@@ -109,8 +111,8 @@ void test_initButtons_TimersAreNullPtrs(void) {
 // init Quadrature encoder
 ////
 // Fake, empty actions for the encoder
-void fakeCWAction(void) {}
-void fakeCCWAction(void) {}
+void fakeCWAction(void* ctx) { (void)ctx; }
+void fakeCCWAction(void* ctx) { (void)ctx; }
 
 void test_initQuadratureDoesItsJob(void) {
     uint8_t expectedPin0No = 1;

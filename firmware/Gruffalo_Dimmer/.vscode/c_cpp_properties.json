@@ -105,7 +105,8 @@
                 "SL_CODE_COMPONENT_SLI_CRYPTO=sli_crypto",
                 "SLI_RADIOAES_REQUIRES_MASKING=1",
                 "SL_CODE_COMPONENT_SLI_PROTOCOL_CRYPTO=sli_protocol_crypto",
-                "SL_CODE_COMPONENT_PSEC_OSAL=psec_osal"
+                "SL_CODE_COMPONENT_PSEC_OSAL=psec_osal",
+                "SL_POWER_MANAGER_DEBUG=1"
             ],
             "compileCommands": "${workspaceFolder}/cmake_gcc/build/compile_commands.json"
         }

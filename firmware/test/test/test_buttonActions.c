@@ -1,7 +1,10 @@
 #include <unity.h>
 
-#include "app_log.h"
+// Module being tested
 #include "buttonActions.h"
+
+// Mocks and others
+#include "app_log.h"
 #include "mock_PWMControl.h"
 #include "mock_buttons.h"
 #include "mock_debounce.h"
@@ -25,7 +28,7 @@ void setUp(void) {
     channelIdx = 0;
 }
 
-void tearDown(void) { setPrintingState(DEBUG_PRINT_DISABLE); }
+void tearDown(void) {}
 
 // gpioCallbackButton
 // The press of a button starts the debounce and sample timers
@@ -203,8 +206,7 @@ void test_button1Released_FixedToBreathe(void) {
     // Set Expectations
     SLP_getSystemTickInMs_ExpectAndReturn(expectedReleaseTime);
     getLEDStruct_ExpectAndReturn(testChannel, &testLED);
-    // This is only required if we enable printing for logs
-    // getEffectName_ExpectAndReturn(expectedNewAnimation, "Breathe Effect");
+    getEffectName_ExpectAndReturn(expectedNewAnimation, "Breathe Effect");
 
     button1Released(&testBtn);
     TEST_ASSERT_EQUAL_UINT32(expectedNewAnimation, testLED.currAnimation);
@@ -222,8 +224,7 @@ void test_button1Released_BreatheToFixed(void) {
     // Set Expectations
     SLP_getSystemTickInMs_ExpectAndReturn(expectedReleaseTime);
     getLEDStruct_ExpectAndReturn(testChannel, &testLED);
-    // This is only required if we enable printing for logs
-    // getEffectName_ExpectAndReturn(expectedNewAnimation, "Fixed Brightness");
+    getEffectName_ExpectAndReturn(expectedNewAnimation, "Fixed Brightness");
 
     button1Released(&testBtn);
     TEST_ASSERT_EQUAL_UINT32(expectedNewAnimation, testLED.currAnimation);

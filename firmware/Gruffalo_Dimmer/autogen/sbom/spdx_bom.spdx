@@ -13,7 +13,7 @@ DocumentNamespace: https://silabs.com
 
 ## Creation Information
 Creator: Organization: Silicon Laboratories, Inc.
-Created: 2026-02-05T13:20:43Z
+Created: 2026-02-19T12:28:46Z
 ## Relationships
 Relationship: SPDXRef-DOCUMENT DESCRIBES SPDXRef-silabs.simplicity_sdk-2025.12.0
 
@@ -138,7 +138,6 @@ Relationship: SPDXRef-silabs.simplicity_sdk-2025.12.0 CONTAINS SPDXRef-silabs.si
 Relationship: SPDXRef-silabs.simplicity_sdk-2025.12.0 CONTAINS SPDXRef-silabs.simplicity_sdk-2025.12.0-sli_crypto
 Relationship: SPDXRef-silabs.simplicity_sdk-2025.12.0 CONTAINS SPDXRef-silabs.simplicity_sdk-2025.12.0-sl_rail_util_built_in_phys
 Relationship: SPDXRef-silabs.simplicity_sdk-2025.12.0 CONTAINS SPDXRef-silabs.simplicity_sdk-2025.12.0-sl_system_compatibility
-Relationship: SPDXRef-silabs.simplicity_sdk-2025.12.0 CONTAINS SPDXRef-silabs.simplicity_sdk-2025.12.0-power_manager_deepsleep_blocking_hfxo_restore
 Relationship: SPDXRef-silabs.simplicity_sdk-2025.12.0 CONTAINS SPDXRef-silabs.simplicity_sdk-2025.12.0-interrupt_manager_cortexm
 Relationship: SPDXRef-silabs.simplicity_sdk-2025.12.0 CONTAINS SPDXRef-silabs.simplicity_sdk-2025.12.0-rail_util_features
 Relationship: SPDXRef-silabs.simplicity_sdk-2025.12.0 CONTAINS SPDXRef-silabs.simplicity_sdk-2025.12.0-rail_lib_singleprotocol_internal_chips_dummy
@@ -181,6 +180,7 @@ Relationship: SPDXRef-silabs.simplicity_sdk-2025.12.0 CONTAINS SPDXRef-silabs.si
 Relationship: SPDXRef-silabs.simplicity_sdk-2025.12.0 CONTAINS SPDXRef-silabs.simplicity_sdk-2025.12.0-sl_main_init
 Relationship: SPDXRef-silabs.simplicity_sdk-2025.12.0 CONTAINS SPDXRef-silabs.simplicity_sdk-2025.12.0-sl_main_process_action
 Relationship: SPDXRef-silabs.simplicity_sdk-2025.12.0 CONTAINS SPDXRef-silabs.simplicity_sdk-2025.12.0-gpio
+Relationship: SPDXRef-silabs.simplicity_sdk-2025.12.0 CONTAINS SPDXRef-silabs.simplicity_sdk-2025.12.0-power_manager_deepsleep_blocking_hfxo_restore
 
 ## Package Information
 PackageName: BGM220PC22WGA
@@ -1439,17 +1439,6 @@ PackageLicenseConcluded: Zlib
 Relationship: SPDXRef-silabs.simplicity_sdk-2025.12.0-sl_system_compatibility CONTAINED_BY SPDXRef-silabs.simplicity_sdk-2025.12.0
 
 ## Package Information
-PackageName: Power Manager: Deepsleep with blocking on HFXO restore
-SPDXID: SPDXRef-silabs.simplicity_sdk-2025.12.0-power_manager_deepsleep_blocking_hfxo_restore
-PackageVersion: 2025.12.0
-PrimaryPackagePurpose: LIBRARY
-PackageDownloadLocation: NOASSERTION
-PackageSupplier: Organization: Silicon Laboratories, Inc.
-PackageLicenseConcluded: Zlib
-## Relationships
-Relationship: SPDXRef-silabs.simplicity_sdk-2025.12.0-power_manager_deepsleep_blocking_hfxo_restore CONTAINED_BY SPDXRef-silabs.simplicity_sdk-2025.12.0
-
-## Package Information
 PackageName: Interrupt Manager Cortex-M
 SPDXID: SPDXRef-silabs.simplicity_sdk-2025.12.0-interrupt_manager_cortexm
 PackageVersion: 2025.12.0
@@ -1925,3 +1914,14 @@ PackageSupplier: Organization: Silicon Laboratories, Inc.
 PackageLicenseConcluded: Zlib
 ## Relationships
 Relationship: SPDXRef-silabs.simplicity_sdk-2025.12.0-gpio CONTAINED_BY SPDXRef-silabs.simplicity_sdk-2025.12.0
+
+## Package Information
+PackageName: Power Manager: Deepsleep with blocking on HFXO restore
+SPDXID: SPDXRef-silabs.simplicity_sdk-2025.12.0-power_manager_deepsleep_blocking_hfxo_restore
+PackageVersion: 2025.12.0
+PrimaryPackagePurpose: LIBRARY
+PackageDownloadLocation: NOASSERTION
+PackageSupplier: Organization: Silicon Laboratories, Inc.
+PackageLicenseConcluded: Zlib
+## Relationships
+Relationship: SPDXRef-silabs.simplicity_sdk-2025.12.0-power_manager_deepsleep_blocking_hfxo_restore CONTAINED_BY SPDXRef-silabs.simplicity_sdk-2025.12.0

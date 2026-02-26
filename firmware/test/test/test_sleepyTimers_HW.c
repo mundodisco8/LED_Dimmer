@@ -23,7 +23,7 @@ void dummyCallback(timerHandlePtr_t* handle, void* data) {
 
 void setUp(void) { SLP_resetTimersUsed(); }
 
-void tearDown(void) { setPrintingState(DEBUG_PRINT_DISABLE); }
+void tearDown(void) {}
 
 void test_reserveTimer_success(void) {
     slpTimerStatus_t expectedRetVal = SLPTIMER_OK;
@@ -90,7 +90,6 @@ void test_startTimer_Success(void) {
 }
 
 void test_startTimer_WarningTimerRunning(void) {
-    setPrintingState(DEBUG_PRINT_ENABLE);  // This test should print
     slpTimerStatus_t expectedRetVal = SLPTIMER_OK;
     timerHandlePtr_t testPtr = NULL;
     uint32_t testTimeOut = 100;

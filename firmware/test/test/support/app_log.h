@@ -9,8 +9,6 @@
  *
  ****************************************************************************************/
 
-#include <stdbool.h>
-
 #include "unity.h"
 
 // This define has to be passed to as a compilation flag for it to work
