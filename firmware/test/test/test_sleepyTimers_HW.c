@@ -101,17 +101,9 @@ void test_startTimer_WarningTimerRunning(void) {
 
     slpTimerStatus_t retVal = SLP_startTimer(testPtr, testTimeOut, TIMER_ONE_SHOT, dummyCallback, &testContext);
     TEST_ASSERT_EQUAL(expectedRetVal, retVal);
-
-    // OCD - coverage to 100%
-    setPrintingState(DEBUG_PRINT_DISABLE);
-    sl_sleeptimer_start_timer_ms_ExpectAnyArgsAndReturn(SL_STATUS_NOT_READY);
-
-    retVal = SLP_startTimer(testPtr, testTimeOut, TIMER_ONE_SHOT, dummyCallback, &testContext);
-    TEST_ASSERT_EQUAL(expectedRetVal, retVal);
 }
 
 void test_startTimer_Error(void) {
-    setPrintingState(DEBUG_PRINT_ENABLE);  // This test should print
     slpTimerStatus_t expectedRetVal = SLPTIMER_ERROR;
     timerHandlePtr_t testPtr = NULL;
     uint32_t testTimeOut = 100;
@@ -171,7 +163,6 @@ void test_stopTimer_Success(void) {
 }
 
 void test_stopTimer_Error(void) {
-    setPrintingState(DEBUG_PRINT_ENABLE);
     slpTimerStatus_t expectedRetVal = SLPTIMER_ERROR;
     timerHandlePtr_t testPtr = NULL;
 
@@ -181,12 +172,6 @@ void test_stopTimer_Error(void) {
     slpTimerStatus_t retVal = SLP_stopTimer(testPtr);
 
     TEST_ASSERT_EQUAL(expectedRetVal, retVal);
-
-    // OCD - coverage to 100%
-    setPrintingState(DEBUG_PRINT_DISABLE);
-    sl_sleeptimer_stop_timer_ExpectAndReturn((sl_sleeptimer_timer_handle_t*)testPtr, SL_STATUS_INVALID_STATE);
-
-    retVal = SLP_stopTimer(testPtr);
 }
 
 // isTimerRunning
