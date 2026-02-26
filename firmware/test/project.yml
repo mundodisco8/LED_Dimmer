@@ -264,7 +264,7 @@
   :reports: # Specify one or more reports to generate.
     # Make an HTML summary report.
     # - HtmlBasic
-    # - HtmlDetailed
+    - HtmlDetailed
     # - Text
     # - Cobertura
     # - SonarQube
@@ -285,12 +285,13 @@
     # - XmlSummary
   :gcovr:
     # Keep only source files that match this filter. (gcovr --filter).
-    :report_include: "../src/src"
+    :report_include: "../Gruffalo_Dimmer/src"
     :html_artifact_filename: TestCoverageReport.html
     :html_title: Test Coverage Report
     :html_medium_threshold: 75
     :html_high_threshold: 90
     :exclude_unreachable_branches: true
+
     # :html_absolute_paths: TRUE
     # :html_encoding: UTF-8
   :report_generator:

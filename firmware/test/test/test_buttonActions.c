@@ -25,7 +25,7 @@ void setUp(void) {
     channelIdx = 0;
 }
 
-void tearDown(void) {}
+void tearDown(void) { setPrintingState(DEBUG_PRINT_DISABLE); }
 
 // gpioCallbackButton
 // The press of a button starts the debounce and sample timers
@@ -203,7 +203,8 @@ void test_button1Released_FixedToBreathe(void) {
     // Set Expectations
     SLP_getSystemTickInMs_ExpectAndReturn(expectedReleaseTime);
     getLEDStruct_ExpectAndReturn(testChannel, &testLED);
-    getEffectName_ExpectAndReturn(expectedNewAnimation, "Breathe Effect");
+    // This is only required if we enable printing for logs
+    // getEffectName_ExpectAndReturn(expectedNewAnimation, "Breathe Effect");
 
     button1Released(&testBtn);
     TEST_ASSERT_EQUAL_UINT32(expectedNewAnimation, testLED.currAnimation);
@@ -221,7 +222,8 @@ void test_button1Released_BreatheToFixed(void) {
     // Set Expectations
     SLP_getSystemTickInMs_ExpectAndReturn(expectedReleaseTime);
     getLEDStruct_ExpectAndReturn(testChannel, &testLED);
-    getEffectName_ExpectAndReturn(expectedNewAnimation, "Fixed Brightness");
+    // This is only required if we enable printing for logs
+    // getEffectName_ExpectAndReturn(expectedNewAnimation, "Fixed Brightness");
 
     button1Released(&testBtn);
     TEST_ASSERT_EQUAL_UINT32(expectedNewAnimation, testLED.currAnimation);
