@@ -1,32 +1,40 @@
-#include <string.h>
 #include <unity.h>
 
-#include "app_assert.h"
 #include "buttons.h"
-#include "inttypes.h"
+
+// Rest of the headers required
+#include "app_assert.h"
+#include "app_log.h"
+#include "mock_debounce.h"
 #include "mock_gpio_HW.h"
 #include "mock_interrupt_HW.h"
 #include "mock_sleepyTimers_HW.h"
 
-void setUp() {}
+// Forward declarations for STATIC elements of the module
+extern void samplingTimerCallback(timerHandlePtr_t handlePtr, void* data);
+extern void longPressTimerCallback(timerHandlePtr_t handlePtr, void* data);
 
-void tearDown() {}
+// Some timer handlers for the buttons
+timerHandlePtr_t longPressTimerPtr;
+timerHandlePtr_t samplingTimerPtr;
+
+void setUp() {
+    // test assertions
+    assertSetUp();
+}
+
+void tearDown() {
+    // check assertions
+    assertTearDownCheck();
+}
 
 ////
 // init Buttons
 ////
 
 // Check that buttons are initialised correctly
-void fakePressedAction(void* ctx) {
-    (void)ctx;
-    // test assertions
-    assertSetUp();
-}
-void fakeReleasedAction(void* ctx) {
-    (void)ctx;
-    // check assertions
-    assertTearDownCheck();
-}
+void fakePressedAction(void* ctx) { (void)ctx; }
+void fakeReleasedAction(void* ctx) { (void)ctx; }
 
 void test_initButtonsDoesItsJob(void) {
     button_t testBtn = {0};
@@ -44,7 +52,7 @@ void test_initButtonsDoesItsJob(void) {
 
     // Set Expectations
     setPinMode_Expect(expectedPort, expectedPin, expectedMode, expectedDout);
-    SLP_reserveTimer_ExpectAndReturn(&(testBtn.debounceTimerPtr), SLPTIMER_OK);
+    SLP_reserveTimer_ExpectAndReturn(&(testBtn.longPressTimerPtr), SLPTIMER_OK);
     SLP_reserveTimer_ReturnThruPtr_handlePtr((timerHandlePtr_t*)&dummy1);
     SLP_reserveTimer_ExpectAndReturn(&(testBtn.samplingTimerPtr), SLPTIMER_OK);
     SLP_reserveTimer_ReturnThruPtr_handlePtr((timerHandlePtr_t*)&dummy2);
@@ -58,7 +66,7 @@ void test_initButtonsDoesItsJob(void) {
     TEST_ASSERT_EQUAL_INT32(0, testBtn.integrator);
     TEST_ASSERT_EQUAL_PTR(fakePressedAction, testBtn.pressedAction);
     TEST_ASSERT_EQUAL_PTR(fakeReleasedAction, testBtn.releasedAction);
-    TEST_ASSERT_NOT_NULL(testBtn.debounceTimerPtr);
+    TEST_ASSERT_NOT_NULL(testBtn.longPressTimerPtr);
     TEST_ASSERT_NOT_NULL(testBtn.samplingTimerPtr);
 }
 
@@ -246,4 +254,99 @@ void test_configQuadInts_NullPointerGuards_IntNumberPointer(void) {
 
     uint32_t retVal = configureQuadratureInterrupts(&testQuad, fakeQuadCallback, pinNoPtr);
     TEST_ASSERT_EQUAL_HEX32(BTN_NULL_POINTER_PASSED, retVal);
+}
+
+////
+// StartButtonTimer()
+//
+// Also tests getDebounceTime() and getDebounceSamplingPeriod() (statics called by it)
+////
+
+// 1) Start a sampling timer that is not already running
+//    a) Also test that getDebounceSamplingPeriod() returns the right value
+// 2) Start a sampling timer that IS already running
+// 3) Checks that we hit the logging function when an error is returned by the SLP* functions
+
+void test_startButtonTimer_SamplingTimerNotRunning(void) {
+    button_t testButton = {.samplingTimerPtr = samplingTimerPtr};
+
+    SLP_isTimerRunning_ExpectAndReturn(testButton.samplingTimerPtr, false);
+    SLP_startTimer_ExpectAndReturn(testButton.samplingTimerPtr, DEBOUNCE_SAMPLING_PERIOD_MS, TIMER_ONE_SHOT,
+                                   samplingTimerCallback, &testButton, SLPTIMER_OK);
+
+    uint32_t retVal = startButtonTimer(&testButton, TIMER_SAMPLE);
+    TEST_ASSERT_EQUAL_UINT32(SLPTIMER_OK, retVal);
+}
+
+void test_startButtonTimer_SamplingTimerISRunning(void) {
+    button_t testButton = {.samplingTimerPtr = samplingTimerPtr};
+
+    SLP_isTimerRunning_ExpectAndReturn(testButton.samplingTimerPtr, true);
+    // startPeriodictimer is not called in this case
+
+    uint32_t retVal = startButtonTimer(&testButton, TIMER_SAMPLE);
+    TEST_ASSERT_EQUAL_UINT32(SLPTIMER_OK, retVal);
+}
+
+void test_startButtonTimer_LongPressTimer(void) {
+    button_t testButton = {.longPressTimerPtr = longPressTimerPtr};
+
+    SLP_isTimerRunning_ExpectAndReturn(testButton.longPressTimerPtr, false);
+    SLP_startTimer_ExpectAndReturn(testButton.longPressTimerPtr, LONGPRESS_TIME_MS, TIMER_ONE_SHOT,
+                                   longPressTimerCallback, &testButton, SLPTIMER_OK);
+    // Sadly, the callback is a static function, so I can't test that startPeriodicTimer will be called with it as a parameter
+    SLP_startTimer_IgnoreArg_callback();
+
+    uint32_t retVal = startButtonTimer(&testButton, TIMER_LONGPRESS);
+    TEST_ASSERT_EQUAL_UINT32(SLPTIMER_OK, retVal);
+}
+
+void test_startButtonTimer_WrongTypeOfTimer(void) {
+    button_t testButton = {0};
+
+    // Set expectations
+    assertExpectFailure();
+
+    uint32_t retVal = startButtonTimer(&testButton, (btnTimerType_t)0xFFFFFFFF);
+}
+
+// This test that the log lines are hit. As in tests we disable logging, this is more something you would spot on the
+// coverage report.
+void test_startButtonTimer_ErrorOnSLP_startTimer(void) {
+    button_t testButton = {.samplingTimerPtr = samplingTimerPtr};
+
+    SLP_isTimerRunning_ExpectAndReturn(testButton.samplingTimerPtr, false);
+    SLP_startTimer_ExpectAndReturn(testButton.samplingTimerPtr, DEBOUNCE_SAMPLING_PERIOD_MS, TIMER_ONE_SHOT, NULL,
+                                   &testButton, BTN_ERROR);
+    // Sadly, the callback is a static function, so I can't test that startPeriodicTimer will be called with it as a parameter
+    SLP_startTimer_IgnoreArg_callback();
+
+    uint32_t retVal = startButtonTimer(&testButton, TIMER_SAMPLE);
+    TEST_ASSERT_EQUAL_UINT32(BTN_ERROR, retVal);
+}
+
+// The sampling timer times out, so we run the debounceButton.
+// Let's assume that the button is as default (released, integrator on 0, GPIO returns pressed)
+void test_sleeptimerSamplingCallback(void) {
+    // Let's make things easy and set the button in a way that debounceButton() does the bare minimum
+    button_t testBtn = {0};
+
+    // Set expectations
+    debounceButton_Expect(&testBtn);
+
+    // The timerHandle is not used, we can pass NULL
+    samplingTimerCallback(NULL, &testBtn);
+    // Check that the callback was called, as it should have reset debounceCycles
+    TEST_ASSERT_EQUAL_UINT32(0UL, testBtn.debounceCycles);
+}
+
+// Changes the button state and calls its action if any
+void test_sleeptimerLongPressCallback_Success(void) {
+    button_t testBtn = {.state = BUTTON_PRESSED, .longPressedAction = NULL};
+
+    // Set expectations
+    buttonState_t expectedState = BUTTON_LONGPRESSED;
+
+    longPressTimerCallback(NULL, &testBtn);
+    TEST_ASSERT_EQUAL_UINT32(expectedState, testBtn.state);
 }

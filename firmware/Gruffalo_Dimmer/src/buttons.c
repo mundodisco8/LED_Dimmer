@@ -20,8 +20,8 @@
 #include <stddef.h>
 
 // SiLabs
-// Ignore a cast-align warning in some cmsis header and a sign conversion in
-// sl_sleeptimer.h
+// Ignore a cast-align warning in some cmsis header and a sign conversion
+#include "app_log.h"
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wcast-align"
 #pragma GCC diagnostic ignored "-Wsign-conversion"
@@ -29,9 +29,48 @@
 #pragma GCC diagnostic pop
 
 // Project's Libraries
+#include "debounce.h"
 #include "gpio_HW.h"
 #include "interrupt_HW.h"
 #include "sleepyTimers_HW.h"
+
+// Trickery to allow testing of static elements. Better to mess a bit with the code than to overcomplicate tests
+#ifdef TEST
+#define STATIC
+#else
+#define STATIC static
+#endif
+
+/**
+ * @brief Debounce control variables
+ * DEBOUNCE_TIME_MS is the duration of the debounce event. During this event, the button is sampled frequently, and when
+ * it converges (integrator reaches INTEGRATOR_TARGET when the button is pressed or reaches 0 when it is released), we
+ * change the button state. If the integrator doesn't converge in this time, we can consider the press to be spurious
+ * and ignore it.
+ * DEBOUNCE_SAMPLING_PERIOD_MS is the period of the sampling events.
+ * INTEGRATOR_TARGET is the number of sampling events the pin has to remain in the new position to consider it a valid
+ * press. A button press won't be valid until is pressed at least for INTEGRATOR_TARGET * DEBOUNCE_SAMPLING_PERIOD_MS
+ */
+const uint32_t DEBOUNCE_TIME_MS = 75U;            // Max time for the button to settle in the new state
+const uint32_t DEBOUNCE_SAMPLING_PERIOD_MS = 5U;  // read the button every this ms
+const int32_t INTEGRATOR_TARGET = 5U;             // Button is stable after SAMPLING * TARGET ms
+
+/**
+ * @brief Time required to consider a press a longpress
+ */
+const uint32_t LONGPRESS_TIME_MS = 3000U;
+
+////
+// forward declarations
+////
+
+STATIC void samplingTimerCallback(timerHandlePtr_t handlePtr, void* data);
+STATIC void longPressTimerCallback(timerHandlePtr_t handlePtr, void* data);
+
+/**
+ * @brief This is in debounce.h, but this way we don't need to include it, breaking a circular dependency
+ */
+void debounceButton(button_t* btnPtr);
 
 // Initialises the button_t struct with the default values and associates the pressed and released actions.
 // NOTE: Each button uses two sleeptimers, so make sure you have enough!
@@ -53,7 +92,7 @@ btnError_t initButton(button_t* btnPtr, pinPort_t pinPort, uint8_t pinNo, action
     btnPtr->state = BUTTON_RELEASED;  // buttons are released by default
     btnPtr->pressedAction = pressedAction;
     btnPtr->releasedAction = releasedAction;
-    slpTimerStatus_t retVal = SLP_reserveTimer(&(btnPtr->debounceTimerPtr));
+    slpTimerStatus_t retVal = SLP_reserveTimer(&(btnPtr->longPressTimerPtr));
     //TODO: Test Asserts on error
     app_assert((retVal == SLPTIMER_OK), "No timer available. Increase the number of timers\r\n");
     retVal = SLP_reserveTimer(&(btnPtr->samplingTimerPtr));
@@ -144,4 +183,86 @@ btnError_t configureQuadratureInterrupts(quad_encoder_t* quadPtr, callbackCtxPtr
     configurePinInterrupt(quadPtr->pin0Port, quadPtr->pin0No, *intNoPtr, false, true, true);
     enablePinInterrupts(1 << *intNoPtr);
     return BTN_OK;
+}
+
+////
+// Timer functions - Starting and stopping the sampling and callback timers
+////
+
+/**
+ * @brief Start the timers of a button.
+ * @param btnPtr a pointer to the button whose timers we want to start
+ * @param timerType which one of the timers of the button to start
+ * @return BTN_OK on success, BTN_ERROR otherwise. Asserts if wrong type of timer is passed in timerType
+ */
+btnError_t startButtonTimer(button_t* btnPtr, const btnTimerType_t timerType) {
+    btnError_t retVal = BTN_OK;
+    // TODO: check for null pointers? initButton should protect against it.
+    uint32_t time = 0;
+    expBehaviour_t behaviour = TIMER_ONE_SHOT;
+    timerHandlePtr_t timerPtr = NULL;
+    timerCallback_t callbackPtr = NULL;
+
+    switch (timerType) {
+        case TIMER_SAMPLE: {
+            time = DEBOUNCE_SAMPLING_PERIOD_MS;
+            behaviour = TIMER_ONE_SHOT;
+            timerPtr = btnPtr->samplingTimerPtr;
+            callbackPtr = samplingTimerCallback;
+            break;
+        }
+        case TIMER_LONGPRESS: {
+            time = LONGPRESS_TIME_MS;
+            behaviour = TIMER_ONE_SHOT;
+            timerPtr = btnPtr->longPressTimerPtr;
+            callbackPtr = longPressTimerCallback;
+            break;
+        }
+        default: {
+            // We fell through the cracks!
+            app_assert(false, "Wrong type of timer passed -> 0x%" PRIX32 "\r\n", (uint32_t)timerType);
+            break;
+        }
+    }
+
+    if (!SLP_isTimerRunning(timerPtr)) {
+        // Don't restart it if it's already running, or noise would extend the debounce time
+        if (SLPTIMER_OK != SLP_startTimer(timerPtr, time, behaviour, callbackPtr, btnPtr)) {
+            app_log_error("Error 0x%04" PRIX32 " starting %s timer\r\n", retVal,
+                          (timerType == TIMER_SAMPLE ? "sampling" : "debouncing"));
+            retVal = BTN_ERROR;
+        }
+    }
+
+    return retVal;
+}
+
+//
+
+/**
+ * @brief Action to run when a sampling timer has timed out
+ * @param handlePtr (unused) a handle to the pointer that triggered the timeout
+ * @param data metadata passed to the callback on trigger. In our case, it's a pointer to the button whose timer
+ *  triggered the callback
+ */
+STATIC void samplingTimerCallback(timerHandlePtr_t handlePtr, void* data) {
+    (void)handlePtr;
+    // When a sampling sleeptimer runs out, calls debounceButton from debounce.h, passing a button_t object as
+    // context data.
+    debounceButton((button_t*)data);
+}
+
+// Action to run when a sampling timer has timed out
+
+/**
+ * @brief Action to run when a button has been held pressed for long enough to trigger a long-press
+ * @param handlePtr (unused) a handle to the pointer that triggered the timeout
+ * @param data metadata passed to the callback on trigger. In our case, it's a pointer to the button whose timer
+ *  triggered the callback
+ */
+STATIC void longPressTimerCallback(timerHandlePtr_t handlePtr, void* data) {
+    (void)handlePtr;
+    // Change button state
+    ((button_t*)data)->state = BUTTON_LONGPRESSED;
+    // call longpress action if any
 }

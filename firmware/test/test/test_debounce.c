@@ -1,5 +1,6 @@
 #include <unity.h>
 
+#include "app_assert.h"
 #include "debounce.h"
 #include "mock_buttons.h"
 #include "mock_gpio_HW.h"
@@ -10,29 +11,41 @@
 "
  */
 
-// STATIC'ed objects that need now to be extern'ed
-extern const uint32_t DEBOUNCE_TIME_MS;
-extern const uint32_t DEBOUNCE_SAMPLING_PERIOD_MS;
-extern const int32_t INTEGRATOR_TARGET;
-extern void sleeptimerSamplingCallback(timerHandlePtr_t* handle, void* data);
+// Globals that are defined in `buttons`. They don't exist now because we are mocking it
+const uint32_t LONGPRESS_TIME_MS = 3000UL;
+const uint32_t DEBOUNCE_TIME_MS = 75UL;
+const uint32_t DEBOUNCE_SAMPLING_PERIOD_MS = 5UL;
+const int32_t INTEGRATOR_TARGET = 5;
 
-// Some empty action callbacks for the buttons
-void fakePressAction(void* ctx) { (void)ctx; }
-void fakeReleaseAction(void* ctx) { (void)ctx; }
+// Fake actions, they set a flag so we can check they were called
+static bool fakePressActionFlag = false;
+static bool fakeReleaseActionFlag = false;
+void fakePressAction(void* ctx) {
+    (void)ctx;
+    fakePressActionFlag = true;
+}
+void fakeReleaseAction(void* ctx) {
+    (void)ctx;
+    static bool fakeReleaseActionFlag = true;
+}
 
-// Some timer handlers for the buttons
-timerHandlePtr_t debounceTimerPtr;
-timerHandlePtr_t samplingTimerPtr;
+void setUp() {
+    fakePressActionFlag = false;
+    fakeReleaseActionFlag = false;
+    // test assertions
+    assertSetUp();
+}
 
-void setUp(void) {}
-
-void tearDown(void) {}
+void tearDown() {
+    // check assertions
+    assertTearDownCheck();
+}
 
 ////
-// samplingTimerCallback
+// debounceButton
 ////
 
-// List of Tests for samplingTimerCallback
+// List of Tests for debounceButton
 // * Integrator increases
 // * Integrator decreases
 // * Integrator doens't decrease below 0
@@ -45,17 +58,10 @@ void tearDown(void) {}
 // * Corruption guards work
 // * State is only changed if the integrator converges and the button is in the right state
 
-// We will call startButtonTimer for timerSample lots of times! Packing its expects in a function
-void startButtonTimerForSampleTimer_Expectations(button_t* buttonPtr) {
-    SLP_isTimerRunning_ExpectAndReturn(buttonPtr->samplingTimerPtr, false);
-    SLP_startTimer_ExpectAndReturn(buttonPtr->samplingTimerPtr, DEBOUNCE_SAMPLING_PERIOD_MS, TIMER_ONE_SHOT,
-                                   sleeptimerSamplingCallback, buttonPtr, SLPTIMER_OK);
-}
-
 void test_IntegratorIncreases(void) {
     pinPort_t testPort = portA;
     uint8_t testPin = 1U;
-    button_state_t testState = BUTTON_RELEASED;
+    buttonState_t testState = BUTTON_RELEASED;
     int32_t testIntegrator = 0UL;
     uint32_t testCycles = 0UL;
 
@@ -70,9 +76,9 @@ void test_IntegratorIncreases(void) {
     int32_t expectedIntegratorValue = 1UL;
     uint32_t expectedPinState = 1UL;
     readPin_ExpectAndReturn(testPort, testPin, expectedPinState);
-    startButtonTimerForSampleTimer_Expectations(&testBtn);
+    startButtonTimer_ExpectAndReturn(&testBtn, TIMER_SAMPLE, BTN_OK);
 
-    samplingTimerCallback(&testBtn);
+    debounceButton(&testBtn);
     TEST_ASSERT_EQUAL_INT32(expectedIntegratorValue, testBtn.integrator);
     TEST_ASSERT_EQUAL_UINT32(expectedDebounceCyles, testBtn.debounceCycles);
 }
@@ -80,7 +86,7 @@ void test_IntegratorIncreases(void) {
 void test_IntegratorDecreases(void) {
     pinPort_t testPort = portA;
     uint8_t testPin = 1U;
-    button_state_t testState = BUTTON_RELEASED;
+    buttonState_t testState = BUTTON_RELEASED;
     int32_t testIntegrator = 2UL;
     uint32_t testCycles = 0UL;
 
@@ -95,9 +101,9 @@ void test_IntegratorDecreases(void) {
     int32_t expectedIntegratorValue = 1UL;
     uint32_t expectedPinState = 0UL;
     readPin_ExpectAndReturn(testPort, testPin, expectedPinState);
-    startButtonTimerForSampleTimer_Expectations(&testBtn);
+    startButtonTimer_ExpectAndReturn(&testBtn, TIMER_SAMPLE, BTN_OK);
 
-    samplingTimerCallback(&testBtn);
+    debounceButton(&testBtn);
     TEST_ASSERT_EQUAL_INT32(expectedIntegratorValue, testBtn.integrator);
     TEST_ASSERT_EQUAL_UINT32(expectedDebounceCyles, testBtn.debounceCycles);
 }
@@ -105,7 +111,7 @@ void test_IntegratorDecreases(void) {
 void test_IntegratorNotBelow0(void) {
     pinPort_t testPort = portA;
     uint8_t testPin = 1U;
-    button_state_t testState = BUTTON_RELEASED;  // as to not trigger the button state change part of the code
+    buttonState_t testState = BUTTON_RELEASED;  // as to not trigger the button state change part of the code
     int32_t testIntegrator = 0UL;
     uint32_t testCycles = 0UL;
 
@@ -120,9 +126,9 @@ void test_IntegratorNotBelow0(void) {
     int32_t expectedIntegratorValue = 0UL;
     uint32_t expectedPinState = 0UL;
     readPin_ExpectAndReturn(testPort, testPin, expectedPinState);
-    startButtonTimerForSampleTimer_Expectations(&testBtn);
+    startButtonTimer_ExpectAndReturn(&testBtn, TIMER_SAMPLE, BTN_OK);
 
-    samplingTimerCallback(&testBtn);
+    debounceButton(&testBtn);
     TEST_ASSERT_EQUAL_INT32(expectedIntegratorValue, testBtn.integrator);
     TEST_ASSERT_EQUAL_UINT32(expectedDebounceCyles, testBtn.debounceCycles);
 }
@@ -130,7 +136,7 @@ void test_IntegratorNotBelow0(void) {
 void test_IntegratorNotAboveMax(void) {
     pinPort_t testPort = portA;
     uint8_t testPin = 1U;
-    button_state_t testState = BUTTON_PRESSED;  // as to not trigger the button state change part of the code
+    buttonState_t testState = BUTTON_PRESSED;  // as to not trigger the button state change part of the code
     int32_t testIntegrator = INTEGRATOR_TARGET;
     uint32_t testCycles = 0UL;
 
@@ -146,9 +152,9 @@ void test_IntegratorNotAboveMax(void) {
     uint32_t expectedPinState = 1UL;
 
     readPin_ExpectAndReturn(testPort, testPin, expectedPinState);
-    startButtonTimerForSampleTimer_Expectations(&testBtn);
+    startButtonTimer_ExpectAndReturn(&testBtn, TIMER_SAMPLE, BTN_OK);
 
-    samplingTimerCallback(&testBtn);
+    debounceButton(&testBtn);
     TEST_ASSERT_EQUAL_INT32(expectedIntegratorValue, testBtn.integrator);
     TEST_ASSERT_EQUAL_UINT32(expectedDebounceCyles, testBtn.debounceCycles);
 }
@@ -163,31 +169,22 @@ void test_ButtonActionIsNull(void) {
                         .pressedAction = NULL,
                         .releasedAction = NULL};
 
+    // Expectations
     readPin_ExpectAndReturn(portA, 1, 1);
-    // The system tick of the current press is registered in the button_t struct
-    uint64_t timeAtPress = 1000;
-    SLP_getSystemTickInMs_ExpectAndReturn(timeAtPress);
-    // Expectations for stopButtonTimers. Ignore parameters as we are not testing it here.
-    // Retunr false so we exit the execution faster. It doesn't change the outcome
-    SLP_isTimerRunning_IgnoreAndReturn(false);
-    samplingTimerCallback(&testBtn);
+    debounceButton(&testBtn);
 
     // Same thing with the release action
     testBtn.integrator = 0;
     testBtn.state = BUTTON_PRESSED;
     readPin_ExpectAndReturn(portA, 1, 0);
-    // Expectations for stopButtonTimers. Ignore parameters as we are not testing it here.
-    // Retunr false so we exit the execution faster. It doesn't change the outcome
-    SLP_isTimerRunning_IgnoreAndReturn(false);
-    samplingTimerCallback(&testBtn);
-    // TODO: Don't know how to pass this test. If fails, it throws an exception
-    // So if the tests don't complain about bad memory, it means it worked?
+
+    debounceButton(&testBtn);
 }
 
 void test_IntegratorDecreasesMultiple(void) {
     pinPort_t testPort = portA;
     uint8_t testPin = 1U;
-    button_state_t testState = BUTTON_RELEASED;
+    buttonState_t testState = BUTTON_RELEASED;
     int32_t testIntegrator = 4UL;
     uint32_t testCycles = 0UL;
 
@@ -202,19 +199,19 @@ void test_IntegratorDecreasesMultiple(void) {
     int32_t expectedIntegratorValue = testIntegrator - 3UL;
     uint32_t expectedPinState = 0UL;
     readPin_ExpectAndReturn(testPort, testPin, expectedPinState);
-    startButtonTimerForSampleTimer_Expectations(&testBtn);
+    startButtonTimer_ExpectAndReturn(&testBtn, TIMER_SAMPLE, BTN_OK);
 
-    samplingTimerCallback(&testBtn);
-
-    readPin_ExpectAndReturn(testPort, testPin, expectedPinState);
-    startButtonTimerForSampleTimer_Expectations(&testBtn);
-
-    samplingTimerCallback(&testBtn);
+    debounceButton(&testBtn);
 
     readPin_ExpectAndReturn(testPort, testPin, expectedPinState);
-    startButtonTimerForSampleTimer_Expectations(&testBtn);
+    startButtonTimer_ExpectAndReturn(&testBtn, TIMER_SAMPLE, BTN_OK);
 
-    samplingTimerCallback(&testBtn);
+    debounceButton(&testBtn);
+
+    readPin_ExpectAndReturn(testPort, testPin, expectedPinState);
+    startButtonTimer_ExpectAndReturn(&testBtn, TIMER_SAMPLE, BTN_OK);
+
+    debounceButton(&testBtn);
 
     TEST_ASSERT_EQUAL_INT32(expectedIntegratorValue, testBtn.integrator);
     TEST_ASSERT_EQUAL_UINT32(expectedDebounceCyles, testBtn.debounceCycles);
@@ -223,7 +220,7 @@ void test_IntegratorDecreasesMultiple(void) {
 void test_IntegratorIncreasesMultiple(void) {
     pinPort_t testPort = portA;
     uint8_t testPin = 1U;
-    button_state_t testState = BUTTON_RELEASED;
+    buttonState_t testState = BUTTON_RELEASED;
     int32_t testIntegrator = 1UL;
     uint32_t testCycles = 0UL;
 
@@ -238,19 +235,19 @@ void test_IntegratorIncreasesMultiple(void) {
     int32_t expectedIntegratorValue = testIntegrator + 3UL;
     uint32_t expectedPinState = 1UL;
     readPin_ExpectAndReturn(testPort, testPin, expectedPinState);
-    startButtonTimerForSampleTimer_Expectations(&testBtn);
+    startButtonTimer_ExpectAndReturn(&testBtn, TIMER_SAMPLE, BTN_OK);
 
-    samplingTimerCallback(&testBtn);
-
-    readPin_ExpectAndReturn(testPort, testPin, expectedPinState);
-    startButtonTimerForSampleTimer_Expectations(&testBtn);
-
-    samplingTimerCallback(&testBtn);
+    debounceButton(&testBtn);
 
     readPin_ExpectAndReturn(testPort, testPin, expectedPinState);
-    startButtonTimerForSampleTimer_Expectations(&testBtn);
+    startButtonTimer_ExpectAndReturn(&testBtn, TIMER_SAMPLE, BTN_OK);
 
-    samplingTimerCallback(&testBtn);
+    debounceButton(&testBtn);
+
+    readPin_ExpectAndReturn(testPort, testPin, expectedPinState);
+    startButtonTimer_ExpectAndReturn(&testBtn, TIMER_SAMPLE, BTN_OK);
+
+    debounceButton(&testBtn);
 
     TEST_ASSERT_EQUAL_INT32(expectedIntegratorValue, testBtn.integrator);
     TEST_ASSERT_EQUAL_UINT32(expectedDebounceCyles, testBtn.debounceCycles);
@@ -259,7 +256,7 @@ void test_IntegratorIncreasesMultiple(void) {
 void test_fromReleasedToPressed(void) {
     pinPort_t testPort = portA;
     uint8_t testPin = 1U;
-    button_state_t testState = BUTTON_RELEASED;
+    buttonState_t testState = BUTTON_RELEASED;
     int32_t testIntegrator = 0UL;
     uint32_t testCycles = 0UL;
 
@@ -278,20 +275,18 @@ void test_fromReleasedToPressed(void) {
 
     for (int32_t i = 0; i < INTEGRATOR_TARGET - 1; i++) {
         readPin_ExpectAndReturn(testPort, testPin, expectedPinState);
-        startButtonTimerForSampleTimer_Expectations(&testBtn);
+        startButtonTimer_ExpectAndReturn(&testBtn, TIMER_SAMPLE, BTN_OK);
 
         // Press the button for (INTEGRATOR_TARGET -1) times
-        samplingTimerCallback(&testBtn);
+        debounceButton(&testBtn);
         // button must remain RELEASED
         TEST_ASSERT_EQUAL_UINT32(BUTTON_RELEASED, testBtn.state);
         TEST_ASSERT_EQUAL_UINT32(i + 1, testBtn.integrator);
     }
     // Press the button an additional time, the button state must switch
     readPin_ExpectAndReturn(testPort, testPin, expectedPinState);
-    // If the button was pressed, record when it happened
-    SLP_getSystemTickInMs_ExpectAndReturn(timeAtPress);
 
-    samplingTimerCallback(&testBtn);
+    debounceButton(&testBtn);
 
     TEST_ASSERT_EQUAL_UINT32(BUTTON_PRESSED, testBtn.state);
     TEST_ASSERT_LESS_OR_EQUAL_INT64(timeAtPress, testBtn.lastPressMs);
@@ -302,7 +297,7 @@ void test_fromReleasedToPressed(void) {
 void test_fromPressedToReleased(void) {
     pinPort_t testPort = portA;
     uint8_t testPin = 1U;
-    button_state_t testState = BUTTON_PRESSED;
+    buttonState_t testState = BUTTON_PRESSED;
     int32_t testIntegrator = 5UL;
     uint32_t testCycles = 0UL;
 
@@ -321,10 +316,10 @@ void test_fromPressedToReleased(void) {
 
     for (int32_t i = 0; i < INTEGRATOR_TARGET - 1; i++) {
         readPin_ExpectAndReturn(testPort, testPin, expectedPinState);
-        startButtonTimerForSampleTimer_Expectations(&testBtn);
+        startButtonTimer_ExpectAndReturn(&testBtn, TIMER_SAMPLE, BTN_OK);
 
         // Press the button for (INTEGRATOR_TARGET -1) times
-        samplingTimerCallback(&testBtn);
+        debounceButton(&testBtn);
         // button must remain RELEASED
         TEST_ASSERT_EQUAL_UINT32(BUTTON_PRESSED, testBtn.state);
         TEST_ASSERT_EQUAL_UINT32(INTEGRATOR_TARGET - (i + 1), testBtn.integrator);
@@ -333,7 +328,7 @@ void test_fromPressedToReleased(void) {
     readPin_ExpectAndReturn(testPort, testPin, expectedPinState);
     // If the button was released, we DON'T record when it happened
 
-    samplingTimerCallback(&testBtn);
+    debounceButton(&testBtn);
 
     TEST_ASSERT_EQUAL_UINT32(BUTTON_RELEASED, testBtn.state);
     TEST_ASSERT_LESS_OR_EQUAL_INT64(timeAtPress, testBtn.lastPressMs);
@@ -346,7 +341,7 @@ void test_fromPressedToReleased(void) {
 void test_someNoisyInputs_ButtonReleased(void) {
     pinPort_t testPort = portA;
     uint8_t testPin = 1U;
-    button_state_t testState = BUTTON_RELEASED;
+    buttonState_t testState = BUTTON_RELEASED;
     int32_t testIntegrator = 0UL;
     uint32_t testCycles = 0UL;
 
@@ -368,16 +363,16 @@ void test_someNoisyInputs_ButtonReleased(void) {
     for (uint32_t i = 0; i < (sizeof(buttonExpectedPress) / sizeof(buttonExpectedPress[0])) - 1; i++) {
         readPin_ExpectAndReturn(testPort, testPin, buttonExpectedPress[i]);
         buttonExpectedPress[i] == 0 ? integrator-- : integrator++;
-        startButtonTimerForSampleTimer_Expectations(&testBtn);
+        startButtonTimer_ExpectAndReturn(&testBtn, TIMER_SAMPLE, BTN_OK);
 
-        samplingTimerCallback(&testBtn);
+        debounceButton(&testBtn);
         // button must remain RELEASED
         TEST_ASSERT_EQUAL_UINT32(buttonExpectedState, testBtn.state);
         TEST_ASSERT_EQUAL_UINT32(integrator, testBtn.integrator);
         TEST_ASSERT_EQUAL_UINT32(i + 1, testBtn.debounceCycles);
     }
 
-    samplingTimerCallback(&testBtn);
+    debounceButton(&testBtn);
     // button must remain RELEASED, and the integrator and debounce cycles must be reset too
     TEST_ASSERT_EQUAL_UINT32(buttonExpectedState, testBtn.state);
     TEST_ASSERT_EQUAL_UINT32(0UL, testBtn.debounceCycles);
@@ -387,7 +382,7 @@ void test_someNoisyInputs_ButtonReleased(void) {
 void test_someNoisyInputs_ButtonPressed(void) {
     pinPort_t testPort = portA;
     uint8_t testPin = 1U;
-    button_state_t testState = BUTTON_PRESSED;
+    buttonState_t testState = BUTTON_PRESSED;
     int32_t testIntegrator = INTEGRATOR_TARGET;
     uint32_t testCycles = 0UL;
 
@@ -410,87 +405,18 @@ void test_someNoisyInputs_ButtonPressed(void) {
     for (uint32_t i = 0; i < (sizeof(buttonExpectedPress) / sizeof(buttonExpectedPress[0])) - 1; i++) {
         readPin_ExpectAndReturn(testPort, testPin, buttonExpectedPress[i]);
         buttonExpectedPress[i] == 0 ? integrator-- : integrator++;
-        startButtonTimerForSampleTimer_Expectations(&testBtn);
+        startButtonTimer_ExpectAndReturn(&testBtn, TIMER_SAMPLE, BTN_OK);
 
-        samplingTimerCallback(&testBtn);
+        debounceButton(&testBtn);
         // button must remain PRESSED
         TEST_ASSERT_EQUAL_UINT32(buttonExpectedState, testBtn.state);
         TEST_ASSERT_EQUAL_UINT32(integrator, testBtn.integrator);
         TEST_ASSERT_EQUAL_UINT32(i + 1, testBtn.debounceCycles);
     }
 
-    samplingTimerCallback(&testBtn);
+    debounceButton(&testBtn);
     // button must remain RELEASED, and the integrator and debounce cycles must be reset too
     TEST_ASSERT_EQUAL_UINT32(buttonExpectedState, testBtn.state);
     TEST_ASSERT_EQUAL_UINT32(0UL, testBtn.debounceCycles);
     TEST_ASSERT_EQUAL_UINT32(INTEGRATOR_TARGET, testBtn.integrator);
-}
-
-////
-// StartButtonTimer()
-//
-// Also tests getDebounceTime() and getDebounceSamplingPeriod() (statics called by it)
-////
-
-// 1) Start a sampling timer that is not already running
-//    a) Also test that getDebounceSamplingPeriod() returns the right value
-// 2) Start a sampling timer that IS already running
-// 3) Checks that we hit the logging function when an error is returned by the SLP* functions
-
-void test_startButtonTimer_SamplingTimerNotRunning(void) {
-    button_t testButton = {.samplingTimerPtr = samplingTimerPtr};
-
-    SLP_isTimerRunning_ExpectAndReturn(testButton.samplingTimerPtr, false);
-    SLP_startTimer_ExpectAndReturn(testButton.samplingTimerPtr, DEBOUNCE_SAMPLING_PERIOD_MS, TIMER_ONE_SHOT, NULL,
-                                   &testButton, SLPTIMER_OK);
-    // Sadly, the callback is a static function, so I can't test that startPeriodicTimer will be called with it as a parameter
-    SLP_startTimer_IgnoreArg_callback();
-
-    uint32_t retVal = startButtonTimer(&testButton, TIMER_SAMPLE);
-    TEST_ASSERT_EQUAL_UINT32(SLPTIMER_OK, retVal);
-}
-
-void test_startButtonTimer_SamplingTimerISRunning(void) {
-    button_t testButton = {.samplingTimerPtr = samplingTimerPtr};
-
-    SLP_isTimerRunning_ExpectAndReturn(testButton.samplingTimerPtr, true);
-    // startPeriodictimer is not called in this case
-
-    uint32_t retVal = startButtonTimer(&testButton, TIMER_SAMPLE);
-    TEST_ASSERT_EQUAL_UINT32(SLPTIMER_OK, retVal);
-}
-
-void test_startButtonTimer_DebounceTimer(void) {
-    button_t testButton = {.debounceTimerPtr = debounceTimerPtr};
-
-    uint32_t retVal = startButtonTimer(&testButton, TIMER_DEBOUNCE);
-}
-
-// This test that the log lines are hit. As in tests we disable logging, this is more something you would spot on the
-// coverage report.
-void test_startButtonTimer_ErrorOnSLP_startTimer(void) {
-    button_t testButton = {.samplingTimerPtr = samplingTimerPtr};
-
-    SLP_isTimerRunning_ExpectAndReturn(testButton.samplingTimerPtr, false);
-    SLP_startTimer_ExpectAndReturn(testButton.samplingTimerPtr, DEBOUNCE_SAMPLING_PERIOD_MS, TIMER_ONE_SHOT, NULL,
-                                   &testButton, SLPTIMER_ERROR);
-    // Sadly, the callback is a static function, so I can't test that startPeriodicTimer will be called with it as a parameter
-    SLP_startTimer_IgnoreArg_callback();
-
-    uint32_t retVal = startButtonTimer(&testButton, TIMER_SAMPLE);
-    TEST_ASSERT_EQUAL_UINT32(SLPTIMER_ERROR, retVal);
-}
-
-// The sampling timer times out, so we run the samplingTimerCallback.
-// Let's assume that the button is as default (released, integrator on 0, GPIO returns pressed)
-void test_sleeptimerSamplingCallback(void) {
-    // Let's make things easy and set the button in a way that samplingTimerCallback() does the bare minimum
-    button_t testBtn = {.debounceCycles = (DEBOUNCE_TIME_MS / DEBOUNCE_SAMPLING_PERIOD_MS), .state = BUTTON_RELEASED};
-
-    // Don't expect anything
-
-    // The timerHandle is not used, we can pass NULL
-    sleeptimerSamplingCallback(NULL, &testBtn);
-    // Check that the callback was called, as it should have reset debounceCycles
-    TEST_ASSERT_EQUAL_UINT32(0UL, testBtn.debounceCycles);
 }

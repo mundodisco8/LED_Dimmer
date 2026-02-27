@@ -36,7 +36,7 @@ void test_gpioCallBackButton(void) {
     button_t testButton = {0};
     uint8_t testIntNo = 4;
     // Set Expectations
-    startButtonTimer_ExpectAndReturn(&testButton, TIMER_DEBOUNCE, SLPTIMER_OK);
+    startButtonTimer_ExpectAndReturn(&testButton, TIMER_LONGPRESS, SLPTIMER_OK);
     startButtonTimer_ExpectAndReturn(&testButton, TIMER_SAMPLE, SLPTIMER_OK);
 
     gpioCallbackButton(testIntNo, &testButton);

@@ -8,12 +8,12 @@ typedef struct timerHandle_t* timerHandlePtr_t;
 
 // timerCallback_t is an equivalent type to sl_sleeptimer_timer_callback_t, so we can load our own functions as
 // callbacks for out timers, without having to expose the SDK headers
-typedef void (*timerCallback_t)(timerHandlePtr_t* handle, void* data);
+typedef void (*timerCallback_t)(timerHandlePtr_t handlePtr, void* data);
 
-typedef enum slpTimerStatus{
+typedef enum slpTimerStatus {
     SLPTIMER_OK = 0,
     SLPTIMER_NO_TIMERS_AVAILABLE = 1,
     SLPTIMER_ERROR,
 } slpTimerStatus_t;
 
-#endif // _SLEEPYTIMERS_HW_TYPES_H_
+#endif  // _SLEEPYTIMERS_HW_TYPES_H_

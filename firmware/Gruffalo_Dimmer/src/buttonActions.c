@@ -55,7 +55,7 @@ void gpioCallbackButton(uint8_t intNo, void* ctx) {
     (void)intNo;
     // TODO: could get rid of this timer if I count ticks of the TIMER_SAMPLE instead
     // set debounce timer
-    startButtonTimer((button_t*)ctx, TIMER_DEBOUNCE);
+    startButtonTimer((button_t*)ctx, TIMER_LONGPRESS);
     // set sampling timer
     startButtonTimer((button_t*)ctx, TIMER_SAMPLE);
 }
