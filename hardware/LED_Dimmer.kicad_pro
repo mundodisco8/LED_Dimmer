@@ -555,7 +555,7 @@
       "plot": "",
       "pos_files": "",
       "specctra_dsn": "",
-      "step": "",
+      "step": "../../LED_Dimmer.step",
       "svg": "",
       "vrml": ""
     },
