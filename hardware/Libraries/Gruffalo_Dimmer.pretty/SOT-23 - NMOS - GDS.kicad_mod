@@ -455,6 +455,45 @@
 		(layer "F.Fab")
 		(uuid "2c2d89aa-c260-4157-81b2-fab4d547c2cb")
 	)
+	(fp_text user "D"
+		(at 0 -0.375 0)
+		(unlocked yes)
+		(layer "Eco1.User")
+		(uuid "a044e17c-27a2-46f3-b71d-b70a196f4365")
+		(effects
+			(font
+				(size 0.25 0.25)
+				(thickness 0.0625)
+			)
+			(justify left bottom)
+		)
+	)
+	(fp_text user "G"
+		(at -0.7 0 0)
+		(unlocked yes)
+		(layer "Eco1.User")
+		(uuid "a1a5056e-78bd-4c1e-aa37-bc0b60b6ea7a")
+		(effects
+			(font
+				(size 0.25 0.25)
+				(thickness 0.0625)
+			)
+			(justify left bottom)
+		)
+	)
+	(fp_text user "S"
+		(at 0 0.4 0)
+		(unlocked yes)
+		(layer "Eco1.User")
+		(uuid "b9ee689f-8848-419c-a1ee-8069fec406f6")
+		(effects
+			(font
+				(size 0.25 0.25)
+				(thickness 0.0625)
+			)
+			(justify left bottom)
+		)
+	)
 	(fp_text user "${REFERENCE}"
 		(at 2.55 -1.45 0)
 		(unlocked yes)
@@ -467,20 +506,20 @@
 			)
 		)
 	)
-	(pad "D" smd roundrect
+	(pad "1" smd rect
+		(at -0.95 1.5)
+		(size 0.8 1.5)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "0ae31931-3156-4259-85ff-7643d83de76c")
+	)
+	(pad "2" smd roundrect
 		(at 0 -1.5)
 		(size 0.8 1.5)
 		(layers "F.Cu" "F.Mask" "F.Paste")
 		(roundrect_rratio 0.25)
 		(uuid "4843f6d0-5770-489e-81fe-9dd6461bf10d")
 	)
-	(pad "G" smd rect
-		(at -0.95 1.5)
-		(size 0.8 1.5)
-		(layers "F.Cu" "F.Mask" "F.Paste")
-		(uuid "0ae31931-3156-4259-85ff-7643d83de76c")
-	)
-	(pad "S" smd roundrect
+	(pad "3" smd roundrect
 		(at 0.95 1.5)
 		(size 0.8 1.5)
 		(layers "F.Cu" "F.Mask" "F.Paste")
