@@ -25,9 +25,9 @@ typedef void (*actionCallback_t)(void* ctx);
 typedef struct button {
     pinPort_t btnPort;
     uint8_t pinNo;
-    buttonState_t state;                 // The state of the button, pressed or released
+    buttonState_t state;                 // The state of the button, pressed (long, short) or released
+    buttonState_t prevState;             // The previous state of the button
     int32_t integrator;                  // The value of the integrator for this button
-    uint64_t lastPressMs;                // System Tick of last press in ms
     actionCallback_t pressedAction;      // action to perform when the state changes to BUTTON_PRESSED
     actionCallback_t longPressedAction;  // action to perform when the state changes to BUTTON_LONGPRESSED
     actionCallback_t releasedAction;     // action to perform when the state changes to BUTTON_RELEASED

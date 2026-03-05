@@ -62,6 +62,7 @@
 #include "app_log.h"
 #include "gatt_db.h"
 #include "pin_config.h"
+#include "sl_power_manager.h"
 #include "sl_sleeptimer.h"
 
 #define DEBUG_EFM_USER
@@ -89,6 +90,15 @@ quad_encoder_t quad1 = {0};
 // Used in the interrupt to signal we have to process the LED Effects
 volatile bool processLEDEffects = true;
 
+/*****************************************************************************
+ *  User defined weak function for performing early application initialization.
+ *  This is called from sl_main_init.
+ ******************************************************************************/
+void app_init_early(void) {
+    // Release pin state after EM4 exit (reset).
+    sl_power_manager_em4_unlatch_pin_retention();
+}
+
 /******************************************************************************
  * Application Init.
  *****************************************************************************/
@@ -110,20 +120,20 @@ void app_init(void) {
     uint32_t quad0GPIOIntNo = 0;
     uint32_t button1GPIOIntNo = 0;
     uint32_t quad1GPIOIntNo = 0;
-    initButton(&button0, (pinPort_t)btn0_PORT, btn0_PIN, button0Pressed, button0Released);
+    initButton(&button0, (pinPort_t)btn0_PORT, btn0_PIN, button0ShortPressed, button0LongPressed, button0Released);
     initQuadEncoder(&quad0, (pinPort_t)quad0_0_PORT, quad0_0_PIN, (pinPort_t)quad0_1_PORT, quad0_1_PIN, quad0ClockWise,
                     quad0CounterClockWise);
-    initButton(&button1, (pinPort_t)btn1_PORT, btn1_PIN, button1Pressed, button1Released);
+    initButton(&button1, (pinPort_t)btn1_PORT, btn1_PIN, button1ShortPressed, button1LongPressed, button1Released);
     initQuadEncoder(&quad1, (pinPort_t)quad1_0_PORT, quad1_0_PIN, (pinPort_t)quad1_1_PORT, quad1_1_PIN, quad1ClockWise,
                     quad1CounterClockWise);
-    btnError_t retVal = configureButtonInterrupts(&button0, gpioCallbackButton, &button0GPIOIntNo);
-    app_assert((retVal == BTN_OK), "Error configuring Btn 0 interrupts\r\n");
-    retVal = configureQuadratureInterrupts(&quad0, gpioCallbackQuad, &quad0GPIOIntNo);
-    app_assert((retVal == BTN_OK), "Error configuring Quad 0 interrupts\r\n");
-    retVal = configureButtonInterrupts(&button1, gpioCallbackButton, &button1GPIOIntNo);
-    app_assert((retVal == BTN_OK), "Error configuring Btn 1 interrupts\r\n");
-    retVal = configureQuadratureInterrupts(&quad1, gpioCallbackQuad, &quad1GPIOIntNo);
-    app_assert((retVal == BTN_OK), "Error configuring Quad 1 interrupts\r\n");
+    configureButtonInterrupts(&button0, gpioCallbackButton, &button0GPIOIntNo);
+    configureQuadratureInterrupts(&quad0, gpioCallbackQuad, &quad0GPIOIntNo);
+    configureButtonInterrupts(&button1, gpioCallbackButton, &button1GPIOIntNo);
+    configureQuadratureInterrupts(&quad1, gpioCallbackQuad, &quad1GPIOIntNo);
+
+    // Set pins for EM4 wakeup
+    setPinUpForEM4WakeUp(btn0_EM4_WakeUp_PORT, btn0_EM4_WakeUp_PIN);
+    setPinUpForEM4WakeUp(btn1_EM4_WakeUp_PORT, btn1_EM4_WakeUp_PIN);
 
     // Init PWM on TIMER0
     initTimer0PWM(PWM_FREQUENCY);
@@ -167,6 +177,11 @@ void app_process_action(void) {
     if (processLEDEffects) {
         processLEDEffects = false;
         effectControlLoop();
+    }
+
+    if ((BUTTON_LONGPRESSED == buttonGetState(&button0)) && (BUTTON_LONGPRESSED == buttonGetState(&button1))) {
+        app_log_warning("**** ENTERING EM4! 🥱💤****\r\n");
+        sl_power_manager_enter_em4();
     }
 }
 

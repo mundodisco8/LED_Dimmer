@@ -68,7 +68,7 @@ int main(void) {
     app_init();
 
     sl_power_manager_subscribe_em_transition_event(&event_handle, &event_info);
-    sl_power_manager_debug_print_em_requirements();
+    // sl_power_manager_debug_print_em_requirements();
 
 #if defined(SL_CATALOG_KERNEL_PRESENT)
     // Start the kernel. Task(s) created in app_init() will start running.
@@ -84,14 +84,7 @@ int main(void) {
 
 #if defined(SL_CATALOG_POWER_MANAGER_PRESENT)
         // Let the CPU go to sleep if the system allows it.
-        if (sleepFlag) {
-            sl_power_manager_remove_em_requirement(SL_POWER_MANAGER_EM1);
-            // TIMHW_stopTimer0();
-            sl_power_manager_sleep();
-            // TIMHW_startTimer0();
-            sl_power_manager_add_em_requirement(SL_POWER_MANAGER_EM1);
-            sleepFlag = false;
-        }
+        // sl_power_manager_sleep();
 #endif
     }
 #endif  // SL_CATALOG_KERNEL_PRESENT

@@ -35,6 +35,13 @@
 // Our headers
 #include "buttons.h"
 
+// Trickery to allow testing of static elements. Better to mess a bit with the code than to overcomplicate tests
+#ifdef TEST
+#define STATIC
+#else
+#define STATIC static
+#endif
+
 /******************************************************************************
 written by Kenneth A. Kuhn
 version 1.00
@@ -92,6 +99,23 @@ in the presence of noise.
 //     }
 
 /**
+ * @brief Debounce control variables
+ * DEBOUNCE_TIME_MS is the duration of the debounce event. During this event, the button is sampled frequently, and when
+ * it converges (integrator reaches INTEGRATOR_TARGET when the button is pressed or reaches 0 when it is released), we
+ * change the button state. If the integrator doesn't converge in this time, we can consider the press to be spurious
+ * and ignore it.
+ * DEBOUNCE_SAMPLING_PERIOD_MS is the period of the sampling events.
+ * INTEGRATOR_TARGET is the number of sampling events the pin has to remain in the new position to consider it a valid
+ * press. A button press won't be valid until is pressed at least for INTEGRATOR_TARGET * DEBOUNCE_SAMPLING_PERIOD_MS
+ */
+const uint32_t DEBOUNCE_SAMPLING_PERIOD_MS = 5UL;            // read the button every this ms
+STATIC const uint32_t DEBOUNCE_TIME_MS = 75UL;               // Max time for the button to settle in the new state
+STATIC const uint32_t DEBOUNCE_STABLE_INPUT_TIME_MS = 25UL;  // Min time of input stability required to change the state
+// Value the integrator must hit to change states. There's a +1 because of how we increment/decrement. Don't worry about
+// it
+STATIC const int32_t INTEGRATOR_TARGET = (DEBOUNCE_STABLE_INPUT_TIME_MS / DEBOUNCE_SAMPLING_PERIOD_MS) + 1UL;
+
+/**
  * @brief Callback used by the sampling timer to update the integrator value.
  * Reads the state of the pin passed as parameter and updates the integrator value. If the value reaches one of the two
  * targets (0 or INTEGRATOR_TARGET) it updates the state of the button.
@@ -102,7 +126,6 @@ void debounceButton(button_t* btnPtr) {
         /* Step 1: Update the integrator based on the input signal.  Note that the
        integrator follows the input, decreasing or increasing towards the limits as
        determined by the input state (0 or 1). */
-
         if (readPin(btnPtr->btnPort, btnPtr->pinNo) == 1) {
             if (btnPtr->integrator < INTEGRATOR_TARGET) {
                 btnPtr->integrator++;
@@ -113,21 +136,24 @@ void debounceButton(button_t* btnPtr) {
             }
         }
         // app_log_debug("%"PRIu32"\r\n", btnPtr->integrator);
+
         /* Step 2: Update the output state based on the integrator.  Note that the
        output will only change states if the integrator has reached a limit, either
        0 or MAXIMUM. */
-
-        /* Step 3: check if we are settled and can trigger an action */
         if ((btnPtr->state == BUTTON_RELEASED) && (btnPtr->integrator == INTEGRATOR_TARGET)) {
-            // Change button state and stop sampling
-            btnPtr->state = BUTTON_PRESSED;
+            buttonSetState(btnPtr, BUTTON_PRESSED);
+            // Start the longpress timer, if it kicks in, then it will be a long press
+            startButtonTimer(btnPtr, TIMER_LONGPRESS);
             btnPtr->debounceCycles = 0UL;  // reset debounceCycles so it's ready for next button press/release
             if (btnPtr->pressedAction != NULL) {
                 btnPtr->pressedAction(btnPtr);
             }  // else, no action on pressed
-        } else if ((btnPtr->state == BUTTON_PRESSED) && (btnPtr->integrator == 0)) {
+        } else if (((btnPtr->state == BUTTON_PRESSED) || (btnPtr->state == BUTTON_LONGPRESSED)) &&
+                   (btnPtr->integrator == 0)) {
             // Change button state and stop sampling
-            btnPtr->state = BUTTON_RELEASED;
+            buttonSetState(btnPtr, BUTTON_RELEASED);
+            // Stop the LongPress timer, in case it was running (i.e. we released after a short press)
+            stopButtonTimer(btnPtr, TIMER_LONGPRESS);
             btnPtr->debounceCycles = 0UL;  // reset debounceCycles so it's ready for next button press/release
             if (btnPtr->releasedAction != NULL) {
                 btnPtr->releasedAction(btnPtr);
@@ -146,7 +172,7 @@ void debounceButton(button_t* btnPtr) {
         if (btnPtr->state == BUTTON_RELEASED) {
             btnPtr->integrator = 0UL;
             btnPtr->debounceCycles = 0UL;
-        } else {  // Button is PRESSED
+        } else {  // Button is PRESSED or LONG_PRESSED
             btnPtr->integrator = INTEGRATOR_TARGET;
             btnPtr->debounceCycles = 0UL;
         }

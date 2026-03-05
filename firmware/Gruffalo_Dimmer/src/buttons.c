@@ -42,20 +42,6 @@
 #endif
 
 /**
- * @brief Debounce control variables
- * DEBOUNCE_TIME_MS is the duration of the debounce event. During this event, the button is sampled frequently, and when
- * it converges (integrator reaches INTEGRATOR_TARGET when the button is pressed or reaches 0 when it is released), we
- * change the button state. If the integrator doesn't converge in this time, we can consider the press to be spurious
- * and ignore it.
- * DEBOUNCE_SAMPLING_PERIOD_MS is the period of the sampling events.
- * INTEGRATOR_TARGET is the number of sampling events the pin has to remain in the new position to consider it a valid
- * press. A button press won't be valid until is pressed at least for INTEGRATOR_TARGET * DEBOUNCE_SAMPLING_PERIOD_MS
- */
-const uint32_t DEBOUNCE_TIME_MS = 75U;            // Max time for the button to settle in the new state
-const uint32_t DEBOUNCE_SAMPLING_PERIOD_MS = 5U;  // read the button every this ms
-const int32_t INTEGRATOR_TARGET = 5U;             // Button is stable after SAMPLING * TARGET ms
-
-/**
  * @brief Time required to consider a press a longpress
  */
 const uint32_t LONGPRESS_TIME_MS = 3000U;
@@ -68,54 +54,51 @@ STATIC void samplingTimerCallback(timerHandlePtr_t handlePtr, void* data);
 STATIC void longPressTimerCallback(timerHandlePtr_t handlePtr, void* data);
 
 /**
- * @brief This is in debounce.h, but this way we don't need to include it, breaking a circular dependency
+ * @brief Initialises the button_t struct with the default values and associates the pressed and released actions.
+ * NOTE: Each button uses two sleeptimers, so make sure you have enough!
+ * @param btnPtra pointer to a button_t object which will be initialised
+ * @param pinPortthe port of the GPIO Pin of the button
+ * @param pinNothe pin number of the button
+ * @param shortPressActiona buttonCallback_t pointer to the callback to call when the button is short pressed
+ * @param longPressActiona buttonCallback_t pointer to the callback to call when the button is long pressed
+ * @param releasedAction buttonCallback_t pointer to the callback to call when the button is released
+ * @return Doesn't return anything, but Asserts if the quad_encoder_t pointer is NULL
  */
-void debounceButton(button_t* btnPtr);
+void initButton(button_t* btnPtr, const pinPort_t pinPort, const uint8_t pinNo, const actionCallback_t shortPressAction,
+                const actionCallback_t longPressAction, const actionCallback_t releasedAction) {
+    app_assert(btnPtr != NULL, "Passed NULL Button pointer to initButton");
 
-// Initialises the button_t struct with the default values and associates the pressed and released actions.
-// NOTE: Each button uses two sleeptimers, so make sure you have enough!
-// Parameters: btnPtr: a pointer to a button_t object which will be initialised
-//             pinPort: the port of the GPIO Pin of the button
-//             pinNo: the pin number of the button
-//             pressedAction: a buttonCallback_t pointer to the callback to call when the button is pressed
-//             releasedAction: a buttonCallback_t pointer to the callback to call when the button is released
-// Returns: true on sucess, false if the button_t pointer passed is null
-btnError_t initButton(button_t* btnPtr, pinPort_t pinPort, uint8_t pinNo, actionCallback_t pressedAction,
-                      actionCallback_t releasedAction) {
-    if (btnPtr == NULL) {
-        return BTN_NULL_POINTER_PASSED;
-    }
     setPinMode(pinPort, pinNo, MODE_INPUT, false);
     btnPtr->btnPort = pinPort;
     btnPtr->pinNo = pinNo;
     btnPtr->integrator = 0;
     btnPtr->state = BUTTON_RELEASED;  // buttons are released by default
-    btnPtr->pressedAction = pressedAction;
+    btnPtr->pressedAction = shortPressAction;
+    btnPtr->longPressedAction = longPressAction;
     btnPtr->releasedAction = releasedAction;
+
     slpTimerStatus_t retVal = SLP_reserveTimer(&(btnPtr->longPressTimerPtr));
     //TODO: Test Asserts on error
     app_assert((retVal == SLPTIMER_OK), "No timer available. Increase the number of timers\r\n");
     retVal = SLP_reserveTimer(&(btnPtr->samplingTimerPtr));
     app_assert((retVal == SLPTIMER_OK), "No timer available. Increase the number of timers\r\n");
-
-    return BTN_OK;
 }
 
-// Initialises the quad_encoder_t struct with the default values and associates the CW and CCW actions.
-// Parameters: quadPtr: a pointer to a quad_encoder_t object which will be initialised
-//             pin0Port: the port of the GPIO Pin of the A signal of the quaa
-//             pin0No: the pin number of the A signal of the quaa
-//             pin1Port: the port of the GPIO Pin of the B signal of the quaa
-//             pin1No: the pin number of the B signal of the quaa
-//             CWAction: a buttonCallback_t pointer to the callback to call when the button is pressed
-//             CCWAction: a buttonCallback_t pointer to the callback to call when the button is released
-// Returns: true on sucess, false if the button_t pointer passed is null
-btnError_t initQuadEncoder(quad_encoder_t* quadPtr, pinPort_t pin0Port, uint8_t pin0No, pinPort_t pin1Port,
-                           uint8_t pin1No, actionCallback_t CWAction, actionCallback_t CCWAction) {
-    if (quadPtr == NULL) {
-        // Not much we can do it the quad encoder pointer is NULL
-        return BTN_NULL_POINTER_PASSED;
-    }
+/**
+ * @brief Initialises the quad_encoder_t struct with the default values and associates the CW and CCW actions.
+ * @param quadPtr a pointer to a quad_encoder_t object which will be initialised
+ * @param pin0Port the port of the GPIO Pin of the A signal of the quaa
+ * @param pin0No the pin number of the A signal of the quaa
+ * @param pin1Port the port of the GPIO Pin of the B signal of the quaa
+ * @param pin1No the pin number of the B signal of the quaa
+ * @param CWAction a buttonCallback_t pointer to the callback to call when the button is pressed
+ * @param CCWAction a buttonCallback_t pointer to the callback to call when the button is released
+ * @return Doesn't return anything, but Asserts if the quad_encoder_t pointer is NULL
+ */
+void initQuadEncoder(quad_encoder_t* quadPtr, const pinPort_t pin0Port, const uint8_t pin0No, const pinPort_t pin1Port,
+                     const uint8_t pin1No, const actionCallback_t CWAction, const actionCallback_t CCWAction) {
+    app_assert(quadPtr != NULL, "Passed NULL Quad Encoder pointer to initQuadEncoder");
+
     // TODO: If I set the pins as input with no pulls, the encoder signal doesn't go low enough to trigger the interrupt
     // This is really odd, as it measures 1.something volts, as if the pin had an internal pull-up!.
     // I only managed to get it working by actively pulling it dowm, but it should not be neccessary. Do more reasearch!
@@ -127,63 +110,84 @@ btnError_t initQuadEncoder(quad_encoder_t* quadPtr, pinPort_t pin0Port, uint8_t 
     quadPtr->pin1Port = pin1Port;
     quadPtr->clockWiseAction = CWAction;
     quadPtr->counterClockWiseAction = CCWAction;
-    return BTN_OK;
 }
 
-// Configures the interrupt for the button and sets its callback.
-// This callback is the function to call when the GPIO interrupt triggers, but is not the action to take when the button
-// is pressed or released. This callback is the function that will determine if the button is pressed or released and
-// act accordingly
-// Parameters: btnPtr: a pointer to the button_t object to be set
-//             callback: a callbacCtxPtr_t pointer to the function to be called when the interrupt is triggered.
-//             intNoPtr: a pointer to a unit32_t that will store the pin interrupt number assigned.
-// Returns: the interrupt number set, or 0xFF if no interrupt was available.
-//          The interrupt number set in the uint32_t pointed by intNoPtr
-btnError_t configureButtonInterrupts(button_t* btnPtr, callbackCtxPtr_t callback, uint32_t* intNoPtr) {
+/**
+ * @brief Configures the interrupt for the button and sets its callback.
+ * This callback is the function to call when the GPIO interrupt triggers, but is not the action to take when the button
+ * is pressed or released. This callback is the function that will determine if the button is pressed or released and
+ * act accordingly
+ *
+ * @param btnPtr a pointer to the button_t object to be set
+ * @param callback a callbacCtxPtr_t pointer to the function to be called when the interrupt is triggered.
+ * @param intNoPtr a pointer to a unit32_t that will store the pin interrupt number assigned, or 0xFF if no interrupt
+ * was available.
+ * @return returns nothing, but Asserts if there are no interrupts available for the button, or if btnPtr or intNoPtr
+ * was NULL
+ */
+void configureButtonInterrupts(button_t* btnPtr, const callbackCtxPtr_t callback, uint32_t* intNoPtr) {
     // We need btnPtr and intNoPtr to not be null for this to work
-    if ((btnPtr == NULL) || (intNoPtr == NULL)) {
-        return BTN_NULL_POINTER_PASSED;
-    }
+
+    // Null pointer guards
+    app_assert(btnPtr != NULL, "Passed NULL Button pointer to configureButtonInterrupts");
+    app_assert(intNoPtr != NULL, "Passed NULL Int No parameter pointer to configureButtonInterrupts");
     // GPIO clock and pin direction already set by GPIO Init module
     *intNoPtr = setInterruptCallbackWCtx(btnPtr->pinNo, callback, (void*)btnPtr);
-    if (*intNoPtr == 0xFF) {
-        // No ints available
-        return BTN_NO_INTS_AVAILABLE;
-    }  // Else, an int was correctly configured, and returned in intPin
+    app_assert(*intNoPtr != 0xFF, "No Interrupts available for the button!");
     // We call configurePinInterrupt with whatever pin numnber setInterruptCallbackWCtx returns, not with
     // pinNo, as one would expect, just in case they are not the same number
     configurePinInterrupt(btnPtr->btnPort, btnPtr->pinNo, *intNoPtr, true, true, true);
-    enablePinInterrupts(1 << *intNoPtr);
-    return BTN_OK;
+    enablePinInterrupts(1 << (*intNoPtr));
 }
 
-// Configures the interrupt for a quad encoer and sets its callback.
-// This callback is the function to call when the GPIO interrupt triggers, but is not the action to take when its
-// rotated CW or CCW. This callback is the function that determines the rotation direction and acts accordingly
-// Parameters: quadPtr: a pointer to the quad_encoder_t object to be set
-//             callback: a callbacCtxPtr_t pointer to the function to be called when the interrupt is triggered.
-//             intNoPtr: a pointer to a unit32_t that will store the pin interrupt number assigned.
-// Returns: the interrupt number set, or 0xFF if no interrupt was available.
-//          The interrupt number set in the uint32_t pointed by intNoPtr
-btnError_t configureQuadratureInterrupts(quad_encoder_t* quadPtr, callbackCtxPtr_t callback, uint32_t* intNoPtr) {
+/**
+ * @brief Configures the interrupt for the quad encoder and sets its callback.
+ * This callback is the function to call when the GPIO interrupt triggers, but is not the action to take when the button
+ * is pressed or released. This callback is the function that will determine if the button is pressed or released and
+ * act accordingly
+ * * @param quadPtra pointer to the quad_encoder_t object to be set
+ * @param callback a callbacCtxPtr_t pointer to the function to be called when the interrupt is triggered.
+ * @param intNoPtr a pointer to a unit32_t that will store the pin interrupt number assigned, or 0xFF if no interrupt
+ * @return returns nothing, but Asserts if there are no interrupts available for the button, or if quadPtr or intNoPtr
+ * was NULL
+ */
+void configureQuadratureInterrupts(quad_encoder_t* quadPtr, const callbackCtxPtr_t callback, uint32_t* intNoPtr) {
     // The rotary encoder is a PEC11R-4115F-S0018 -> 18 detents and 18 pulses. Each click generates a full pulse, so
     // there's only two codes 00 and 01 to care about, as the encoder will always return to 11 (00 can only achieved if
     // you fiddle and try to hold the shaft between detents).
 
     // Null pointer guards
-    if ((quadPtr == NULL) || (intNoPtr == NULL)) {
-        return BTN_NULL_POINTER_PASSED;
-    }
+    app_assert(quadPtr != NULL, "Passed NULL Quad Encoder pointer to configureQuadratureInterrupts");
+    app_assert(intNoPtr != NULL, "Passed NULL Int No parameter pointer to configureQuadratureInterrupts");
+
     // quad1_0 pin interrupt on falling edge only, as we are not interested on the rising edge.
     // GPIO clock and pin direction already set by GPIO Init module
     *intNoPtr = setInterruptCallbackWCtx(quadPtr->pin0No, callback, (void*)quadPtr);
-    if (*intNoPtr == 0xFF) {
-        return BTN_NO_INTS_AVAILABLE;
-    }
+    app_assert(*intNoPtr != 0xFF, "No Interrupts available for the quad encoder!");
+
     configurePinInterrupt(quadPtr->pin0Port, quadPtr->pin0No, *intNoPtr, false, true, true);
     enablePinInterrupts(1 << *intNoPtr);
-    return BTN_OK;
 }
+
+/**
+ * @brief Updates the button state, making sure we also
+ * @param btnPtr a pointer to the button whose state has changed
+ * @param newState the new state of the button
+ */
+void buttonSetState(button_t* btnPtr, const buttonState_t newState) {
+    app_assert(btnPtr != NULL, "Passed NULL pointer to buttonSetState");
+
+    // Keep track of the previous state, as we use that on the action logic
+    btnPtr->prevState = btnPtr->state;
+    btnPtr->state = newState;
+}
+
+/**
+ * @brief Returns the state of the button
+ * @param btnPtr a pointer to the button whose state we want to get
+ * @return the state of the button
+ */
+buttonState_t buttonGetState(button_t* btnPtr) { return btnPtr->state; }
 
 ////
 // Timer functions - Starting and stopping the sampling and callback timers
@@ -202,11 +206,12 @@ static char* getTimerTypeString(const btnTimerType_t timerType) {
  * @brief Start the timers of a button.
  * @param btnPtr a pointer to the button whose timers we want to start
  * @param timerType which one of the timers of the button to start
- * @return BTN_OK on success, BTN_ERROR otherwise. Asserts if wrong type of timer is passed in timerType
+ * @return BTN_OK on success, BTN_ERROR otherwise. Asserts if wrong type of timer is passed in timerType or if btnPtr
+ * is NULL
  */
 btnError_t startButtonTimer(button_t* btnPtr, const btnTimerType_t timerType) {
-    btnError_t retVal = BTN_OK;
-    // TODO: check for null pointers? initButton should protect against it.
+    app_assert(btnPtr != NULL, "Passed NULL Button pointer to startButtonTimer");
+
     uint32_t time = 0;
     expBehaviour_t behaviour = TIMER_ONE_SHOT;
     timerHandlePtr_t timerPtr = NULL;
@@ -242,10 +247,44 @@ btnError_t startButtonTimer(button_t* btnPtr, const btnTimerType_t timerType) {
         }
     }
 
-    return retVal;
+    return BTN_OK;
 }
 
-//
+/**
+ * @brief Stops a timer on a button.
+ * @param btnPtr a pointer to the button whose timers we want to stop
+ * @param timerType which one of the timers of the button to stop
+ * @return BTN_OK on success, BTN_ERROR otherwise. Asserts if wrong type of timer is passed in timerType or if btnPtr
+ * is NULL
+ */
+btnError_t stopButtonTimer(button_t* btnPtr, const btnTimerType_t timerType) {
+    app_assert(btnPtr != NULL, "Passed NULL Button pointer to stoptButtonTimer");
+
+    timerHandlePtr_t timerPtr = NULL;
+
+    switch (timerType) {
+        case TIMER_SAMPLE: {
+            timerPtr = btnPtr->samplingTimerPtr;
+            break;
+        }
+        case TIMER_LONGPRESS: {
+            timerPtr = btnPtr->longPressTimerPtr;
+            break;
+        }
+        default: {
+            // We fell through the cracks!
+            app_assert(false, "Wrong type of timer passed -> 0x%" PRIX32 "\r\n", (uint32_t)timerType);
+            break;
+        }
+    }
+    if (SLP_isTimerRunning(timerPtr)) {
+        if (SLPTIMER_OK != SLP_stopTimer(timerPtr)) {
+            app_log_error("Error stopping %s\r\n", getTimerTypeString(timerType));
+            return BTN_ERROR;
+        }
+    }
+    return BTN_OK;
+}
 
 /**
  * @brief Action to run when a sampling timer has timed out
@@ -270,7 +309,11 @@ STATIC void samplingTimerCallback(timerHandlePtr_t handlePtr, void* data) {
  */
 STATIC void longPressTimerCallback(timerHandlePtr_t handlePtr, void* data) {
     (void)handlePtr;
+    button_t* btnPtr = (button_t*)data;
     // Change button state
-    ((button_t*)data)->state = BUTTON_LONGPRESSED;
+    buttonSetState(btnPtr, BUTTON_LONGPRESSED);
     // call longpress action if any
+    if (NULL != btnPtr->longPressedAction) {
+        btnPtr->longPressedAction(btnPtr);
+    }
 }
