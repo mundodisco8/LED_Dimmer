@@ -19,9 +19,13 @@
     <property object="PC02" propertyId="pin.name" value="pwm2"/>
     <property object="PC04" propertyId="pin.name" value="btn1"/>
     <property object="PC04" propertyId="pin.reserve" value="Reserved"/>
+    <property object="PC05" propertyId="pin.name" value="btn1_EM4_WakeUp"/>
+    <property object="PC07" propertyId="pin.name" value="btn0_EM4_WakeUp"/>
     <property object="PORTIO" propertyId="portio.euart0.enable.rx" value="Enabled"/>
     <property object="PORTIO" propertyId="portio.euart0.enable.tx" value="Enabled"/>
     <property object="PORTIO" propertyId="portio.euart0.location.rx" value="16"/>
+    <property object="PORTIO" propertyId="portio.gpio.enable.em4wu7" value="Enabled"/>
+    <property object="PORTIO" propertyId="portio.gpio.enable.em4wu8" value="Enabled"/>
     <property object="PORTIO" propertyId="portio.timer0.enable.cc0" value="Enabled"/>
     <property object="PORTIO" propertyId="portio.timer0.enable.cc1" value="Enabled"/>
     <property object="PORTIO" propertyId="portio.timer0.enable.cc2" value="Enabled"/>

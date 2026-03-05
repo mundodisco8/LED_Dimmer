@@ -15,8 +15,10 @@ extern void samplingTimerCallback(timerHandlePtr_t handlePtr, void* data);
 extern void longPressTimerCallback(timerHandlePtr_t handlePtr, void* data);
 
 // Some timer handlers for the buttons
-timerHandlePtr_t longPressTimerPtr;
-timerHandlePtr_t samplingTimerPtr;
+uint32_t dummyA = 0;
+uint32_t dummyB = 0;
+timerHandlePtr_t longPressTimerPtr = &dummyA;  // give some non-null values to the pointers
+timerHandlePtr_t samplingTimerPtr = &dummyB;
 
 void setUp() {
     // test assertions
@@ -34,6 +36,7 @@ void tearDown() {
 
 // Check that buttons are initialised correctly
 void fakePressedAction(void* ctx) { (void)ctx; }
+void fakeLongPressedAction(void* ctx) { (void)ctx; }
 void fakeReleasedAction(void* ctx) { (void)ctx; }
 
 void test_initButtonsDoesItsJob(void) {
@@ -57,20 +60,20 @@ void test_initButtonsDoesItsJob(void) {
     SLP_reserveTimer_ExpectAndReturn(&(testBtn.samplingTimerPtr), SLPTIMER_OK);
     SLP_reserveTimer_ReturnThruPtr_handlePtr((timerHandlePtr_t*)&dummy2);
 
-    uint32_t retVal = initButton(&testBtn, expectedPort, expectedPin, fakePressedAction, fakeReleasedAction);
+    initButton(&testBtn, expectedPort, expectedPin, fakePressedAction, fakeLongPressedAction, fakeReleasedAction);
     // Check retVal is true
-    TEST_ASSERT_EQUAL_UINT32(BTN_OK, retVal);
     TEST_ASSERT_EQUAL_UINT32(expectedPort, testBtn.btnPort);
     TEST_ASSERT_EQUAL_UINT32(expectedPin, testBtn.pinNo);
     TEST_ASSERT_EQUAL_UINT32(BUTTON_RELEASED, testBtn.state);
     TEST_ASSERT_EQUAL_INT32(0, testBtn.integrator);
     TEST_ASSERT_EQUAL_PTR(fakePressedAction, testBtn.pressedAction);
+    TEST_ASSERT_EQUAL_PTR(fakeLongPressedAction, testBtn.longPressedAction);
     TEST_ASSERT_EQUAL_PTR(fakeReleasedAction, testBtn.releasedAction);
     TEST_ASSERT_NOT_NULL(testBtn.longPressTimerPtr);
     TEST_ASSERT_NOT_NULL(testBtn.samplingTimerPtr);
 }
 
-void test_initButtons_AssertionsFirstAsser(void) {
+void test_initButtons_FirstReservedTimerFails(void) {
     button_t testBtn = {0};
 
     // Set expectations
@@ -80,13 +83,13 @@ void test_initButtons_AssertionsFirstAsser(void) {
     SLP_reserveTimer_ExpectAnyArgsAndReturn(SLPTIMER_NO_TIMERS_AVAILABLE);
     // Only one call to SLP_reserveTimer
 
-    initButton(&testBtn, 0, 0, NULL, NULL);
+    initButton(&testBtn, 0, 0, NULL, NULL, NULL);
 }
 
-void test_initButtons_AssertionsSecondAsser(void) {
+void test_initButtons_SecondReservedTimerFails(void) {
     button_t testBtn = {0};
 
-    // Test second assert
+    // Test second timer assert
     // Set expectations
     setPinMode_Ignore();
     // Expect assert
@@ -94,25 +97,18 @@ void test_initButtons_AssertionsSecondAsser(void) {
     SLP_reserveTimer_ExpectAnyArgsAndReturn(SLPTIMER_OK);
     SLP_reserveTimer_ExpectAnyArgsAndReturn(SLPTIMER_NO_TIMERS_AVAILABLE);
 
-    initButton(&testBtn, 0, 0, NULL, NULL);
+    initButton(&testBtn, 0, 0, NULL, NULL, NULL);
 }
 
 // Protection against null pointers: because of shortcircuiting in OR comparisons, there's only need to test the three
 // checks individually, and that will cover all the cases of the if statement
 void test_initButtons_ButtonIsNullPointer(void) {
     button_t* testPtr = NULL;
-    uint32_t retVal = initButton(testPtr, portA, 1, fakePressedAction, fakeReleasedAction);
-    TEST_ASSERT_EQUAL_INT32(BTN_NULL_POINTER_PASSED, retVal);
-}
 
-// TODO: is needed?
-void test_initButtons_TimersAreNullPtrs(void) {
-    button_t* testPtr = {0};
-    uint32_t retVal = initButton(testPtr, portA, 1, fakePressedAction, fakeReleasedAction);
-    TEST_ASSERT_EQUAL_INT32(BTN_NULL_POINTER_PASSED, retVal);
+    // Set expectations
+    assertExpectFailure();
 
-    retVal = initButton(testPtr, portA, 1, fakePressedAction, fakeReleasedAction);
-    TEST_ASSERT_EQUAL_INT32(BTN_NULL_POINTER_PASSED, retVal);
+    initButton(testPtr, portA, 1, fakePressedAction, fakeLongPressedAction, fakeReleasedAction);
 }
 
 ////
@@ -135,9 +131,8 @@ void test_initQuadratureDoesItsJob(void) {
     setPinMode_Expect(expectedPortPin0, expectedPin0No, expectedPinMode, expectedDout);
     setPinMode_Expect(expectedPortPin1, expectedPin1No, expectedPinMode, expectedDout);
 
-    uint32_t retVal = initQuadEncoder(&testQuad, expectedPortPin0, expectedPin0No, expectedPortPin1, expectedPin1No,
-                                      fakeCWAction, fakeCCWAction);
-    TEST_ASSERT_EQUAL_UINT32(BTN_OK, retVal);
+    initQuadEncoder(&testQuad, expectedPortPin0, expectedPin0No, expectedPortPin1, expectedPin1No, fakeCWAction,
+                    fakeCCWAction);
     TEST_ASSERT_EQUAL_UINT32(expectedPin0No, testQuad.pin0No);
     TEST_ASSERT_EQUAL_UINT32(expectedPortPin0, testQuad.pin0Port);
     TEST_ASSERT_EQUAL_UINT32(expectedPin1No, testQuad.pin1No);
@@ -148,8 +143,11 @@ void test_initQuadratureDoesItsJob(void) {
 
 void test_initQuadrature_QuadIsNull(void) {
     quad_encoder_t* quadPtr = NULL;
-    uint32_t retVal = initQuadEncoder(quadPtr, 0, 0, 0, 0, NULL, NULL);
-    TEST_ASSERT_EQUAL_UINT32(BTN_NULL_POINTER_PASSED, retVal);
+
+    // Set expectations
+    assertExpectFailure();
+
+    initQuadEncoder(quadPtr, 0, 0, 0, 0, NULL, NULL);
 }
 
 ////
@@ -172,8 +170,7 @@ void test_configureButtonInterrupts_Works(void) {
     setInterruptCallbackWCtx_ExpectAndReturn(testBtn.pinNo, fakeButtonCallback, &testBtn, testBtn.pinNo);
     configurePinInterrupt_Expect(testBtn.btnPort, testBtn.pinNo, testBtn.pinNo, true, true, true);
     enablePinInterrupts_Expect(1 << testBtn.pinNo);
-    uint32_t retVal = configureButtonInterrupts(&testBtn, fakeButtonCallback, &intNo);
-    TEST_ASSERT_EQUAL_UINT32(BTN_OK, retVal);
+    configureButtonInterrupts(&testBtn, fakeButtonCallback, &intNo);
     TEST_ASSERT_EQUAL_UINT32(testBtn.pinNo, intNo);
 }
 
@@ -183,25 +180,34 @@ void test_configureButtonInterrupts_NoInterruptsAvailable(void) {
         .btnPort = portA,
         .pinNo = 1,
     };
-    uint32_t intNoReturned = 0;
+    uint32_t testIntNo = 0;
+    uint32_t intNoReturned = 0xFF;
 
-    setInterruptCallbackWCtx_ExpectAndReturn(testBtn.pinNo, fakeButtonCallback, &testBtn, 0xFF);
+    // Set expectations
+    assertExpectFailure();
+    setInterruptCallbackWCtx_ExpectAndReturn(testBtn.pinNo, fakeButtonCallback, &testBtn, intNoReturned);
+
     // No other calls have to be made and the function exits
-    uint32_t retVal = configureButtonInterrupts(&testBtn, fakeButtonCallback, &intNoReturned);
-    TEST_ASSERT_EQUAL_UINT32(BTN_NO_INTS_AVAILABLE, retVal);
+    configureButtonInterrupts(&testBtn, fakeButtonCallback, &testIntNo);
 }
 
 void test_configButtonInts_PassedButtonPtrIsNull(void) {
     button_t* btnPtr = NULL;
     uint32_t intNoReturned = 0;
-    uint32_t retVal = configureButtonInterrupts(btnPtr, fakeButtonCallback, &intNoReturned);
-    TEST_ASSERT_EQUAL_UINT32(BTN_NULL_POINTER_PASSED, retVal);
+
+    // Set expectations
+    assertExpectFailure();
+
+    configureButtonInterrupts(btnPtr, fakeButtonCallback, &intNoReturned);
 }
 
 void test_configButtonInts_intNumberPtrIsNull(void) {
     button_t btn = {0};
-    uint32_t retVal = configureButtonInterrupts(&btn, fakeButtonCallback, NULL);
-    TEST_ASSERT_EQUAL_UINT32(BTN_NULL_POINTER_PASSED, retVal);
+
+    // Set expectations
+    assertExpectFailure();
+
+    configureButtonInterrupts(&btn, fakeButtonCallback, NULL);
 }
 
 ////
@@ -224,8 +230,7 @@ void test_configQuadInts_ConfigsInts(void) {
     setInterruptCallbackWCtx_ExpectAndReturn(testQuad.pin0No, fakeQuadCallback, &testQuad, testQuad.pin0No);
     configurePinInterrupt_Expect(testQuad.pin0Port, testQuad.pin0No, testQuad.pin0No, false, true, true);
     enablePinInterrupts_Expect(1 << testQuad.pin0No);
-    uint32_t retVal = configureQuadratureInterrupts(&testQuad, fakeQuadCallback, &pinNoReturned);
-    TEST_ASSERT_EQUAL_HEX32(BTN_OK, retVal);
+    configureQuadratureInterrupts(&testQuad, fakeQuadCallback, &pinNoReturned);
 }
 
 void test_configQuadInts_AllIntsInUse(void) {
@@ -235,25 +240,60 @@ void test_configQuadInts_AllIntsInUse(void) {
     };
     uint32_t pinNoReturned = 0;
 
+    // Set expectations
+    assertExpectFailure();
+
     setInterruptCallbackWCtx_ExpectAndReturn(testQuad.pin0No, fakeQuadCallback, &testQuad, 0xFF);
-    uint32_t retVal = configureQuadratureInterrupts(&testQuad, fakeQuadCallback, &pinNoReturned);
-    TEST_ASSERT_EQUAL_HEX32(BTN_NO_INTS_AVAILABLE, retVal);
+    configureQuadratureInterrupts(&testQuad, fakeQuadCallback, &pinNoReturned);
 }
 
 void test_configQuadInts_NullPointerGuards_QuadPointer(void) {
     quad_encoder_t* quadPtr = NULL;
     uint32_t pinNoReturned = 0;
 
-    uint32_t retVal = configureQuadratureInterrupts(quadPtr, fakeQuadCallback, &pinNoReturned);
-    TEST_ASSERT_EQUAL_HEX32(BTN_NULL_POINTER_PASSED, retVal);
+    // Set expectations
+    assertExpectFailure();
+
+    configureQuadratureInterrupts(quadPtr, fakeQuadCallback, &pinNoReturned);
 }
 
 void test_configQuadInts_NullPointerGuards_IntNumberPointer(void) {
     quad_encoder_t testQuad = {0};
     uint32_t* pinNoPtr = NULL;
 
-    uint32_t retVal = configureQuadratureInterrupts(&testQuad, fakeQuadCallback, pinNoPtr);
-    TEST_ASSERT_EQUAL_HEX32(BTN_NULL_POINTER_PASSED, retVal);
+    // Set expectations
+    assertExpectFailure();
+
+    configureQuadratureInterrupts(&testQuad, fakeQuadCallback, pinNoPtr);
+}
+
+////
+// buttonSetState
+// - Success
+// - Null pointer
+////
+
+void test_buttonSetState_Success(void) {
+    button_t testButton = {0};
+    buttonState_t testState = BUTTON_PRESSED;
+
+    // Set Expectations
+    buttonState_t expectedState = BUTTON_RELEASED;
+
+    buttonSetState(&testButton, expectedState);
+
+    TEST_ASSERT_EQUAL_UINT32(expectedState, testButton.state);
+    TEST_ASSERT_EQUAL_UINT32(testState, testButton.prevState);
+}
+
+void test_buttonSetState_NullPointer(void) {
+    // Set Expectations
+    buttonState_t expectedState = BUTTON_RELEASED;
+
+    // Set expectations
+    assertExpectFailure();
+
+    buttonSetState(NULL, expectedState);
 }
 
 ////
@@ -307,7 +347,7 @@ void test_startButtonTimer_WrongTypeOfTimer(void) {
     // Set expectations
     assertExpectFailure();
 
-    uint32_t retVal = startButtonTimer(&testButton, (btnTimerType_t)0xFFFFFFFF);
+    startButtonTimer(&testButton, (btnTimerType_t)0xFFFFFFFF);
 }
 
 // This test that the log lines are hit. As in tests we disable logging, this is more something you would spot on the
@@ -321,8 +361,74 @@ void test_startButtonTimer_ErrorOnSLP_startTimer(void) {
     // Sadly, the callback is a static function, so I can't test that startPeriodicTimer will be called with it as a parameter
     SLP_startTimer_IgnoreArg_callback();
 
-    uint32_t retVal = startButtonTimer(&testButton, TIMER_SAMPLE);
+    btnError_t retVal = startButtonTimer(&testButton, TIMER_SAMPLE);
     TEST_ASSERT_EQUAL_UINT32(BTN_ERROR, retVal);
+}
+
+////
+// StopButtonTimer()
+// - Success
+// - Do nothing if timer is not running
+// - Return error if problems stopping timer
+// - Assert on null pointer
+////
+
+void test_stopButtonTimer_Success(void) {
+    button_t testBtn = {.samplingTimerPtr = samplingTimerPtr, .longPressTimerPtr = longPressTimerPtr};
+
+    // Set Expectations
+    btnError_t expectedRetVal = BTN_OK;
+    SLP_isTimerRunning_ExpectAndReturn(testBtn.samplingTimerPtr, true);
+    SLP_stopTimer_ExpectAndReturn(testBtn.samplingTimerPtr, SLPTIMER_OK);
+
+    btnError_t retVal = stopButtonTimer(&testBtn, TIMER_SAMPLE);
+    TEST_ASSERT_EQUAL_UINT32(expectedRetVal, retVal);
+
+    // Set Expectations
+    SLP_isTimerRunning_ExpectAndReturn(testBtn.longPressTimerPtr, true);
+    SLP_stopTimer_ExpectAndReturn(testBtn.longPressTimerPtr, SLPTIMER_OK);
+
+    retVal = stopButtonTimer(&testBtn, TIMER_LONGPRESS);
+    TEST_ASSERT_EQUAL_UINT32(expectedRetVal, retVal);
+}
+
+void test_stopButtonTimer_TimerNotRunning(void) {
+    button_t testBtn = {.samplingTimerPtr = samplingTimerPtr};
+
+    // Set Expectations
+    btnError_t expectedRetVal = BTN_OK;
+    SLP_isTimerRunning_ExpectAndReturn(testBtn.samplingTimerPtr, false);
+
+    btnError_t retVal = stopButtonTimer(&testBtn, TIMER_SAMPLE);
+    TEST_ASSERT_EQUAL_UINT32(expectedRetVal, retVal);
+}
+
+void test_stopButtonTimer_ErrorStoppingTimer(void) {
+    button_t testBtn = {.samplingTimerPtr = samplingTimerPtr};
+
+    // Set Expectations
+    btnError_t expectedRetVal = BTN_ERROR;
+    SLP_isTimerRunning_ExpectAndReturn(testBtn.samplingTimerPtr, true);
+    SLP_stopTimer_ExpectAndReturn(testBtn.samplingTimerPtr, SLPTIMER_ERROR);
+
+    btnError_t retVal = stopButtonTimer(&testBtn, TIMER_SAMPLE);
+    TEST_ASSERT_EQUAL_UINT32(expectedRetVal, retVal);
+}
+
+void test_stopButtonTimer_NullPointer(void) {
+    // Set Expectations
+    assertExpectFailure();
+
+    btnError_t retVal = stopButtonTimer(NULL, TIMER_SAMPLE);
+}
+
+void test_stopButtonTimer_WrongTypeOfTimer(void) {
+    button_t testButton = {0};
+
+    // Set expectations
+    assertExpectFailure();
+
+    stopButtonTimer(&testButton, (btnTimerType_t)0xFFFFFFFF);
 }
 
 // The sampling timer times out, so we run the debounceButton.

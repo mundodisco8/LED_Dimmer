@@ -12,10 +12,10 @@
  */
 
 // Globals that are defined in `buttons`. They don't exist now because we are mocking it
-const uint32_t LONGPRESS_TIME_MS = 3000UL;
-const uint32_t DEBOUNCE_TIME_MS = 75UL;
-const uint32_t DEBOUNCE_SAMPLING_PERIOD_MS = 5UL;
-const int32_t INTEGRATOR_TARGET = 5;
+extern const uint32_t LONGPRESS_TIME_MS;
+extern const uint32_t DEBOUNCE_TIME_MS;
+extern const uint32_t DEBOUNCE_SAMPLING_PERIOD_MS;
+extern const int32_t INTEGRATOR_TARGET;
 
 // Fake actions, they set a flag so we can check they were called
 static bool fakePressActionFlag = false;
@@ -26,7 +26,7 @@ void fakePressAction(void* ctx) {
 }
 void fakeReleaseAction(void* ctx) {
     (void)ctx;
-    static bool fakeReleaseActionFlag = true;
+    fakeReleaseActionFlag = true;
 }
 
 void setUp() {
@@ -171,14 +171,23 @@ void test_ButtonActionIsNull(void) {
 
     // Expectations
     readPin_ExpectAndReturn(portA, 1, 1);
+    buttonSetState_Expect(&testBtn, BUTTON_PRESSED);
+    stopButtonTimer_ExpectAndReturn(&testBtn, TIMER_LONGPRESS, BTN_OK);
+
     debounceButton(&testBtn);
+    // Because the action on pressed is null, fakePressActionFlag is expected to remain false
+    TEST_ASSERT_FALSE(fakePressActionFlag);
 
     // Same thing with the release action
     testBtn.integrator = 0;
     testBtn.state = BUTTON_PRESSED;
     readPin_ExpectAndReturn(portA, 1, 0);
+    buttonSetState_Expect(&testBtn, BUTTON_RELEASED);
+    startButtonTimer_ExpectAndReturn(&testBtn, TIMER_LONGPRESS, BTN_OK);
 
     debounceButton(&testBtn);
+    // Because the action on pressed is null, fakePressActionFlag is expected to remain false
+    TEST_ASSERT_FALSE(fakePressActionFlag);
 }
 
 void test_IntegratorDecreasesMultiple(void) {
@@ -272,24 +281,24 @@ void test_fromReleasedToPressed(void) {
     int32_t expectedIntegratorValue = INTEGRATOR_TARGET;
     uint32_t expectedPinState = 1UL;
     uint64_t timeAtPress = 1000;
+    buttonState_t expectedState = BUTTON_PRESSED;
 
     for (int32_t i = 0; i < INTEGRATOR_TARGET - 1; i++) {
         readPin_ExpectAndReturn(testPort, testPin, expectedPinState);
         startButtonTimer_ExpectAndReturn(&testBtn, TIMER_SAMPLE, BTN_OK);
 
-        // Press the button for (INTEGRATOR_TARGET -1) times
+        // Press the button for (INTEGRATOR_TARGET - 1) times
         debounceButton(&testBtn);
         // button must remain RELEASED
-        TEST_ASSERT_EQUAL_UINT32(BUTTON_RELEASED, testBtn.state);
+        TEST_ASSERT_EQUAL_UINT32(testState, testBtn.state);
         TEST_ASSERT_EQUAL_UINT32(i + 1, testBtn.integrator);
     }
     // Press the button an additional time, the button state must switch
     readPin_ExpectAndReturn(testPort, testPin, expectedPinState);
-
+    buttonSetState_Expect(&testBtn, expectedState);
+    stopButtonTimer_ExpectAndReturn(&testBtn, TIMER_LONGPRESS, BTN_OK);
     debounceButton(&testBtn);
 
-    TEST_ASSERT_EQUAL_UINT32(BUTTON_PRESSED, testBtn.state);
-    TEST_ASSERT_LESS_OR_EQUAL_INT64(timeAtPress, testBtn.lastPressMs);
     TEST_ASSERT_EQUAL_UINT32(expectedIntegratorValue, testBtn.integrator);
     TEST_ASSERT_EQUAL_UINT32(expectedDebounceCyles, testBtn.debounceCycles);
 }
@@ -298,7 +307,7 @@ void test_fromPressedToReleased(void) {
     pinPort_t testPort = portA;
     uint8_t testPin = 1U;
     buttonState_t testState = BUTTON_PRESSED;
-    int32_t testIntegrator = 5UL;
+    int32_t testIntegrator = INTEGRATOR_TARGET;
     uint32_t testCycles = 0UL;
 
     button_t testBtn = {.btnPort = testPort,
@@ -313,25 +322,69 @@ void test_fromPressedToReleased(void) {
     int32_t expectedIntegratorValue = 0UL;
     uint32_t expectedPinState = 0UL;
     uint64_t timeAtPress = 1000;
+    buttonState_t expectedState = BUTTON_RELEASED;
 
     for (int32_t i = 0; i < INTEGRATOR_TARGET - 1; i++) {
         readPin_ExpectAndReturn(testPort, testPin, expectedPinState);
         startButtonTimer_ExpectAndReturn(&testBtn, TIMER_SAMPLE, BTN_OK);
 
-        // Press the button for (INTEGRATOR_TARGET -1) times
+        // Press the button for (INTEGRATOR_TARGET - 1) times
         debounceButton(&testBtn);
         // button must remain RELEASED
-        TEST_ASSERT_EQUAL_UINT32(BUTTON_PRESSED, testBtn.state);
+        TEST_ASSERT_EQUAL_UINT32(testState, testBtn.state);
         TEST_ASSERT_EQUAL_UINT32(INTEGRATOR_TARGET - (i + 1), testBtn.integrator);
     }
     // Press the button an additional time, the button state must switch
     readPin_ExpectAndReturn(testPort, testPin, expectedPinState);
+    buttonSetState_Expect(&testBtn, expectedState);
+    startButtonTimer_ExpectAndReturn(&testBtn, TIMER_LONGPRESS, BTN_OK);
     // If the button was released, we DON'T record when it happened
 
     debounceButton(&testBtn);
 
-    TEST_ASSERT_EQUAL_UINT32(BUTTON_RELEASED, testBtn.state);
-    TEST_ASSERT_LESS_OR_EQUAL_INT64(timeAtPress, testBtn.lastPressMs);
+    TEST_ASSERT_EQUAL_UINT32(expectedIntegratorValue, testBtn.integrator);
+    TEST_ASSERT_EQUAL_UINT32(expectedDebounceCyles, testBtn.debounceCycles);
+}
+
+void test_fromLongPressedToReleased(void) {
+    pinPort_t testPort = portA;
+    uint8_t testPin = 1U;
+    buttonState_t testState = BUTTON_LONGPRESSED;
+    int32_t testIntegrator = INTEGRATOR_TARGET;
+    uint32_t testCycles = 0UL;
+
+    button_t testBtn = {.btnPort = testPort,
+                        .pinNo = testPin,
+                        .state = testState,
+                        .integrator = testIntegrator,
+                        .debounceCycles = testCycles,
+                        .releasedAction = fakeReleaseAction};
+
+    // Expectations
+    uint32_t expectedDebounceCyles = 0UL;  // we reset on button state change
+    int32_t expectedIntegratorValue = 0UL;
+    uint32_t expectedPinState = 0UL;
+    uint64_t timeAtPress = 1000;
+    buttonState_t expectedState = BUTTON_RELEASED;
+
+    for (int32_t i = 0; i < INTEGRATOR_TARGET - 1; i++) {
+        readPin_ExpectAndReturn(testPort, testPin, expectedPinState);
+        startButtonTimer_ExpectAndReturn(&testBtn, TIMER_SAMPLE, BTN_OK);
+
+        // Press the button for (INTEGRATOR_TARGET - 1) times
+        debounceButton(&testBtn);
+        // button must remain RELEASED
+        TEST_ASSERT_EQUAL_UINT32(testState, testBtn.state);
+        TEST_ASSERT_EQUAL_UINT32(INTEGRATOR_TARGET - (i + 1), testBtn.integrator);
+    }
+    // Press the button an additional time, the button state must switch
+    readPin_ExpectAndReturn(testPort, testPin, expectedPinState);
+    buttonSetState_Expect(&testBtn, expectedState);
+    startButtonTimer_ExpectAndReturn(&testBtn, TIMER_LONGPRESS, BTN_OK);
+    // If the button was released, we DON'T record when it happened
+
+    debounceButton(&testBtn);
+
     TEST_ASSERT_EQUAL_UINT32(expectedIntegratorValue, testBtn.integrator);
     TEST_ASSERT_EQUAL_UINT32(expectedDebounceCyles, testBtn.debounceCycles);
 }

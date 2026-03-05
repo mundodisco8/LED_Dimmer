@@ -36,8 +36,8 @@ void test_gpioCallBackButton(void) {
     button_t testButton = {0};
     uint8_t testIntNo = 4;
     // Set Expectations
-    startButtonTimer_ExpectAndReturn(&testButton, TIMER_LONGPRESS, SLPTIMER_OK);
-    startButtonTimer_ExpectAndReturn(&testButton, TIMER_SAMPLE, SLPTIMER_OK);
+    startButtonTimer_ExpectAndReturn(&testButton, TIMER_LONGPRESS, BTN_OK);
+    startButtonTimer_ExpectAndReturn(&testButton, TIMER_SAMPLE, BTN_OK);
 
     gpioCallbackButton(testIntNo, &testButton);
 }
@@ -80,13 +80,11 @@ void test_gpioCallBackQuad(void) {
 }
 
 // button0 changes the current PWM channel active. Third press resets channel to 0
-void test_button0Released_ShortPress(void) {
+void test_button0ReleasedAfterShortPress(void) {
     uint32_t expectedCh = 1;
-    button_t testBtn = {.lastPressMs = 1000};
-    uint64_t timeOfRelease = 1100;  // mimicks a short press
+    button_t testBtn = {.prevState = BUTTON_PRESSED};  // So all releases will be "short" releases
 
     // Set Expectations
-    SLP_getSystemTickInMs_ExpectAndReturn(timeOfRelease);
     button0Released(&testBtn);
     TEST_ASSERT_EQUAL(expectedCh, channelIdx);
 
@@ -94,7 +92,6 @@ void test_button0Released_ShortPress(void) {
     expectedCh = 2;
 
     // Set Expectations
-    SLP_getSystemTickInMs_ExpectAndReturn(timeOfRelease);
     button0Released(&testBtn);
     TEST_ASSERT_EQUAL(expectedCh, channelIdx);
 
@@ -102,24 +99,21 @@ void test_button0Released_ShortPress(void) {
     expectedCh = 0;
 
     // Set Expectations
-    SLP_getSystemTickInMs_ExpectAndReturn(timeOfRelease);
     button0Released(&testBtn);
     TEST_ASSERT_EQUAL(expectedCh, channelIdx);
 }
 
 // button0 on long press. does nothing, for now
-void test_button0Released_LongPress(void) {
-    button_t testBtn = {.lastPressMs = 1000};
-    uint64_t timeOfRelease = 3000;  // mimicks a short press
+void test_button0ReleasedAfterLongPress(void) {
+    button_t testBtn = {.prevState = BUTTON_LONGPRESSED};  // So the release will be a "long" release
 
-    // Set Expectations
-    SLP_getSystemTickInMs_ExpectAndReturn(timeOfRelease);
-    // app_log_debug_expec();
+    // No action on long release
+
     button0Released(&testBtn);
 }
 
 // Button 0 Pressed does nothing for now
-void test_button0Pressed(void) { button0Pressed(NULL); }
+void test_button0ShortPressed(void) { button0ShortPressed(NULL); }
 
 // Test Quad actions
 // Rotating CW increases channel's % by 5, and CCW decreases it
@@ -196,15 +190,15 @@ void test_quad0CounterClockWise_MinBrightness(void) {
 
 void test_button1Released_FixedToBreathe(void) {
     // Shortpress, current lastPressMs is 0
-    button_t testBtn = {.lastPressMs = 0};
-    uint32_t expectedReleaseTime = 1;
+    button_t testBtn = {
+        .prevState = BUTTON_PRESSED  // so release is "short" release
+    };
     LEDChannel_t testChannel = LED_CHANNEL_1;
     anim_t testCurrAnimation = ANIM_FIXED;
     anim_t expectedNewAnimation = ANIM_BREATHE;
     LED_t testLED = {.currAnimation = testCurrAnimation};
 
     // Set Expectations
-    SLP_getSystemTickInMs_ExpectAndReturn(expectedReleaseTime);
     getLEDStruct_ExpectAndReturn(testChannel, &testLED);
     getEffectName_ExpectAndReturn(expectedNewAnimation, "Breathe Effect");
 
@@ -214,15 +208,16 @@ void test_button1Released_FixedToBreathe(void) {
 
 void test_button1Released_BreatheToFixed(void) {
     // Shortpress, current lastPressMs is 0
-    button_t testBtn = {.lastPressMs = 0};
-    uint32_t expectedReleaseTime = 1;
+    button_t testBtn = {
+        .prevState = BUTTON_PRESSED  // so release is "short" release
+
+    };
     LEDChannel_t testChannel = LED_CHANNEL_1;
     anim_t testCurrAnimation = ANIM_BREATHE;
     anim_t expectedNewAnimation = ANIM_FIXED;
     LED_t testLED = {.currAnimation = testCurrAnimation};
 
     // Set Expectations
-    SLP_getSystemTickInMs_ExpectAndReturn(expectedReleaseTime);
     getLEDStruct_ExpectAndReturn(testChannel, &testLED);
     getEffectName_ExpectAndReturn(expectedNewAnimation, "Fixed Brightness");
 
@@ -232,17 +227,17 @@ void test_button1Released_BreatheToFixed(void) {
 
 // button0 on long press. does nothing, for now
 void test_button1Released_LongPress(void) {
-    button_t testBtn = {.lastPressMs = 1000};
-    uint64_t timeOfRelease = 3000;  // mimicks a short press
+    button_t testBtn = {
+        .prevState = BUTTON_LONGPRESSED  // so release is "short" release
+    };
 
-    // Set Expectations
-    SLP_getSystemTickInMs_ExpectAndReturn(timeOfRelease);
-    // app_log_debug_expec();
+    // No action on long release
+
     button1Released(&testBtn);
 }
 
 // Button 1 Pressed does nothing for now
-void test_button1Pressed(void) { button1Pressed(NULL); }
+void test_button1Pressed(void) { button1ShortPressed(NULL); }
 
 /**
  * quad1Clockwise

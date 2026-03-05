@@ -13,7 +13,6 @@
 #include <stddef.h>
 
 // Other SiLabs headers
-#include "pin_config.h"
 // Ignore a cast-align warning in some cmsis header
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wcast-align"
@@ -26,6 +25,8 @@
 #pragma GCC diagnostic ignored "-Wsign-conversion"
 #include "app_log.h"
 #pragma GCC diagnostic pop
+// Move this to the bottom of SiLabs headers so clang doesn't sort it.
+#include "pin_config.h"
 
 // Project headers
 #include "gpio_HW.h"

@@ -107,8 +107,8 @@
     - ../Gruffalo_Dimmer/src/**
   :include:
     - ../Gruffalo_Dimmer/inc/**
-    - ../test/**
     - ../Gruffalo_Dimmer/config/**
+    - ../test/**
   :support:
     - test/support
   :libraries: []

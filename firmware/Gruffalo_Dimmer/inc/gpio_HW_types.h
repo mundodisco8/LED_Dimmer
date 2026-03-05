@@ -1,9 +1,8 @@
 #ifndef _GPIO_HW_TYPES_H_
 #define _GPIO_HW_TYPES_H_
 
-// TODO: Create a button header, where the buttons are defined with their pins and ports and stuff, and then just exported as something that doesn't require knowledge of that.
-
 // Hack to get same pin modes. Copied from em_gpio.h
+// TODO: just get a lookup getter, so I don't depend of headers that could change
 typedef enum pin_mode {
     MODE_DISABLED = 0,
     /** Input enabled. Filter if DOUT is set. */
@@ -17,6 +16,7 @@ typedef enum pin_mode {
 } pinMode_t;
 
 // Hack to get the same port values than em_gpio.h without having to include it.
+// TODO: just get a lookup getter, so I don't depend of headers that could change
 typedef enum ports {
     portA = 0,
     portB,
