@@ -172,7 +172,7 @@ void test_ButtonActionIsNull(void) {
     // Expectations
     readPin_ExpectAndReturn(portA, 1, 1);
     buttonSetState_Expect(&testBtn, BUTTON_PRESSED);
-    stopButtonTimer_ExpectAndReturn(&testBtn, TIMER_LONGPRESS, BTN_OK);
+    startButtonTimer_ExpectAndReturn(&testBtn, TIMER_LONGPRESS, BTN_OK);
 
     debounceButton(&testBtn);
     // Because the action on pressed is null, fakePressActionFlag is expected to remain false
@@ -183,7 +183,7 @@ void test_ButtonActionIsNull(void) {
     testBtn.state = BUTTON_PRESSED;
     readPin_ExpectAndReturn(portA, 1, 0);
     buttonSetState_Expect(&testBtn, BUTTON_RELEASED);
-    startButtonTimer_ExpectAndReturn(&testBtn, TIMER_LONGPRESS, BTN_OK);
+    stopButtonTimer_ExpectAndReturn(&testBtn, TIMER_LONGPRESS, BTN_OK);
 
     debounceButton(&testBtn);
     // Because the action on pressed is null, fakePressActionFlag is expected to remain false
@@ -296,7 +296,7 @@ void test_fromReleasedToPressed(void) {
     // Press the button an additional time, the button state must switch
     readPin_ExpectAndReturn(testPort, testPin, expectedPinState);
     buttonSetState_Expect(&testBtn, expectedState);
-    stopButtonTimer_ExpectAndReturn(&testBtn, TIMER_LONGPRESS, BTN_OK);
+    startButtonTimer_ExpectAndReturn(&testBtn, TIMER_LONGPRESS, BTN_OK);
     debounceButton(&testBtn);
 
     TEST_ASSERT_EQUAL_UINT32(expectedIntegratorValue, testBtn.integrator);
@@ -337,7 +337,7 @@ void test_fromPressedToReleased(void) {
     // Press the button an additional time, the button state must switch
     readPin_ExpectAndReturn(testPort, testPin, expectedPinState);
     buttonSetState_Expect(&testBtn, expectedState);
-    startButtonTimer_ExpectAndReturn(&testBtn, TIMER_LONGPRESS, BTN_OK);
+    stopButtonTimer_ExpectAndReturn(&testBtn, TIMER_LONGPRESS, BTN_OK);
     // If the button was released, we DON'T record when it happened
 
     debounceButton(&testBtn);
@@ -380,7 +380,7 @@ void test_fromLongPressedToReleased(void) {
     // Press the button an additional time, the button state must switch
     readPin_ExpectAndReturn(testPort, testPin, expectedPinState);
     buttonSetState_Expect(&testBtn, expectedState);
-    startButtonTimer_ExpectAndReturn(&testBtn, TIMER_LONGPRESS, BTN_OK);
+    stopButtonTimer_ExpectAndReturn(&testBtn, TIMER_LONGPRESS, BTN_OK);
     // If the button was released, we DON'T record when it happened
 
     debounceButton(&testBtn);

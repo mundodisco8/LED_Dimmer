@@ -190,6 +190,15 @@ btnError_t configureQuadratureInterrupts(quad_encoder_t* quadPtr, callbackCtxPtr
 ////
 
 /**
+ * @brief Silly function to get the type of timer as a string
+ * @param timerType a timer type
+ * @return char* a string with "Sampling timer" if the timer was a TIMER_SAMPLE, "Debouncing Timer" otherwise
+ */
+static char* getTimerTypeString(const btnTimerType_t timerType) {
+    return (TIMER_SAMPLE ? "Sampling Timer" : "Debouncing Timer");
+}
+
+/**
  * @brief Start the timers of a button.
  * @param btnPtr a pointer to the button whose timers we want to start
  * @param timerType which one of the timers of the button to start
@@ -228,9 +237,8 @@ btnError_t startButtonTimer(button_t* btnPtr, const btnTimerType_t timerType) {
     if (!SLP_isTimerRunning(timerPtr)) {
         // Don't restart it if it's already running, or noise would extend the debounce time
         if (SLPTIMER_OK != SLP_startTimer(timerPtr, time, behaviour, callbackPtr, btnPtr)) {
-            app_log_error("Error 0x%04" PRIX32 " starting %s timer\r\n", retVal,
-                          (timerType == TIMER_SAMPLE ? "sampling" : "debouncing"));
-            retVal = BTN_ERROR;
+            app_log_error("Error starting %s timer\r\n", getTimerTypeString(timerType));
+            return BTN_ERROR;
         }
     }
 

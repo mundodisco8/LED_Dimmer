@@ -17,12 +17,27 @@ extern void longPressTimerCallback(timerHandlePtr_t handlePtr, void* data);
 // Some timer handlers for the buttons
 uint32_t dummyA = 0;
 uint32_t dummyB = 0;
-timerHandlePtr_t longPressTimerPtr = &dummyA;  // give some non-null values to the pointers
-timerHandlePtr_t samplingTimerPtr = &dummyB;
+timerHandlePtr_t longPressTimerPtr = (timerHandlePtr_t)&dummyA;  // give some non-null values to the pointers
+timerHandlePtr_t samplingTimerPtr = (timerHandlePtr_t)&dummyB;
+
+// Values for globals lost in the mocking process
+const uint32_t DEBOUNCE_SAMPLING_PERIOD_MS = 5UL;  // read the button every this ms
+
+// Fake Actions
+void fakePressedAction(void* ctx) { (void)ctx; }
+
+bool fakeLongPressedActionFlag = false;
+void fakeLongPressedAction(void* ctx) {
+    (void)ctx;
+    fakeLongPressedActionFlag = true;
+}
+
+void fakeReleasedAction(void* ctx) { (void)ctx; }
 
 void setUp() {
     // test assertions
     assertSetUp();
+    fakeLongPressedActionFlag = false;
 }
 
 void tearDown() {
@@ -33,11 +48,6 @@ void tearDown() {
 ////
 // init Buttons
 ////
-
-// Check that buttons are initialised correctly
-void fakePressedAction(void* ctx) { (void)ctx; }
-void fakeLongPressedAction(void* ctx) { (void)ctx; }
-void fakeReleasedAction(void* ctx) { (void)ctx; }
 
 void test_initButtonsDoesItsJob(void) {
     button_t testBtn = {0};
@@ -296,6 +306,17 @@ void test_buttonSetState_NullPointer(void) {
     buttonSetState(NULL, expectedState);
 }
 
+void test_buttonGetState_Success(void) {
+    button_t testButton = {0};
+
+    // Set expectations
+    buttonState_t expectedState = BUTTON_LONGPRESSED;
+    testButton.state = expectedState;
+
+    buttonState_t returnedState = buttonGetState(&testButton);
+    TEST_ASSERT_EQUAL_UINT32(expectedState, returnedState);
+}
+
 ////
 // StartButtonTimer()
 //
@@ -315,7 +336,7 @@ void test_startButtonTimer_SamplingTimerNotRunning(void) {
                                    samplingTimerCallback, &testButton, SLPTIMER_OK);
 
     uint32_t retVal = startButtonTimer(&testButton, TIMER_SAMPLE);
-    TEST_ASSERT_EQUAL_UINT32(SLPTIMER_OK, retVal);
+    TEST_ASSERT_EQUAL_UINT32(BTN_OK, retVal);
 }
 
 void test_startButtonTimer_SamplingTimerISRunning(void) {
@@ -325,7 +346,7 @@ void test_startButtonTimer_SamplingTimerISRunning(void) {
     // startPeriodictimer is not called in this case
 
     uint32_t retVal = startButtonTimer(&testButton, TIMER_SAMPLE);
-    TEST_ASSERT_EQUAL_UINT32(SLPTIMER_OK, retVal);
+    TEST_ASSERT_EQUAL_UINT32(BTN_OK, retVal);
 }
 
 void test_startButtonTimer_LongPressTimer(void) {
@@ -338,16 +359,33 @@ void test_startButtonTimer_LongPressTimer(void) {
     SLP_startTimer_IgnoreArg_callback();
 
     uint32_t retVal = startButtonTimer(&testButton, TIMER_LONGPRESS);
-    TEST_ASSERT_EQUAL_UINT32(SLPTIMER_OK, retVal);
+    TEST_ASSERT_EQUAL_UINT32(BTN_OK, retVal);
 }
 
 void test_startButtonTimer_WrongTypeOfTimer(void) {
     button_t testButton = {0};
-
     // Set expectations
     assertExpectFailure();
 
     startButtonTimer(&testButton, (btnTimerType_t)0xFFFFFFFF);
+}
+
+void test_startButtonTimer_StartTimerReturnsError(void) {
+    button_t testButton = {.samplingTimerPtr = samplingTimerPtr};
+
+    SLP_isTimerRunning_ExpectAndReturn(testButton.samplingTimerPtr, false);
+    SLP_startTimer_ExpectAndReturn(testButton.samplingTimerPtr, DEBOUNCE_SAMPLING_PERIOD_MS, TIMER_ONE_SHOT,
+                                   samplingTimerCallback, &testButton, SLPTIMER_ERROR);
+
+    uint32_t retVal = startButtonTimer(&testButton, TIMER_SAMPLE);
+    TEST_ASSERT_EQUAL_UINT32(BTN_ERROR, retVal);
+}
+
+void test_startButtonTimer_NullPointer(void) {
+    // Set expectations
+    assertExpectFailure();
+
+    startButtonTimer(NULL, TIMER_SAMPLE);
 }
 
 // This test that the log lines are hit. As in tests we disable logging, this is more something you would spot on the
@@ -357,7 +395,7 @@ void test_startButtonTimer_ErrorOnSLP_startTimer(void) {
 
     SLP_isTimerRunning_ExpectAndReturn(testButton.samplingTimerPtr, false);
     SLP_startTimer_ExpectAndReturn(testButton.samplingTimerPtr, DEBOUNCE_SAMPLING_PERIOD_MS, TIMER_ONE_SHOT, NULL,
-                                   &testButton, BTN_ERROR);
+                                   &testButton, SLPTIMER_ERROR);
     // Sadly, the callback is a static function, so I can't test that startPeriodicTimer will be called with it as a parameter
     SLP_startTimer_IgnoreArg_callback();
 
@@ -419,7 +457,7 @@ void test_stopButtonTimer_NullPointer(void) {
     // Set Expectations
     assertExpectFailure();
 
-    btnError_t retVal = stopButtonTimer(NULL, TIMER_SAMPLE);
+    stopButtonTimer(NULL, TIMER_SAMPLE);
 }
 
 void test_stopButtonTimer_WrongTypeOfTimer(void) {
@@ -448,6 +486,19 @@ void test_sleeptimerSamplingCallback(void) {
 
 // Changes the button state and calls its action if any
 void test_sleeptimerLongPressCallback_Success(void) {
+    button_t testBtn = {.state = BUTTON_PRESSED, .longPressedAction = fakeLongPressedAction};
+
+    // Set expectations
+    buttonState_t expectedState = BUTTON_LONGPRESSED;
+
+    longPressTimerCallback(NULL, &testBtn);
+    TEST_ASSERT_EQUAL_UINT32(expectedState, testBtn.state);
+    // We expect the fakeLongPressActionFlag to be true, as it was executed
+    TEST_ASSERT_TRUE(fakeLongPressedActionFlag);
+}
+
+// Changes the button state and calls its action if any
+void test_sleeptimerLongPressCallback_SuccessButNoCallback(void) {
     button_t testBtn = {.state = BUTTON_PRESSED, .longPressedAction = NULL};
 
     // Set expectations
@@ -455,4 +506,6 @@ void test_sleeptimerLongPressCallback_Success(void) {
 
     longPressTimerCallback(NULL, &testBtn);
     TEST_ASSERT_EQUAL_UINT32(expectedState, testBtn.state);
+    // We expect the fakeLongPressActionFlag to be false, as the button didn't have the callback loaded
+    TEST_ASSERT_FALSE(fakeLongPressedActionFlag);
 }

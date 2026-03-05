@@ -112,8 +112,11 @@ void test_button0ReleasedAfterLongPress(void) {
     button0Released(&testBtn);
 }
 
-// Button 0 Pressed does nothing for now
+// Button 0 ShortPressed does nothing for now
 void test_button0ShortPressed(void) { button0ShortPressed(NULL); }
+
+// Button 0 LongPressed does nothing for now
+void test_button0LongPressed(void) { button0LongPressed(NULL); }
 
 // Test Quad actions
 // Rotating CW increases channel's % by 5, and CCW decreases it
@@ -238,6 +241,9 @@ void test_button1Released_LongPress(void) {
 
 // Button 1 Pressed does nothing for now
 void test_button1Pressed(void) { button1ShortPressed(NULL); }
+
+// Button 1 LongPressed does nothing for now
+void test_button1LongPressed(void) { button1LongPressed(NULL); }
 
 /**
  * quad1Clockwise
