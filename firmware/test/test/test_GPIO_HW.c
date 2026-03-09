@@ -11,8 +11,8 @@
  */
 
 // Externs to test static stuff
-extern GPIO_Port_TypeDef getPort(pinPort_t port);
-extern GPIO_Mode_TypeDef getMode(pinMode_t mode);
+extern GPIO_Port_TypeDef getSiLabsPort(pinPort_t port);
+extern GPIO_Mode_TypeDef getSiLabsMode(pinMode_t mode);
 
 void setUp(void) { assertSetUp(); }
 
@@ -96,16 +96,16 @@ void test_getPort_Success(void) {
     GPIO_Port_TypeDef expectedPortC = gpioPortC;
     GPIO_Port_TypeDef expectedPortD = gpioPortD;
 
-    GPIO_Port_TypeDef returnedPort = getPort(testPortA);
+    GPIO_Port_TypeDef returnedPort = getSiLabsPort(testPortA);
     TEST_ASSERT_EQUAL_UINT32(expectedPortA, returnedPort);
 
-    returnedPort = getPort(testPortB);
+    returnedPort = getSiLabsPort(testPortB);
     TEST_ASSERT_EQUAL_UINT32(expectedPortB, returnedPort);
 
-    returnedPort = getPort(testPortC);
+    returnedPort = getSiLabsPort(testPortC);
     TEST_ASSERT_EQUAL_UINT32(expectedPortC, returnedPort);
 
-    returnedPort = getPort(testPortD);
+    returnedPort = getSiLabsPort(testPortD);
     TEST_ASSERT_EQUAL_UINT32(expectedPortD, returnedPort);
 }
 
@@ -114,7 +114,7 @@ void test_getPort_AssertsOnPortE(void) {
 
     // The BGM220P has no pins in portE
     assertExpectFailure();
-    GPIO_Port_TypeDef returnedPort = getPort(testPortE);
+    GPIO_Port_TypeDef returnedPort = getSiLabsPort(testPortE);
 }
 
 void test_getPort_AssertsOnPortF(void) {
@@ -122,13 +122,13 @@ void test_getPort_AssertsOnPortF(void) {
 
     // The BGM220P has no pins in portF
     assertExpectFailure();
-    GPIO_Port_TypeDef returnedPort = getPort(testPortF);
+    GPIO_Port_TypeDef returnedPort = getSiLabsPort(testPortF);
 }
 
 void test_getPort_AssertsOnUnknownPort(void) {
     // Assert on unknown port
     assertExpectFailure();
-    getPort((pinPort_t)0xFF);
+    getSiLabsPort((pinPort_t)0xFF);
 }
 
 void test_getMode_Success(void) {
@@ -145,19 +145,19 @@ void test_getMode_Success(void) {
     GPIO_Mode_TypeDef expectedModeInputPullFilter = gpioModeInputPullFilter;
     GPIO_Mode_TypeDef expectedModePushPull = gpioModePushPull;
 
-    GPIO_Mode_TypeDef returnedMode = getMode(testModeDisabled);
+    GPIO_Mode_TypeDef returnedMode = getSiLabsMode(testModeDisabled);
     TEST_ASSERT_EQUAL_UINT32(expectedModeDisabled, returnedMode);
 
-    returnedMode = getMode(testModeInput);
+    returnedMode = getSiLabsMode(testModeInput);
     TEST_ASSERT_EQUAL_UINT32(expectedModeInput, returnedMode);
 
-    returnedMode = getMode(testModeInputPull);
+    returnedMode = getSiLabsMode(testModeInputPull);
     TEST_ASSERT_EQUAL_UINT32(expectedModeInputPull, returnedMode);
 
-    returnedMode = getMode(testModeInputPullFilter);
+    returnedMode = getSiLabsMode(testModeInputPullFilter);
     TEST_ASSERT_EQUAL_UINT32(expectedModeInputPullFilter, returnedMode);
 
-    returnedMode = getMode(testModePushPull);
+    returnedMode = getSiLabsMode(testModePushPull);
     TEST_ASSERT_EQUAL_UINT32(expectedModePushPull, returnedMode);
 }
 
@@ -166,7 +166,7 @@ void test_getMode_AssertsOnUknownMode(void) {
 
     // Expect assert on unknown mode
     assertExpectFailure();
-    getMode(testModeUnknown);
+    getSiLabsMode(testModeUnknown);
 }
 
 // SetPinUpForEM4WakeUp

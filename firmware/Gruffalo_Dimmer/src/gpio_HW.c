@@ -24,7 +24,7 @@
  * @param port the gpio port as a pinport_t
  * @return the equivalent GPIO_Port_TypeDef pin port
  */
-STATIC GPIO_Port_TypeDef getPort(pinPort_t port) {
+STATIC GPIO_Port_TypeDef getSiLabsPort(pinPort_t port) {
     switch (port) {
         case portA: {
             return gpioPortA;
@@ -57,7 +57,7 @@ STATIC GPIO_Port_TypeDef getPort(pinPort_t port) {
  * @param mode the pin mode as a pinMode_t
  * @return the equivalent GPIO_Mode_TypeDef pin mode
  */
-STATIC GPIO_Mode_TypeDef getMode(pinMode_t mode) {
+STATIC GPIO_Mode_TypeDef getSiLabsMode(pinMode_t mode) {
     // NOTE: I'll only do this for now, but add more if needed!
     switch (mode) {
         case MODE_DISABLED: {
@@ -103,7 +103,7 @@ void enableGPIOClock(void) { CMU_ClockEnable(cmuClock_GPIO, true); }
  * @param dout the value for the Out register
  */
 void setPinMode(pinPort_t port, uint8_t pin, pinMode_t mode, bool dout) {
-    GPIO_PinModeSet(getPort(port), pin, getMode(mode), dout);
+    GPIO_PinModeSet(getSiLabsPort(port), pin, getSiLabsMode(mode), dout);
 }
 
 /**
@@ -112,7 +112,7 @@ void setPinMode(pinPort_t port, uint8_t pin, pinMode_t mode, bool dout) {
  * @param pin the pin number
  * @return uint32_t the current state of the pin, 0 if clear and 1 if set
  */
-uint32_t readPin(pinPort_t port, uint8_t pinNo) { return GPIO_PinInGet(getPort(port), pinNo); }
+uint32_t readPin(pinPort_t port, uint8_t pinNo) { return GPIO_PinInGet(getSiLabsPort(port), pinNo); }
 
 /**
  * @brief Configures a GPIO interrupt
@@ -125,7 +125,7 @@ uint32_t readPin(pinPort_t port, uint8_t pinNo) { return GPIO_PinInGet(getPort(p
  */
 void configurePinInterrupt(pinPort_t port, uint8_t pinNo, uint32_t intNo, bool risingEdge, bool fallingEdge,
                            bool enable) {
-    GPIO_ExtIntConfig(getPort(port), pinNo, intNo, risingEdge, fallingEdge, enable);
+    GPIO_ExtIntConfig(getSiLabsPort(port), pinNo, intNo, risingEdge, fallingEdge, enable);
 }
 
 /**
@@ -166,7 +166,7 @@ void setPinUpForEM4WakeUp(pinPort_t port, uint8_t pin) {
     }  // else leave as 0xFF
 
     if (0xFF == EM4WakeUpPinMask) {
-        app_assert(false, "Pin %" PRIu32 " in port %" PRIu32 " is not an EM4 WakeUp pin", pin, port);
+        app_assert(false, "Pin %u in port %u is not an EM4 WakeUp pin", pin, port);
     }
     // The pin has to be set as input
     GPIO_PinModeSet(port, pin, MODE_INPUT_PULL_FILTER, true);

@@ -71,22 +71,22 @@ void gpioCallbackQuad(uint8_t intNo, void* ctx) {
 
 void button0ShortPressed(void* ctx) {
     (void)ctx;
-    app_log_debug("Btn0 Pressed\r\n");
+    // app_log_debug("Btn0 Pressed\r\n");
 }
 
 void button0LongPressed(void* ctx) {
     (void)ctx;
-    app_log_debug("Btn0 LONG Pressed\r\n");
+    // app_log_debug("Btn0 LONG Pressed\r\n");
 }
 
 void button0Released(void* ctx) {
-    app_log_debug("Btn0 Released\r\n");
+    // app_log_debug("Btn0 Released\r\n");
     // Cast the context as a button_t pointer
     button_t* btnPtr = (button_t*)ctx;
 
     if (BUTTON_LONGPRESSED == (btnPtr->prevState)) {
         // Long Press
-        app_log_debug("Released 0 after LONG press\r\n");
+        // app_log_debug("Released 0 after LONG press\r\n");
     } else {
         // Short Press
         channelIdx++;
@@ -124,21 +124,21 @@ void quad0CounterClockWise(void* ctx) {
 
 void button1ShortPressed(void* ctx) {
     (void)ctx;
-    app_log_debug("Btn1 Pressed\r\n");
+    // app_log_debug("Btn1 Pressed\r\n");
 }
 
 void button1LongPressed(void* ctx) {
     (void)ctx;
-    app_log_debug("Btn1 LONG Pressed\r\n");
+    // app_log_debug("Btn1 LONG Pressed\r\n");
 }
 
 void button1Released(void* ctx) {
-    app_log_debug("Btn1 Released\r\n");
+    // app_log_debug("Btn1 Released\r\n");
     // Cast the context as a button_t pointer
     button_t* btnPtr = (button_t*)ctx;
     if (BUTTON_LONGPRESSED == (btnPtr->prevState)) {
         // Long Press
-        app_log_debug("Released 1 after LONG press\r\n");
+        // app_log_debug("Released 1 after LONG press\r\n");
     } else {
         // Short Press
         LED_t* LED_ptr = getLEDStruct(currChannel[channelIdx]);

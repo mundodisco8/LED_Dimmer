@@ -47,6 +47,7 @@
 #include "em_common.h"
 #pragma GCC diagnostic pop
 
+#include "em_emu.h"
 #include "em_gpio.h"
 #include "em_timer.h"
 
@@ -74,6 +75,7 @@
 #include "buttons.h"
 #include "effectControl.h"
 #include "gpio_HW.h"
+#include "sleepyTimers_HW.h"
 #include "timer_HW.h"
 
 // The advertising set handle allocated from Bluetooth stack.
@@ -89,6 +91,11 @@ quad_encoder_t quad1 = {0};
 
 // Used in the interrupt to signal we have to process the LED Effects
 volatile bool processLEDEffects = true;
+
+////
+// Forward Declarations
+////
+static void init_EM4(void);
 
 /*****************************************************************************
  *  User defined weak function for performing early application initialization.
@@ -109,10 +116,13 @@ void app_init(void) {
     /////////////////////////////////////////////////////////////////////////////
     app_log_error("Booted up!\r\n");
 
+    init_EM4();
+
+    // Release pin state
+    EMU_UnlatchPinRetention();
+
     enableGPIOClock();
-    // setPinMode(portC, pwm0_PIN, MODE_PUSHPULL, 0);
-    // setPinMode(portC, pwm1_PIN, MODE_PUSHPULL, 0);
-    // setPinMode(portC, pwm2_PIN, MODE_PUSHPULL, 0);
+
     // TODO: there's no need, that I can see, of keeping the interrupt number, and I'm certainly not using it anywhere
     // If anything, it could be stored internally in the button_t struct
     // Init GPIOs for buttons and quads
@@ -132,8 +142,8 @@ void app_init(void) {
     configureQuadratureInterrupts(&quad1, gpioCallbackQuad, &quad1GPIOIntNo);
 
     // Set pins for EM4 wakeup
-    setPinUpForEM4WakeUp(btn0_EM4_WakeUp_PORT, btn0_EM4_WakeUp_PIN);
-    setPinUpForEM4WakeUp(btn1_EM4_WakeUp_PORT, btn1_EM4_WakeUp_PIN);
+    setPinUpForEM4WakeUp((pinPort_t)btn0_EM4_WakeUp_PORT, btn0_EM4_WakeUp_PIN);
+    setPinUpForEM4WakeUp((pinPort_t)btn1_EM4_WakeUp_PORT, btn1_EM4_WakeUp_PIN);
 
     // Init PWM on TIMER0
     initTimer0PWM(PWM_FREQUENCY);
@@ -181,7 +191,16 @@ void app_process_action(void) {
 
     if ((BUTTON_LONGPRESSED == buttonGetState(&button0)) && (BUTTON_LONGPRESSED == buttonGetState(&button1))) {
         app_log_warning("**** ENTERING EM4! 🥱💤****\r\n");
-        sl_power_manager_enter_em4();
+        // Block while the two buttons are pressed, so they release doesn't wake up the unit again
+        while ((BUTTON_RELEASED != buttonGetState(&button0)) || (BUTTON_RELEASED != buttonGetState(&button1))) {
+        }
+        // Wait a bit more just in case the buttons bounce
+        uint64_t delay = SLP_getSystemTickInMs() + 1000;
+        uint64_t now;
+        do {
+            now = SLP_getSystemTickInMs();
+        } while (now < delay);
+        EMU_EnterEM4();
     }
 }
 
@@ -280,4 +299,10 @@ void TIMER0_IRQHandler(void) {
     if (!processLEDEffects) {
         processLEDEffects = true;
     }
+}
+
+// Init EM4
+static void init_EM4(void) {
+    EMU_EM4Init_TypeDef em4Init = EMU_EM4INIT_DEFAULT;
+    EMU_EM4Init(&em4Init);
 }
