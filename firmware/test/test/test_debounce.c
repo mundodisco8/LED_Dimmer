@@ -280,7 +280,6 @@ void test_fromReleasedToPressed(void) {
     uint32_t expectedDebounceCyles = 0UL;  // we reset it on button state change
     int32_t expectedIntegratorValue = INTEGRATOR_TARGET;
     uint32_t expectedPinState = 1UL;
-    uint64_t timeAtPress = 1000;
     buttonState_t expectedState = BUTTON_PRESSED;
 
     for (int32_t i = 0; i < INTEGRATOR_TARGET - 1; i++) {
@@ -321,7 +320,6 @@ void test_fromPressedToReleased(void) {
     uint32_t expectedDebounceCyles = 0UL;  // we reset on button state change
     int32_t expectedIntegratorValue = 0UL;
     uint32_t expectedPinState = 0UL;
-    uint64_t timeAtPress = 1000;
     buttonState_t expectedState = BUTTON_RELEASED;
 
     for (int32_t i = 0; i < INTEGRATOR_TARGET - 1; i++) {
@@ -364,7 +362,6 @@ void test_fromLongPressedToReleased(void) {
     uint32_t expectedDebounceCyles = 0UL;  // we reset on button state change
     int32_t expectedIntegratorValue = 0UL;
     uint32_t expectedPinState = 0UL;
-    uint64_t timeAtPress = 1000;
     buttonState_t expectedState = BUTTON_RELEASED;
 
     for (int32_t i = 0; i < INTEGRATOR_TARGET - 1; i++) {

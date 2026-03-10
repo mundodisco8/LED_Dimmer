@@ -114,7 +114,7 @@ void test_getPort_AssertsOnPortE(void) {
 
     // The BGM220P has no pins in portE
     assertExpectFailure();
-    GPIO_Port_TypeDef returnedPort = getSiLabsPort(testPortE);
+    getSiLabsPort(testPortE);
 }
 
 void test_getPort_AssertsOnPortF(void) {
@@ -122,13 +122,13 @@ void test_getPort_AssertsOnPortF(void) {
 
     // The BGM220P has no pins in portF
     assertExpectFailure();
-    GPIO_Port_TypeDef returnedPort = getSiLabsPort(testPortF);
+    (void)getSiLabsPort(testPortF);
 }
 
 void test_getPort_AssertsOnUnknownPort(void) {
     // Assert on unknown port
     assertExpectFailure();
-    getSiLabsPort((pinPort_t)0xFF);
+    (void)getSiLabsPort((pinPort_t)0xFF);
 }
 
 void test_getMode_Success(void) {

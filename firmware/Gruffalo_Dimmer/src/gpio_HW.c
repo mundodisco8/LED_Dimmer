@@ -40,9 +40,11 @@ STATIC GPIO_Port_TypeDef getSiLabsPort(pinPort_t port) {
         }
         case portE: {
             app_assert(false, "Port E doesn't have pins in the BGM220P");
+            break;
         }
         case portF: {
             app_assert(false, "Port F doesn't have pins in the BGM220P");
+            break;
         }
         default: {
             break;  // do nothing, fall through and assert

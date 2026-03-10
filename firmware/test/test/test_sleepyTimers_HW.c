@@ -16,7 +16,7 @@
 
 // Test Callaback functions. They don't do anything, but we use them to pass as callbacks for timers, and to check they
 // are correctly being assigned
-void dummyCallback(timerHandlePtr_t* handle, void* data) {
+void dummyCallback(timerHandlePtr_t handle, void* data) {
     (void)handle;
     (void)data;
 }

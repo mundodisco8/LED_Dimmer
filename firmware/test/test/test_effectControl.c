@@ -382,7 +382,6 @@ void test_setAnimation_WrongAnimType(void) {
     // Set Expectations
     efferr_t expectedRetVal = EFF_BADANIMATION;
     getLEDStruct(testChannel)->currAnimation = testAnimation;
-    anim_t expectedAnimation = testAnimation;
 
     efferr_t retVal = setAnimation(testChannel, testAnimation);
     TEST_ASSERT_EQUAL_UINT32(expectedRetVal, retVal);
