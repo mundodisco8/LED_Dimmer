@@ -13,26 +13,37 @@
 
 // This define has to be passed to as a compilation flag for it to work
 #ifndef DEBUG_LOG_SUPRESS
-#define app_log_error(msg, ...)                                       \
-    char buffer[256] = {0};                                           \
-    snprintf(buffer, sizeof(buffer), msg __VA_OPT__(, ) __VA_ARGS__); \
-    printf("%s - %s", "💣", buffer);
 
-#define app_log_warning(msg, ...)                                     \
-    char buffer[256] = {0};                                           \
-    snprintf(buffer, sizeof(buffer), msg __VA_OPT__(, ) __VA_ARGS__); \
-    printf("%s - %s", "⚠️", buffer);
-
-#define app_log_info(msg, ...)                                        \
-    char buffer[256] = {0};                                           \
-    snprintf(buffer, sizeof(buffer), msg __VA_OPT__(, ) __VA_ARGS__); \
-    printf("%s - %s", "ℹ️", buffer);
-
-#define app_log_debug(msg, ...)                                       \
-    char buffer[256] = {0};                                           \
-    snprintf(buffer, sizeof(buffer), msg __VA_OPT__(, ) __VA_ARGS__); \
-    printf("%s - %s", "🐞", buffer);
-
+#define app_log_critical(msg, ...)                                        \
+    {                                                                     \
+        char buffer[256] = {0};                                           \
+        snprintf(buffer, sizeof(buffer), msg __VA_OPT__(, ) __VA_ARGS__); \
+        printf("%s - %s", "☠️", buffer);                                   \
+    }
+#define app_log_error(msg, ...)                                           \
+    {                                                                     \
+        char buffer[256] = {0};                                           \
+        snprintf(buffer, sizeof(buffer), msg __VA_OPT__(, ) __VA_ARGS__); \
+        printf("%s - %s", "💣", buffer);                                  \
+    }
+#define app_log_warning(msg, ...)                                         \
+    {                                                                     \
+        char buffer[256] = {0};                                           \
+        snprintf(buffer, sizeof(buffer), msg __VA_OPT__(, ) __VA_ARGS__); \
+        printf("%s - %s", "⚠️", buffer);                                   \
+    }
+#define app_log_info(msg, ...)                                            \
+    {                                                                     \
+        char buffer[256] = {0};                                           \
+        snprintf(buffer, sizeof(buffer), msg __VA_OPT__(, ) __VA_ARGS__); \
+        printf("%s - %s", "ℹ️", buffer);                                   \
+    }
+#define app_log_debug(msg, ...)                                           \
+    {                                                                     \
+        char buffer[256] = {0};                                           \
+        snprintf(buffer, sizeof(buffer), msg __VA_OPT__(, ) __VA_ARGS__); \
+        printf("%s - %s", "🐞", buffer);                                  \
+    }
 #else
 #define app_log_error(msg, ...)
 #define app_log_warning(msg, ...)

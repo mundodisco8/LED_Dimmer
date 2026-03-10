@@ -39,6 +39,7 @@
 #include "sl_system_process_action.h"
 #endif  // SL_CATALOG_KERNEL_PRESENT
 
+#include "em_emu.h"
 #include "sl_power_manager_debug.h"
 #include "timer_HW.h"
 void my_events_callback(sl_power_manager_em_t from, sl_power_manager_em_t to);
@@ -63,6 +64,9 @@ int main(void) {
     // this call.
     sl_system_init();
 
+    // Turn on DCDC regulator
+    EMU_DCDCInit_TypeDef dcdcInit = EMU_DCDCINIT_DEFAULT;
+    EMU_DCDCInit(&dcdcInit);
     // Initialize the application. For example, create periodic timer(s) or
     // task(s) if the kernel is present.
     app_init();

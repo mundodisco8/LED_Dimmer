@@ -30,6 +30,8 @@ typedef enum efferr {
     EFF_NULLPTR = 1,
     EFF_BADPERIOD = 2,
     EFF_BADCHANNEL = 3,
+    EFF_BADANIMATION = 4,
+    EFF_ERROR,
 } efferr_t;
 
 /**
@@ -80,7 +82,7 @@ typedef struct breatheControl {
 } breatheControl_t;
 
 /**
- * @brief
+ * @brief This struct contains all the data required to play any LED effect on an LED channel
  */
 typedef struct LED {
     anim_t currAnimation;                // The type of animation currently being played in the LED
@@ -89,6 +91,15 @@ typedef struct LED {
     brightnessControl_t brightnessCtrl;  // Brightness Control Parameters
     breatheControl_t breatheCtrl;        // Parameters of the breathe effect for this LED
 } LED_t;
+
+/**
+ * @brief This struct stores all the data required to restore an LED channel after the system wakes from sleep
+ */
+typedef struct LEDContext {
+    anim_t currAnimation;        // Stores the current animation being played in an LED Channel
+    uint32_t currBrightness;     // Stores the current max brightness of an LED Channel
+    uint32_t currBreathePeriod;  // Stores the current period of the Breathe effect on an LED Channel
+} LEDContext_t;
 
 /**
  * @brief Default parameters of the breathe effect, in case none are provided

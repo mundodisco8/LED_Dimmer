@@ -39,7 +39,8 @@
  *altered from any source distribution.
  *
  ******************************************************************************/
-#include "stdbool.h"
+#include <stdbool.h>
+#include <string.h>
 
 // Ignore a cast-align warning in some cmsis header
 #pragma GCC diagnostic push
@@ -75,6 +76,7 @@
 #include "buttons.h"
 #include "effectControl.h"
 #include "gpio_HW.h"
+#include "nvm_HW.h"
 #include "sleepyTimers_HW.h"
 #include "timer_HW.h"
 
@@ -96,7 +98,7 @@ volatile bool processLEDEffects = true;
 // Forward Declarations
 ////
 static void init_EM4(void);
-
+static void enter_EM4(void);
 /*****************************************************************************
  *  User defined weak function for performing early application initialization.
  *  This is called from sl_main_init.
@@ -117,6 +119,7 @@ void app_init(void) {
     app_log_error("Booted up!\r\n");
 
     init_EM4();
+    nvm_init();
 
     // Release pin state
     EMU_UnlatchPinRetention();
@@ -156,6 +159,23 @@ void app_init(void) {
     fillBreatheEffectLUT(&breatheEffectParams);
 
     initLEDStrips();
+
+    // Restore LED context
+    LEDContext_t LEDContext = {0};
+    nvm_readLEDContext(NVM3_KEY_LED1_CONTEXT, &LEDContext);
+    setLEDBrightness(LED_CHANNEL_1, LEDContext.currBrightness);
+    setBreathePeriod(LED_CHANNEL_1, LEDContext.currBreathePeriod);
+    setAnimation(LED_CHANNEL_1, LEDContext.currAnimation);
+
+    nvm_readLEDContext(NVM3_KEY_LED2_CONTEXT, &LEDContext);
+    setLEDBrightness(LED_CHANNEL_2, LEDContext.currBrightness);
+    setBreathePeriod(LED_CHANNEL_2, LEDContext.currBreathePeriod);
+    setAnimation(LED_CHANNEL_2, LEDContext.currAnimation);
+
+    nvm_readLEDContext(NVM3_KEY_LED3_CONTEXT, &LEDContext);
+    setLEDBrightness(LED_CHANNEL_3, LEDContext.currBrightness);
+    setBreathePeriod(LED_CHANNEL_3, LEDContext.currBreathePeriod);
+    setAnimation(LED_CHANNEL_3, LEDContext.currAnimation);
 }
 
 /******************************************************************************
@@ -191,16 +211,10 @@ void app_process_action(void) {
 
     if ((BUTTON_LONGPRESSED == buttonGetState(&button0)) && (BUTTON_LONGPRESSED == buttonGetState(&button1))) {
         app_log_warning("**** ENTERING EM4! 🥱💤****\r\n");
-        // Block while the two buttons are pressed, so they release doesn't wake up the unit again
+        // Block while the two buttons are pressed, so their release doesn't wake up the unit again
         while ((BUTTON_RELEASED != buttonGetState(&button0)) || (BUTTON_RELEASED != buttonGetState(&button1))) {
         }
-        // Wait a bit more just in case the buttons bounce
-        uint64_t delay = SLP_getSystemTickInMs() + 1000;
-        uint64_t now;
-        do {
-            now = SLP_getSystemTickInMs();
-        } while (now < delay);
-        EMU_EnterEM4();
+        enter_EM4();
     }
 }
 
@@ -287,7 +301,9 @@ void sl_bt_on_event(sl_bt_msg_t* evt) {
     }
 }
 
-// Handles the overflow interrupt on TIMER0
+/**
+ * @brief Handles the overflow interrupt on TIMER0
+ */
 void TIMER0_IRQHandler(void) {
     // Acknowledge the interrupt
     uint32_t flags = TIMER_IntGet(TIMER0);
@@ -301,8 +317,51 @@ void TIMER0_IRQHandler(void) {
     }
 }
 
-// Init EM4
+/**
+ * @brief inits EM4
+ */
 static void init_EM4(void) {
     EMU_EM4Init_TypeDef em4Init = EMU_EM4INIT_DEFAULT;
     EMU_EM4Init(&em4Init);
+}
+
+/**
+ * @brief Enters EM4: saves context in NVM, turns off LEDs and goes to sleep
+ */
+static void enter_EM4(void) {
+    // Store context in nvm3
+    // STORE CONTEXT 1
+    LEDContext_t context = {0};
+    context.currAnimation = getAnimation(LED_CHANNEL_1);
+    context.currBreathePeriod = getBreathePeriod(LED_CHANNEL_1);
+    context.currBrightness = getLEDBrightness(LED_CHANNEL_1);
+    nvm_writeLEDContext(NVM3_KEY_LED1_CONTEXT, &context);
+    // STORE CONTEXT 2
+    context.currAnimation = getAnimation(LED_CHANNEL_2);
+    context.currBreathePeriod = getBreathePeriod(LED_CHANNEL_2);
+    context.currBrightness = getLEDBrightness(LED_CHANNEL_2);
+    nvm_writeLEDContext(NVM3_KEY_LED2_CONTEXT, &context);
+    // STORE CONTEXT 3
+    context.currAnimation = getAnimation(LED_CHANNEL_3);
+    context.currBreathePeriod = getBreathePeriod(LED_CHANNEL_3);
+    context.currBrightness = getLEDBrightness(LED_CHANNEL_3);
+    nvm_writeLEDContext(NVM3_KEY_LED3_CONTEXT, &context);
+    // Check for NVM repack
+    nvm_checkForRepack();
+
+    // Turn off LEDs, as sometimes they stay on in EM4 (I think the GPIOs stay at whatever their state was at the
+    // time of jumping to EM4
+    setLEDBrightness(LED_CHANNEL_1, 0UL);
+    setLEDBrightness(LED_CHANNEL_2, 0UL);
+    setLEDBrightness(LED_CHANNEL_3, 0UL);
+
+    // Wait a bit more just in case
+    uint64_t delay = SLP_getSystemTickInMs() + 1000;
+    uint64_t now;
+    do {
+        now = SLP_getSystemTickInMs();
+    } while (now < delay);
+
+    // Go to sleep
+    EMU_EnterEM4();
 }
