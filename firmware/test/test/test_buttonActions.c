@@ -199,14 +199,13 @@ void test_button1Released_FixedToBreathe(void) {
     LEDChannel_t testChannel = LED_CHANNEL_1;
     anim_t testCurrAnimation = ANIM_FIXED;
     anim_t expectedNewAnimation = ANIM_BREATHE;
-    LED_t testLED = {.currAnimation = testCurrAnimation};
 
     // Set Expectations
-    getLEDStruct_ExpectAndReturn(testChannel, &testLED);
+    getAnimation_ExpectAndReturn(testChannel, testCurrAnimation);
+    setAnimation_ExpectAndReturn(testChannel, expectedNewAnimation, EFF_OK);
     getEffectName_ExpectAndReturn(expectedNewAnimation, "Breathe Effect");
 
     button1Released(&testBtn);
-    TEST_ASSERT_EQUAL_UINT32(expectedNewAnimation, testLED.currAnimation);
 }
 
 void test_button1Released_BreatheToFixed(void) {
@@ -218,14 +217,13 @@ void test_button1Released_BreatheToFixed(void) {
     LEDChannel_t testChannel = LED_CHANNEL_1;
     anim_t testCurrAnimation = ANIM_BREATHE;
     anim_t expectedNewAnimation = ANIM_FIXED;
-    LED_t testLED = {.currAnimation = testCurrAnimation};
 
     // Set Expectations
-    getLEDStruct_ExpectAndReturn(testChannel, &testLED);
+    getAnimation_ExpectAndReturn(testChannel, testCurrAnimation);
+    setAnimation_ExpectAndReturn(testChannel, expectedNewAnimation, EFF_OK);
     getEffectName_ExpectAndReturn(expectedNewAnimation, "Fixed Brightness");
 
     button1Released(&testBtn);
-    TEST_ASSERT_EQUAL_UINT32(expectedNewAnimation, testLED.currAnimation);
 }
 
 // button0 on long press. does nothing, for now

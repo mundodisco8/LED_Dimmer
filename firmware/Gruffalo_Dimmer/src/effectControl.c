@@ -340,6 +340,22 @@ STATIC void effectControl_Breathe(LEDChannel_t LEDChannel) {
     setDutyCycle(LED_ptr->CCChannel, brightness, true);
 }
 
+/**
+ * @brief Sets a new animation type to be played on one of the LED Channels.
+ */
+anim_t getAnimation(const LEDChannel_t channelNo) { return getLEDStruct(channelNo)->currAnimation; }
+/**
+ * @brief Sets the animation type being played of one of the LED Channels.
+ */
+efferr_t setAnimation(const LEDChannel_t channelNo, const anim_t newAnimation) {
+    if (newAnimation >= ANIM_MAX_EFFECTS) {
+        app_log_error("Wrong type of animation 0x%" PRIX32 "\r\n", (uint32_t)newAnimation);
+        return EFF_BADANIMATION;
+    }
+    getLEDStruct(channelNo)->currAnimation = newAnimation;
+    return EFF_OK;
+}
+
 const LEDChannel_t LEDChannels[] = {LED_CHANNEL_1, LED_CHANNEL_2, LED_CHANNEL_3};
 
 /**

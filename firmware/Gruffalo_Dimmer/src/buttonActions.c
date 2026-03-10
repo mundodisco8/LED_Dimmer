@@ -99,6 +99,7 @@ void button0Released(void* ctx) {
 
 void quad0ClockWise(void* ctx) {
     (void)ctx;
+    // TODO: IF PRESSED AND ROTATED increase ALL channels
     const uint32_t currBrightness = getLEDBrightness(currChannel[channelIdx]);
     if (currBrightness < MAX_BRIGHTNESS) {
         // Only trigger an action if brightness is less than 100%
@@ -111,7 +112,7 @@ void quad0ClockWise(void* ctx) {
 
 void quad0CounterClockWise(void* ctx) {
     (void)ctx;
-
+    // TODO: IF PRESSED AND ROTATED decrease ALL channels
     const uint32_t currBrightness = getLEDBrightness(currChannel[channelIdx]);
     if (currBrightness > MIN_BRIGHTNESS) {
         const uint32_t newBrightness = currBrightness - BRIGHTNESS_DELTA;
@@ -141,14 +142,15 @@ void button1Released(void* ctx) {
         // app_log_debug("Released 1 after LONG press\r\n");
     } else {
         // Short Press
-        LED_t* LED_ptr = getLEDStruct(currChannel[channelIdx]);
+        anim_t currAnimation = getAnimation(currChannel[channelIdx]);
         // "increase" the current animation
-        LED_ptr->currAnimation++;
-        if (LED_ptr->currAnimation == ANIM_MAX_EFFECTS) {
+        anim_t nextAnimation = (anim_t)((uint32_t)currAnimation + 1);
+        if (nextAnimation == ANIM_MAX_EFFECTS) {
             // reset on overflow
-            LED_ptr->currAnimation = ANIM_FIXED;
+            nextAnimation = ANIM_FIXED;
         }
-        app_log_info("Ch %d set to Mode %s\r\n", channelIdx, getEffectName(LED_ptr->currAnimation));
+        setAnimation(currChannel[channelIdx], nextAnimation);
+        app_log_info("Ch %d set to Mode %s\r\n", channelIdx, getEffectName(nextAnimation));
     }
 }
 

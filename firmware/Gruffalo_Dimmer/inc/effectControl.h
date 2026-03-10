@@ -125,6 +125,15 @@ efferr_t setBreathePeriod(const LEDChannel_t channelNo, const uint32_t newPeriod
 uint32_t getBreathePeriod(const LEDChannel_t channelNo);
 
 /**
+ * @brief Sets a new animation type to be played on one of the LED Channels.
+ */
+efferr_t setAnimation(const LEDChannel_t channelNo, const anim_t newAnimation);
+/**
+ * @brief Sets a new animation type to be played on one of the LED Channels.
+ */
+anim_t getAnimation(const LEDChannel_t channelNo);
+
+/**
  * @brief Returns a pointer to the LED struct for the desired channel
  */
 LED_t* getLEDStruct(const LEDChannel_t channelNo);

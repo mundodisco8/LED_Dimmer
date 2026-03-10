@@ -357,7 +357,50 @@ void test_getBreathePeriod_Success(void) {
 
     TEST_ASSERT_EQUAL_UINT32(expectedPeriod, breathePeriod);
 }
+/**
+ * setAnimationType and getAnimationType
+ * - Success
+ * - Wrong Type of animation does nothing
+ */
 
+void test_setAnimationType_Success(void) {
+    LEDChannel_t testChannel = LED_CHANNEL_1;
+    anim_t testAnimation = ANIM_BREATHE;
+
+    // Set Expectations
+    efferr_t expectedRetVal = EFF_OK;
+
+    efferr_t retVal = setAnimation(testChannel, testAnimation);
+    TEST_ASSERT_EQUAL_UINT32(expectedRetVal, retVal);
+    TEST_ASSERT_EQUAL_INT32(testAnimation, LEDCh1.currAnimation);
+}
+
+void test_setAnimation_WrongAnimType(void) {
+    LEDChannel_t testChannel = LED_CHANNEL_1;
+    anim_t testAnimation = (anim_t)0xFF;
+
+    // Set Expectations
+    efferr_t expectedRetVal = EFF_BADANIMATION;
+    getLEDStruct(testChannel)->currAnimation = testAnimation;
+    anim_t expectedAnimation = testAnimation;
+
+    efferr_t retVal = setAnimation(testChannel, testAnimation);
+    TEST_ASSERT_EQUAL_UINT32(expectedRetVal, retVal);
+    // Test animation doesn't change
+    TEST_ASSERT_EQUAL_INT32(testAnimation, LEDCh1.currAnimation);
+}
+
+void test_getAnimationType_Success(void) {
+    LEDChannel_t testChannel = LED_CHANNEL_1;
+    anim_t testAnimation = ANIM_BREATHE;
+
+    // Set Expectations
+    getLEDStruct(testChannel)->currAnimation = testAnimation;
+    anim_t expectedAnimation = testAnimation;
+
+    anim_t channelAnimation = getAnimation(testChannel);
+    TEST_ASSERT_EQUAL_UINT32(expectedAnimation, channelAnimation);
+}
 ////
 // Effect Control
 //

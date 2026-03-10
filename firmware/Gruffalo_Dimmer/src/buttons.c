@@ -199,7 +199,7 @@ buttonState_t buttonGetState(button_t* btnPtr) { return btnPtr->state; }
  * @return char* a string with "Sampling timer" if the timer was a TIMER_SAMPLE, "Debouncing Timer" otherwise
  */
 static char* getTimerTypeString(const btnTimerType_t timerType) {
-    return (TIMER_SAMPLE ? "Sampling Timer" : "Debouncing Timer");
+    return ((timerType == TIMER_SAMPLE) ? "Sampling Timer" : "Debouncing Timer");
 }
 
 /**
