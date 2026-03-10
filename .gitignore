@@ -53,3 +53,7 @@ hardware/Snowflake-backups/**
 
 # Test Artifacts
 **/test/build/
+
+# CPPCheck
+**/cppCheck_html_report/**
+**/cppCheck_build/**

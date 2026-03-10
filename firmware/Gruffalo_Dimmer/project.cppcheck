@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="1">
+    <builddir>cppcheck_build</builddir>
+    <platform>bgm220.xml</platform>
+
+    <analyze-all-vs-configs>false</analyze-all-vs-configs>
+    <check-headers>true</check-headers>
+
+    <paths>
+        <dir name="."/>
+    </paths>
+
+    <exclude>
+        <path name="autogen/"/>
+        <path name="config/"/>
+        <path name="simplicity_sdk_*/"/>
+        <path name="cmake_gcc/"/>
+    </exclude>
+
+    <libraries>
+        <library>gnu</library>
+    </libraries>
+
+    <defines>
+        <define name="__GNUC__"/>
+    </defines>
+
+    <suppressions>
+        <suppression>*:**/cmsis_gcc.h</suppression>
+        <suppression>*:**/core_cm33.h</suppression>
+        <suppression>*:**/simplicity_sdk_2025.12.0/**</suppression>
+        <suppression>unmatchedSuppression</suppression>
+        <suppression>missingIncludeSystem</suppression>
+        <suppression>unusedFunction</suppression>
+    </suppressions>
+
+    <importproject>cmake_gcc/build/compile_commands.json</importproject>
+</project>

@@ -1,0 +1,10 @@
+// Completely ignore the Silicon Labs SDK/Gecko SDK
+*:*/simplicity_sdk*/*
+*:*/autogen/*
+*:*/config/*
+
+// Ignore common build artifacts
+*:*/cmake_gcc/*
+
+// Optional: Ignore common SiLabs macros that cause false positives
+unmatchedSuppression
