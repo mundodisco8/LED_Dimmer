@@ -37,7 +37,12 @@ typedef enum efferr {
 /**
  * @brief LED channel numbers
  */
-typedef enum channelNo { LED_CHANNEL_1 = 0, LED_CHANNEL_2, LED_CHANNEL_3, CH_COUNT } LEDChannel_t;
+typedef enum channelNo {
+    LED_CHANNEL_1 = 0,
+    LED_CHANNEL_2,
+    LED_CHANNEL_3,
+    LED_CHANNELS_ALL,  // All channels selected
+} LEDChannel_t;
 
 /**
  * @brief Type with the valid animation effects for an LED

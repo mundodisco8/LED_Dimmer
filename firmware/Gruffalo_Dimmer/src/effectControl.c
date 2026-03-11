@@ -366,7 +366,7 @@ void effectControlLoop(void) {
     // NOTE: the effect Control Loop runs at the PWM frequency, as it's triggered by the timer overflow interrupt
     // Write OCB to update the duty cycle of the next waveform period
     // Ramp up/down from the current compare value to the target, increasing/decreasing by 1 on each PWM cycle
-    for (uint32_t i = 0; i < CH_COUNT; i++) {
+    for (uint32_t i = 0; i < PWM_CHANNELS; i++) {
         anim_t currEffect = getLEDStruct(LEDChannels[i])->currAnimation;
         if (currEffect == ANIM_FIXED) {
             effectControl_FadeBrightness(LEDChannels[i]);

@@ -18,6 +18,7 @@
 
 // externs to test some static variables in the module
 extern uint8_t channelIdx;
+extern const uint32_t BRIGHTNESS_DELTA;  // in percent with two decimals -> 5%
 
 // Provide values for some globals whose definitions are lost when using mocks
 const uint32_t PWM_FREQUENCY = 1000UL;
@@ -120,10 +121,11 @@ void test_button0LongPressed(void) { button0LongPressed(NULL); }
 
 // Test Quad actions
 // Rotating CW increases channel's % by 5, and CCW decreases it
+// Rotating while any press rises/lowers all channels
 
 void test_quad0ClockWise(void) {
     uint32_t expectedInitialBrightness = 1000;
-    uint32_t expectedFinalBrightness = 1500;
+    uint32_t expectedFinalBrightness = expectedInitialBrightness + BRIGHTNESS_DELTA;
     LEDChannel_t expectedChannel = LED_CHANNEL_1;
 
     // Set Expectations
@@ -132,12 +134,12 @@ void test_quad0ClockWise(void) {
     quad0ClockWise(NULL);
 
     // Turn twice more...
-    expectedFinalBrightness = 2500;
+    expectedFinalBrightness = expectedInitialBrightness + (3 * BRIGHTNESS_DELTA);
 
     // Set Expectations
-    getLEDBrightness_ExpectAndReturn(expectedChannel, 1500);
-    setLEDBrightness_ExpectAndReturn(expectedChannel, 2000, EFF_OK);
-    getLEDBrightness_ExpectAndReturn(expectedChannel, 2000);
+    getLEDBrightness_ExpectAndReturn(expectedChannel, expectedInitialBrightness + BRIGHTNESS_DELTA);
+    setLEDBrightness_ExpectAndReturn(expectedChannel, expectedInitialBrightness + (2 * BRIGHTNESS_DELTA), EFF_OK);
+    getLEDBrightness_ExpectAndReturn(expectedChannel, expectedInitialBrightness + (2 * BRIGHTNESS_DELTA));
     setLEDBrightness_ExpectAndReturn(expectedChannel, expectedFinalBrightness, EFF_OK);
     quad0ClockWise(NULL);
     quad0ClockWise(NULL);
@@ -153,9 +155,30 @@ void test_quad0ClockWise_MaxBrightness(void) {
     quad0ClockWise(NULL);
 }
 
+void test_quad0ClockWise_WhileShortPressed(void) {
+    uint32_t testBrightnessCh1 = 1000;
+    uint32_t testBrightnessCh2 = 2000;
+    uint32_t testBrightnessCh3 = 3000;
+    button_t testButton = {.state = BUTTON_PRESSED};
+
+    // Set Expectations
+    uint32_t expectedBirghtnessCh1 = testBrightnessCh1 + BRIGHTNESS_DELTA;
+    uint32_t expectedBirghtnessCh2 = testBrightnessCh2 + BRIGHTNESS_DELTA;
+    uint32_t expectedBirghtnessCh3 = testBrightnessCh3 + BRIGHTNESS_DELTA;
+
+    getLEDBrightness_ExpectAndReturn(LED_CHANNEL_1, testBrightnessCh1);
+    setLEDBrightness_ExpectAndReturn(LED_CHANNEL_1, expectedBirghtnessCh1, EFF_OK);
+    getLEDBrightness_ExpectAndReturn(LED_CHANNEL_2, testBrightnessCh2);
+    setLEDBrightness_ExpectAndReturn(LED_CHANNEL_2, expectedBirghtnessCh2, EFF_OK);
+    getLEDBrightness_ExpectAndReturn(LED_CHANNEL_3, testBrightnessCh3);
+    setLEDBrightness_ExpectAndReturn(LED_CHANNEL_3, expectedBirghtnessCh3, EFF_OK);
+
+    quad0ClockWise(NULL);
+}
+
 void test_quad0CounterClockWise(void) {
     uint32_t expectedInitialBrightness = 9000;
-    uint32_t expectedFinalBrightness = 8500;
+    uint32_t expectedFinalBrightness = expectedInitialBrightness - BRIGHTNESS_DELTA;
     LEDChannel_t expectedChannel = LED_CHANNEL_1;
 
     // Set Expectations
@@ -164,12 +187,12 @@ void test_quad0CounterClockWise(void) {
     quad0CounterClockWise(NULL);
 
     // Turn twice more...
-    expectedFinalBrightness = 7500;
+    expectedFinalBrightness = expectedInitialBrightness - (3 * BRIGHTNESS_DELTA);
 
     // Set Expectations
-    getLEDBrightness_ExpectAndReturn(expectedChannel, 8500);
-    setLEDBrightness_ExpectAndReturn(expectedChannel, 8000, EFF_OK);
-    getLEDBrightness_ExpectAndReturn(expectedChannel, 8000);
+    getLEDBrightness_ExpectAndReturn(expectedChannel, expectedInitialBrightness - BRIGHTNESS_DELTA);
+    setLEDBrightness_ExpectAndReturn(expectedChannel, expectedInitialBrightness - (2 * BRIGHTNESS_DELTA), EFF_OK);
+    getLEDBrightness_ExpectAndReturn(expectedChannel, expectedInitialBrightness - (2 * BRIGHTNESS_DELTA));
     setLEDBrightness_ExpectAndReturn(expectedChannel, expectedFinalBrightness, EFF_OK);
     quad0CounterClockWise(NULL);
     quad0CounterClockWise(NULL);
