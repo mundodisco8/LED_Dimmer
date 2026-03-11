@@ -161,7 +161,9 @@ void app_init(void) {
     initLEDStrips();
 
     // Restore LED context
+    app_log_debug("Recovering LED context...\r\n");
     LEDContext_t LEDContext = {0};
+    // TODO: change to return error code, as I need to check success before setting values, otherwise leave default
     nvm_readLEDContext(NVM3_KEY_LED1_CONTEXT, &LEDContext);
     setLEDBrightness(LED_CHANNEL_1, LEDContext.currBrightness);
     setBreathePeriod(LED_CHANNEL_1, LEDContext.currBreathePeriod);
@@ -330,6 +332,7 @@ static void init_EM4(void) {
  */
 static void enter_EM4(void) {
     // Store context in nvm3
+    app_log_debug("Saving LED context...\r\n");
     // STORE CONTEXT 1
     LEDContext_t context = {0};
     context.currAnimation = getAnimation(LED_CHANNEL_1);
@@ -351,11 +354,11 @@ static void enter_EM4(void) {
 
     // Turn off LEDs, as sometimes they stay on in EM4 (I think the GPIOs stay at whatever their state was at the
     // time of jumping to EM4
-    setLEDBrightness(LED_CHANNEL_1, 0UL);
-    setLEDBrightness(LED_CHANNEL_2, 0UL);
-    setLEDBrightness(LED_CHANNEL_3, 0UL);
+    app_log_debug("Turning LEDs off..\r\n");
+    TIMHW_stopTimer0();
 
-    // Wait a bit more just in case
+    // Wait a bit more just in case, logs to print, etc
+    app_log_debug("Entering M4...\r\n");
     uint64_t delay = SLP_getSystemTickInMs() + 1000;
     uint64_t now;
     do {
