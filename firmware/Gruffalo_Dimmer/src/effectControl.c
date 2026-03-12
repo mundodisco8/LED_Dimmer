@@ -281,9 +281,10 @@ STATIC void effectControl_FadeBrightness(LEDChannel_t LEDChannel) {
     // we tick at ~PWM freq.
 
     // Because the "compares" are uints, we can't simply take the absolute value of the difference, because of target is
-    // smaller than current, we get the abs of a "negative" which is MASSIVE parsed as uint. We do some casting trickery
-    // con control the result.
-    uint32_t diff = labs(((int32_t)targetLevel - (int32_t)currentLevel));  // we will use this result a couple of times
+    // smaller than current, we get the abs of a "negative" which is MASSIVE parsed as uint.
+    uint32_t diff = (targetLevel > currentLevel)
+                        ? (targetLevel - currentLevel)
+                        : (currentLevel - targetLevel);  // we will use this result a couple of times
 
     if (LED_ptr->brightnessCtrl.brightChangeRequestedFlag) {
         // We want to calculate the delta only when there's a change in brightness
@@ -305,12 +306,10 @@ STATIC void effectControl_FadeBrightness(LEDChannel_t LEDChannel) {
     if (currentLevel > targetLevel) {
         // Decrease towards target
         LED_ptr->brightnessCtrl.currentBrightness -= step;
-    } else if (currentLevel < targetLevel) {  // GCOVR_EXCL_BR_LINE
-        // and if both are equal, don't do anything
+    } else {  // GCOVR_EXCL_BR_LINE
+        // Because we return above if targetLevel == currentLevel, then if not >, it must be <
         // Increase towards target
         LED_ptr->brightnessCtrl.currentBrightness += step;
-    } else {                                                 // GCOVR_EXCL_BR_LINE
-        app_assert(false, "Didn't expected to reach here");  // GCOVR_EXCL_LINE
     }
     setDutyCycle(LED_ptr->CCChannel, LED_ptr->brightnessCtrl.currentBrightness, true);
 }

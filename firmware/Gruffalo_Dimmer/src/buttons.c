@@ -187,7 +187,7 @@ void buttonSetState(button_t* btnPtr, const buttonState_t newState) {
  * @param btnPtr a pointer to the button whose state we want to get
  * @return the state of the button
  */
-buttonState_t buttonGetState(button_t* btnPtr) { return btnPtr->state; }
+buttonState_t buttonGetState(const button_t* btnPtr) { return btnPtr->state; }
 
 ////
 // Timer functions - Starting and stopping the sampling and callback timers
@@ -257,7 +257,7 @@ btnError_t startButtonTimer(button_t* btnPtr, const btnTimerType_t timerType) {
  * @return BTN_OK on success, BTN_ERROR otherwise. Asserts if wrong type of timer is passed in timerType or if btnPtr
  * is NULL
  */
-btnError_t stopButtonTimer(button_t* btnPtr, const btnTimerType_t timerType) {
+btnError_t stopButtonTimer(const button_t* btnPtr, const btnTimerType_t timerType) {
     app_assert(btnPtr != NULL, "Passed NULL Button pointer to stoptButtonTimer");
 
     timerHandlePtr_t timerPtr = NULL;

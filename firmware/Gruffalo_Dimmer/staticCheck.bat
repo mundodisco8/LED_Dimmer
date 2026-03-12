@@ -13,7 +13,13 @@ SET "CPPCHECK_PATH=C:\Program Files\Cppcheck"
 if not exist "%BUILD_DIR%" mkdir "%BUILD_DIR%"
 
 echo [1/2] Running Cppcheck analysis...
-"%CPPCHECK_PATH%\cppcheck.exe" --enable=warning,performance,portability,style --inline-suppr --project=%PROJECT_FILE% --std=c11 --xml --xml-version=2 2> %OUTPUT_XML%
+"%CPPCHECK_PATH%\cppcheck.exe" ^
+  --enable=warning,performance,portability,style ^
+  --inline-suppr ^
+  --suppressions-list=.cppcheck_ignore ^
+  --project=%PROJECT_FILE% ^
+  --std=c11 ^
+  --xml --xml-version=2 2> %OUTPUT_XML%
 
 if %ERRORLEVEL% NEQ 0 (
     echo Cppcheck encountered an error.

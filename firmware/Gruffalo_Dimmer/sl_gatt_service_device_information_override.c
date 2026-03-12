@@ -98,7 +98,8 @@ static_assert(gattdb_system_id_len == 8,
  * Bluetooth stack event handler.
  *****************************************************************************/
 void sl_gatt_service_device_information_override_on_event(sl_bt_msg_t* evt) {
-    sl_status_t sc;
+    sl_status_t sc = SL_STATUS_OK;
+    (void)sc;
 
     // Handle stack events
     switch (SL_BT_MSG_ID(evt->header)) {

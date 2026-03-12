@@ -241,7 +241,6 @@ timerStatus_t TIMHW_setCCChannelPin(pinPort_t pinPort, uint8_t pinNo, CCChannel_
         default: {
             app_log_error("Incorrect Channel Selected\r\n");
             return TIMER_WRONG_CC_CHANNEL;
-            break;
         }
     }
     // Set PWM pin as output starting low.

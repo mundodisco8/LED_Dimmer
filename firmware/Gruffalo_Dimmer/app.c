@@ -43,21 +43,21 @@
 #include <string.h>
 
 // Ignore a cast-align warning in some cmsis header
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wcast-align"
+// #pragma GCC diagnostic push
+// #pragma GCC diagnostic ignored "-Wcast-align"
 #include "em_common.h"
-#pragma GCC diagnostic pop
+// #pragma GCC diagnostic pop
 
 #include "em_emu.h"
 #include "em_gpio.h"
 #include "em_timer.h"
 
 // Ignore a sign conversion warning in sl_sleeptimer.h
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wsign-conversion"
-#pragma GCC diagnostic ignored "-Wpedantic"
+// #pragma GCC diagnostic push
+// #pragma GCC diagnostic ignored "-Wsign-conversion"
+// #pragma GCC diagnostic ignored "-Wpedantic"
 #include "sl_bluetooth.h"
-#pragma GCC diagnostic pop
+// #pragma GCC diagnostic pop
 
 #include "app.h"
 #include "app_assert.h"

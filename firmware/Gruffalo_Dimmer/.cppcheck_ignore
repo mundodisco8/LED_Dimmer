@@ -7,4 +7,22 @@
 *:*/cmake_gcc/*
 
 // Optional: Ignore common SiLabs macros that cause false positives
-unmatchedSuppression
+// unmatchedSuppression
+// unusedFunction
+// missingIncludeSystem
+
+////
+// Project things I can't change and must be silenced
+////
+
+// Parameter 'evt' can be declared as pointer -> can't change as function is declared in SDK header
+constParameterPointer:app.c
+// Parameter 'evt' can be declared as pointer -> can't change as function is declared in SDK header
+constParameterPointer:sl_gatt_service_device_information_override.c
+
+// These are errors I get from the SDK that are not silenced because they are inlined
+comparePointers:simplicity_sdk_2025.12.0/cmsis/Core/Include/cmsis_gcc.h
+constVariablePointer:simplicity_sdk_2025.12.0/cmsis/Core/Include/core_cm33.h
+constParameterPointer:simplicity_sdk_2025.12.0/platform_common/platform/common/inc/sl_slist.h
+constParameterPointer:simplicity_sdk_2025.12.0/platform_core/platform/emlib/inc/em_bus.h
+constParameterPointer:simplicity_sdk_2025.12.0/platform_core/platform/emlib/inc/em_timer.h

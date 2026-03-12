@@ -83,7 +83,7 @@ void button0LongPressed(void* ctx) {
 void button0Released(void* ctx) {
     // app_log_debug("Btn0 Released\r\n");
     // Cast the context as a button_t pointer
-    button_t* btnPtr = (button_t*)ctx;
+    const button_t* btnPtr = (button_t*)ctx;
 
     if (BUTTON_LONGPRESSED == (btnPtr->prevState)) {
         // Long Press
@@ -159,7 +159,7 @@ void button1LongPressed(void* ctx) {
 void button1Released(void* ctx) {
     // app_log_debug("Btn1 Released\r\n");
     // Cast the context as a button_t pointer
-    button_t* btnPtr = (button_t*)ctx;
+    const button_t* btnPtr = (button_t*)ctx;
     if (BUTTON_LONGPRESSED == (btnPtr->prevState)) {
         // Long Press
         // app_log_debug("Released 1 after LONG press\r\n");

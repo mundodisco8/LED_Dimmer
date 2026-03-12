@@ -78,17 +78,6 @@ const uint32_t PWM_FREQUENCY = 1000UL;
 // Min PWM Freq -> 250Hz -> TOP is 76800
 // Max PWM Freq -> TOP to 4096 -> 38400000 / (4096 * 2) = 4687.5Hz
 
-typedef struct LEDChannel {
-    uint8_t brightness;      // in % [0-100UL]
-    uint32_t breathePeriod;  // Duration of a breathe effect period in ms
-} LEDChannel_t;
-
-typedef struct LEDArray {
-    LEDChannel_t channel0;
-    LEDChannel_t channel1;
-    LEDChannel_t channel2;
-} LEDArray_t;
-
 ////
 // Forward Declarations
 ////
@@ -114,9 +103,9 @@ STATIC void configureTimerPWMFrequency(uint32_t frequencyHz) {
     // Check the input parameter
     // Check that frequency is not too low for LEDs
     if (frequencyHz < MIN_PWM_FREQ) {
-        app_assert(frequencyHz > MIN_PWM_FREQ, "\r\nFrequency (%" PRIu32 "Hz) is too low!", frequencyHz);
+        app_assert(false, "\r\nFrequency (%" PRIu32 "Hz) is too low!", frequencyHz);
     } else if (frequencyHz > MAX_PWM_FREQ) {
-        app_assert(frequencyHz < MAX_PWM_FREQ, "\r\nFrequency (%" PRIu32 "Hz) is too high!", frequencyHz);
+        app_assert(false, "\r\nFrequency (%" PRIu32 "Hz) is too high!", frequencyHz);
     }
 
     uint32_t timerFreq = TIMHW_getTimer0Frequency();

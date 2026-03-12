@@ -55,7 +55,7 @@ void buttonSetState(button_t* btnPtr, const buttonState_t newState);
 /**
  * @brief Returns the state of the button
  */
-buttonState_t buttonGetState(button_t* btnPtr);
+buttonState_t buttonGetState(const button_t* btnPtr);
 
 /**
  * @brief Starts a timer on a button.
@@ -64,5 +64,5 @@ btnError_t startButtonTimer(button_t* btnPtr, const btnTimerType_t timerType);
 /**
  * @brief Stops a timer on a button.
  */
-btnError_t stopButtonTimer(button_t* btnPtr, const btnTimerType_t timerType);
+btnError_t stopButtonTimer(const button_t* btnPtr, const btnTimerType_t timerType);
 #endif /* _BUTTONS_H_ */
