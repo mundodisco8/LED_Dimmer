@@ -1,3 +1,37 @@
+/**
+ * @file effectControl.h
+ * @author Joel Santos (jsantosrico@gmail.com)
+ * @brief Public API for managing LED animations and state transitions.
+ * @version 0.1
+ * @date 2026-03-13
+ * * @copyright Copyright (c) 2026
+ * * @defgroup EFFECT_CONTROL Effect Control Module
+ * @{
+ *
+ * ### Detailed Description
+ * This module manages high-level LED behaviors, including brightness levels,
+ * animation selection, and transition timing. It abstracts the underlying
+ * hardware to provide a unified interface for controlling three independent
+ * LED strips.
+ *
+ * ### Key Features
+ * * **Animation Support:** Includes "Fixed" (static brightness) and "Breathe"
+ * (cyclic intensity pulse) effects.
+ * * **Breathe Mechanics:** Uses a 200-sample Look-Up Table (LUT) to manage
+ * smooth intensity transitions.
+ * * **Error Handling:** Returns specific error codes (@ref efferr_t) for null
+ * pointers, invalid periods, or out-of-bounds channels.
+ *
+ * ### Resource Constraints
+ * * **LUT Size:** The breathe effect is defined by a fixed 200-unit sample
+ * array (@ref BREATHE_LUT_SIZE).
+ * * **Timing:** The minimum period for a breathe cycle is constrained by
+ * the LUT size to ensure smooth rendering.
+ *
+ * ### Initialization Sequence
+ * 1. Initialize internal LED structures and memory: @ref initLEDStrips.
+ * 2. Set initial animation or brightness: @ref setAnimation or @ref setLEDBrightness.
+ */
 #ifndef _EFFECT_CONTROL_H_
 #define _EFFECT_CONTROL_H_
 

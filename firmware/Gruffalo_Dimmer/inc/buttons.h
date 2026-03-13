@@ -1,8 +1,32 @@
-/*
- * buttons.h
+/**
+ * @file buttons.h
+ * @author Joel Santos (jsantosrico@gmail.com)
+ * @brief Public API for button handling and quadrature encoder decoding.
+ * @version 0.1
+ * @date 2026-03-13
+ * * @copyright Copyright (c) 2026
+ * * @defgroup BUTTON_HW Button and Encoder Hardware Module
+ * @{
  *
- *  Created on: 11 Nov 2022
- *      Author: joel.santos
+ * ### Detailed Description
+ * This module provides an interface to initialize and manage physical user inputs.
+ * It supports push-buttons with multi-state logic and quadrature encoders for
+ * rotational input.
+ *
+ * ### Key Features
+ * * **Software Debouncing:** Uses an integrator algorithm to filter mechanical noise.
+ * * **Multi-Action Buttons:** Supports distinct callbacks for short-press, long-press,
+ * and release events.
+ * * **Quadrature Decoding:** Optimized for PEC11R-style encoders with 18 detents.
+ *
+ * ### Resource Requirements
+ * * **Timers:** Each button instance requires **two reserved sleep timers** (one for
+ * sampling/debouncing and one for long-press timing).
+ * * **Interrupts:** Requires one GPIO interrupt per button and one per encoder A-signal.
+ *
+ * ### Initialization Sequence
+ * 1. Initialize the structure and pins: @ref initButton or @ref initQuadEncoder.
+ * 2. Configure hardware interrupts: @ref configureButtonInterrupts or @ref configureQuadratureInterrupts.
  */
 
 #ifndef _BUTTONS_H_

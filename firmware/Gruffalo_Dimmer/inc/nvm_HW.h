@@ -1,12 +1,31 @@
 /**
  * @file nvm_HW.h
  * @author Joel Santos (jsantosrico@gmail.com)
- * @brief provides functions to interface with the nvm3 module
+ * @brief Public API for interfacing with the NVM3 non-volatile storage module.
  * @version 0.1
- * @date 2026-03-09
+ * @date 2026-03-13
+ * * @copyright Copyright (c) 2026
+ * * @defgroup NVM_HW NVM Hardware Module
+ * @{
  *
- * @copyright Copyright (c) 2026
+ * ### Detailed Description
+ * This module provides an abstraction layer for the Silicon Labs NVM3 (Non-Volatile
+ * Memory) data storage system. It is specifically tailored to persist LED
+ * configuration states across power cycles.
  *
+ * ### Key Features
+ * * **Persistent Contexts:** Saves and restores @ref LEDContext_t structures,
+ * including brightness, animation types, and timing periods.
+ * * **Key-Value Mapping:** Uses unique 32-bit keys (@ref nvmKeys_t) to manage
+ * independent data objects for each LED channel.
+ *
+ * ### Usage Flow
+ * 1. **Initialization:** Call @ref nvm_init at system startup to open the
+ * default NVM3 instance.
+ * 2. **Restoration:** Use @ref nvm_readLEDContext to reload saved states into
+ * RAM during the application boot sequence.
+ * 3. **Persistence:** Call @ref nvm_writeLEDContext whenever a user modifies
+ * a setting (e.g., via encoders or buttons) to ensure the change survives a reset.
  */
 #ifndef _NVM_HW_
 #define _NVM_HW_

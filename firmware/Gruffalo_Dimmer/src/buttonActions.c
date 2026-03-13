@@ -49,6 +49,12 @@ STATIC uint8_t channelIdx = 0UL;  // currently selected channel, used to know wh
 // TODO: Maybe we can store errors in some variables, and then check for interrutp
 // errors in the main loop?
 
+/**
+ * @brief callback to call on pushbutton interrup
+ *
+ * @param intNo the number of the interrupt, used to get the button that triggered the interrupt
+ * @param ctx a button_t pointer to the button that triggered the interrupt
+ */
 void gpioCallbackButton(uint8_t intNo, void* ctx) {
     (void)intNo;
     // TODO: could get rid of this timer if I count ticks of the TIMER_SAMPLE instead
@@ -58,6 +64,12 @@ void gpioCallbackButton(uint8_t intNo, void* ctx) {
     startButtonTimer((button_t*)ctx, TIMER_SAMPLE);
 }
 
+/**
+ * @brief callback to call on quad encoder interrup
+ *
+ * @param intNo the number of the interrupt, used to get the button that triggered the interrupt
+ * @param ctx a button_t pointer to the quad encoder that triggered the interrupt
+ */
 void gpioCallbackQuad(uint8_t intNo, void* ctx) {
     (void)intNo;
     // Trivial, but makes it easier to read
@@ -70,16 +82,31 @@ void gpioCallbackQuad(uint8_t intNo, void* ctx) {
     }
 }
 
+/**
+ * @brief Action triggered on a short press of button 0
+ *
+ * @param ctx a button_t pointer to the button that triggered the interrupt
+ */
 void button0ShortPressed(void* ctx) {
     (void)ctx;
     // app_log_debug("Btn0 Pressed\r\n");
 }
 
+/**
+ * @brief Action triggered on a long press of button 0
+ *
+ * @param ctx a button_t pointer to the button that triggered the interrupt
+ */
 void button0LongPressed(void* ctx) {
     (void)ctx;
     // app_log_debug("Btn0 LONG Pressed\r\n");
 }
 
+/**
+ * @brief Action triggered on release of of button 0
+ *
+ * @param ctx a button_t pointer to the button that triggered the interrupt
+ */
 void button0Released(void* ctx) {
     // app_log_debug("Btn0 Released\r\n");
     // Cast the context as a button_t pointer
@@ -120,6 +147,11 @@ static void updateLEDBrightness(LEDChannel_t channel, int32_t delta) {
     }
 }
 
+/**
+ * @brief Action triggered on a CW rotation of quad 0
+ *
+ * @param ctx a quad_t pointer to the quad encoder that triggered the interrupt
+ */
 void quad0ClockWise(void* ctx) {
     (void)ctx;
     if (LED_CHANNELS_ALL != LEDChannelArray[channelIdx]) {
@@ -133,6 +165,11 @@ void quad0ClockWise(void* ctx) {
     }
 }
 
+/**
+ * @brief Action triggered on a CCW rotation of quad 0
+ *
+ * @param ctx a quad_t pointer to the quad encoder that triggered the interrupt
+ */
 void quad0CounterClockWise(void* ctx) {
     (void)ctx;
     if (LED_CHANNELS_ALL != LEDChannelArray[channelIdx]) {
@@ -146,16 +183,31 @@ void quad0CounterClockWise(void* ctx) {
     }
 }
 
+/**
+ * @brief Action triggered on a short press of button 1
+ *
+ * @param ctx a button_t pointer to the button that triggered the interrupt
+ */
 void button1ShortPressed(void* ctx) {
     (void)ctx;
     // app_log_debug("Btn1 Pressed\r\n");
 }
 
+/**
+ * @brief Action triggered on a long press of button 1
+ *
+ * @param ctx a button_t pointer to the button that triggered the interrupt
+ */
 void button1LongPressed(void* ctx) {
     (void)ctx;
     // app_log_debug("Btn1 LONG Pressed\r\n");
 }
 
+/**
+ * @brief Action triggered on release of of button 1
+ *
+ * @param ctx a button_t pointer to the button that triggered the interrupt
+ */
 void button1Released(void* ctx) {
     // app_log_debug("Btn1 Released\r\n");
     // Cast the context as a button_t pointer
@@ -210,6 +262,11 @@ static void updateBreathePeriod(LEDChannel_t channel, int32_t delta) {
     app_log_debug("Set Ch%" PRIu32 " Breathe Period to %" PRIu32 "ms\r\n", (uint32_t)channel, newPeriod);
 }
 
+/**
+ * @brief Action triggered on a CW rotation of quad 1
+ *
+ * @param ctx a quad_t pointer to the quad encoder that triggered the interrupt
+ */
 void quad1ClockWise(void* ctx) {
     (void)ctx;
     // The breathe period increases / decreases by sizeOfTheBreatheLUT * PWMPeriod, so each tick changes the number of
@@ -227,6 +284,11 @@ void quad1ClockWise(void* ctx) {
     }
 }
 
+/**
+ * @brief Action triggered on a CCW rotation of quad 1
+ *
+ * @param ctx a quad_t pointer to the quad encoder that triggered the interrupt
+ */
 void quad1CounterClockWise(void* ctx) {
     (void)
         ctx;  // The breathe period increases / decreases by sizeOfTheBreatheLUT * PWMPeriod, so each tick changes the number of

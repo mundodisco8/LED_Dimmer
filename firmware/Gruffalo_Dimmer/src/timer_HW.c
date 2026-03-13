@@ -1,13 +1,24 @@
-////
-// timer_HW
-//
-// Wrapper for calls to the em_timer library to use TIMER0 as a PWM generator.
-//
-// This is not a generalisation of em_timer. For now, it just assumes that we are going to use TIMER0. If we need to
-// extend it, it wouldn't be much more work. It is also designed to set TIMER0 in PWM mode.
-//
-////
-
+/**
+ * @file timer_HW.c
+ * @author Joel Santos (jsantosrico@gmail.com)
+ * @brief Implementation of TIMER0 wrappers for PWM generation.
+ * @version 0.1
+ * @date 2026-03-13
+ * * @copyright Copyright (c) 2026
+ * * @details
+ * Interfaces with Silicon Labs `em_timer` and `em_cmu` to drive the core timing
+ * peripheral.
+ * * ### Implementation Details
+ * * **Center-Aligned PWM:** Configures the timer for `timerModeUpDown`, which
+ * counts from 0 to TOP and back to 0, effectively doubling the period for a
+ * given TOP value.
+ * * **Frequency Logic:** The signal frequency is calculated as
+ * `TimerClock / (2 * TOP)`.
+ * * **Pin Routing:** Dynamically routes PWM signals to physical ports and pins
+ * using the platform's `GPIO_TIMER_ROUTEEN` and `GPIO_PinModeSet` registers.
+ * * **Sync Guard:** Every write operation to synchronized registers is preceded
+ * by a check to ensure the timer is active, preventing illegal bus access.
+ */
 #include "timer_HW.h"
 
 #include <stddef.h>
@@ -32,8 +43,13 @@
 #include "gpio_HW.h"
 #include "interrupt_HW.h"
 
+////
 // Globals
-// Initialize TIMER. It's the default config, but I added comments
+////
+
+/**
+ * @brief Initialize TIMER. It's the default config, but I added comments
+ */
 static TIMER_Init_TypeDef timerInit = {
     /** Start counting when initialization completed. */
     .enable = false, /* Enable timer when initialization completes. */
@@ -77,120 +93,32 @@ static void TIMHW_timerModuleEnable(void) { TIMER0->EN_SET = TIMER_EN_EN; }
 static void TIMHW_timerModuleDisable(void) { TIMER0->EN_CLR = TIMER_EN_EN; }
 // GCOVR_EXCL_STOP
 
-// Sets the value of the Compare Register (unbuffered)
-// NOTE: WRITES TO A SYNC type register, requires TIMER0 module to be ENABLED
-// Parameters: channel, the channel to set
-//             compareValue: the new value of the compare Register
-// Returns: TIMER_OK on success, TIMER_DISABLED_BEFORE_WRITING_SYNC if the timer0 module was disabled
-//          before calling this function
-timerStatus_t TIMHW_setT0ChannelOutputCompare(CCChannel_t channel, uint32_t compareValue) {
-    // TIMER_CompareSet writes to TIMER_CC0_OC -> RWH Sync -> module needs to be enabled
-    if (TIMER0->EN == 0) {  // Timer module is disabled!
-        app_log_error("Enable TIMER0 module before calling setChannelOutputCompare()!\r\n");
-        return TIMER_DISBLED_BEFORE_WRITING_SYNC;
-    }  // else, timer module is enabled, we can proceed
-    TIMER_CompareSet(TIMER0, channel, compareValue);  // GCOV_EXCL_LINE
-    return TIMER_OK;
-}
-
-// Sets the value of the buffered Compare Register (buffered). The change will be effective on the
-// next compare match.
-// NOTE: WRITES TO A SYNC type register, requires TIMER0 module to be ENABLED
-// Parameters: channel, the channel to set
-//             compareValue: the new value of the compare Register
-// Returns: TIMER_OK on success, TIMER_DISABLED_BEFORE_WRITING_SYNC if the timer0 module was disabled
-timerStatus_t TIMHW_setT0ChannelOutputCompareBuffered(CCChannel_t channel, uint32_t compareValue) {
-    // TIMER_CompareSet writes to TIMER_CC0_OCB -> RWH Sync -> module needs to be enabled
-    if (TIMER0->EN == 0) {  // Timer module is disabled!
-        app_log_error("Enable TIMER0 module before calling setChannelBufferedOutputCompare()!\r\n");
-        return TIMER_DISBLED_BEFORE_WRITING_SYNC;
-    }  // else, timer module is enabled, we can proceed
-    TIMER_CompareBufSet(TIMER0, channel, compareValue);
-    return TIMER_OK;
-}
-
-// Set the value of the TOP register on TIMER0
-// NOTE: WRITES TO A SYNC type register, requires TIMER0 module to be ENABLED
-// Parameters: top: the value to set as the top value for the count on TIMER0
-//          before calling this function
-timerStatus_t TIMHW_setTimer0TopValue(const uint32_t top) {
-    // TIMER_CompareSet writes to TIMER_TOP -> RWH Sync -> module needs to be enabled
-    if (TIMER0->EN == 0) {  // Timer module is disabled!
-        app_log_error("Enable TIMER0 module before calling setTimer0TopValue()!\r\n");
-        // TODO: This and similar could be an assert
-        return TIMER_DISBLED_BEFORE_WRITING_SYNC;
-    }  // else, timer module is enabled, we can proceed
-    TIMER_TopSet(TIMER0, top);
-    uint32_t newTop = 0;
-    do {
-        newTop = TIMER_TopGet(TIMER0);
-    } while (newTop != top);
-    return TIMER_OK;
-}
-
-// Set the value of the TOP register on TIMER0
-// NOTE: WRITES TO A SYNC type register, requires TIMER0 module to be ENABLED
-// Parameters: top: the value to set as the top value for the count on TIMER0
-//          before calling this function
-timerStatus_t TIMHW_setTimer0TopValueBuffered(const uint32_t top) {
-    // TIMER_CompareSet writes to TIMER_TOP -> RWH Sync -> module needs to be enabled
-    if (TIMER0->EN == 0) {  // Timer module is disabled!
-        app_log_error("Enable TIMER0 module before calling setTimer0TopValueBuffered()!\r\n");
-        // TODO: This and similar could be an assert
-        return TIMER_DISBLED_BEFORE_WRITING_SYNC;
-    }  // else, timer module is enabled, we can proceed
-    TIMER_TopBufSet(TIMER0, top);
-    return TIMER_OK;
-}
+/**
+ * @brief Starts TIMER0
+ */
+void TIMHW_startTimer0(void) { TIMER_Enable(TIMER0, true); }
 
 /**
- * @brief gets the TOP value (NOTE: ACTUAL VALUE, NOT THE BUFFER)
- * @return the value of the TOP register (which might be different than the buffered value)
+ * @brief Stops TIMER0
  */
-uint32_t TIMHW_getTimer0TopValue(void) { return TIMER_TopGet(TIMER0); }
-
-/**
- * @brief gets the Compare / Capture value (NOTE: ACTUAL VALUE, NOT THE BUFFER)
- * @return the value of the compare/capture register (which might be different than the buffered value)
- */
-uint32_t TIMHW_getTimer0CompareValue(const CCChannel_t channel) {
-    // A bit convoluted, but I feel it's better than relying on CCChannel being the same values than the SDK needs
-    uint32_t auxChannel = 0;
-    switch (channel) {
-        case CC_CHANNEL_0: {
-            auxChannel = 0;
-            break;
-        }
-        case CC_CHANNEL_1: {
-            auxChannel = 1;
-            break;
-        }
-        case CC_CHANNEL_2: {
-            auxChannel = 2;
-            break;
-        }
-        default: {
-            break;
-        }
-    }
-    return TIMER_CaptureGet(TIMER0, auxChannel);
-}
-
-// Returns the clock frequency of TIMER0 taking the prescaler into account
-// Returns: the frequency of TIMER0 in Hz
-uint32_t TIMHW_getTimer0Frequency(void) { return CMU_ClockFreqGet(cmuClock_TIMER0) / (timerInit.prescale + 1); }
+void TIMHW_stopTimer0(void) { TIMER_Enable(TIMER0, false); }
 
 ////
 // Config functions
 ////
 
-// Initalises the HW clock of TIMER0
-// NOTE: If a module clock is disabled, the registers of that module are not accessible and accessing such registers
-// will hardfault the Cortex core.
+/**
+ * @brief Initalises the HW clock of TIMER0
+ * NOTE: If a module clock is disabled, the registers of that module are not accessible and accessing such registers
+ * will hardfault the Cortex core.
+ */
 void TIMHW_initTimer0Clock(void) { CMU_ClockEnable(cmuClock_TIMER0, true); }
 
-// Initialises and starts TIMER0
-// Sets all the compare values to 0, so all the PWM signals start with 0% duty cycle.
+/**
+ * @brief Initialises and starts TIMER0
+ * Sets all the compare values to 0, so all the PWM signals start with 0% duty cycle.
+ * @param startTimerOnInit true if we want to star the timer straight away, false to start it later.
+ */
 void TIMHW_initTimer0(bool startTimerOnInit) {
     // NOTE: for joel, regarding writing to CONFIG and SYNC registers (see 19.3.1)
     // TIMER_Init() writes to these regs in this order. Because it enables and disables accordingly
@@ -208,10 +136,13 @@ void TIMHW_initTimer0(bool startTimerOnInit) {
     TIMER_Init(TIMER0, &timerInit);
 }
 
-// Sets a pin as output and associates a GPIO pin with one of the Compare/Capture channels of TIMER0
-// Parameters: pinPort: the pin port
-//             pinNo: the pin number
-//             channel: the channel to associate the pin with
+/**
+ * @brief Sets a pin as output and associates a GPIO pin with one of the Compare/Capture channels of TIMER0
+ * @param pinPort the pin port
+ * @param pinNo the pin number
+ * @param channel the channel to associate the pin with
+ * @return timerStatus_t TIMER_OK on success, TIMER_WRONG_CC_CHANNEL if the requested channel is not valid
+ */
 timerStatus_t TIMHW_setCCChannelPin(pinPort_t pinPort, uint8_t pinNo, CCChannel_t channel) {
     volatile uint32_t* routeRegister = NULL;
     uint32_t portShift = 0;
@@ -250,26 +181,32 @@ timerStatus_t TIMHW_setCCChannelPin(pinPort_t pinPort, uint8_t pinNo, CCChannel_
     return TIMER_OK;
 }
 
-// Enables the Compare/Capture Module for the selected channel on TIMER0
-// Parameters: channel: the channel whose CC module is going to be enabled
+/**
+ * @brief Enables the Compare/Capture Module for the selected channel on TIMER0
+ * @param channel the channel whose CC module is going to be enabled
+ */
 void TIMHW_enableChannelCompCapUnit(CCChannel_t channel) {
     // We don't need to read the current value of the register and OR it with the new value because we are not writing
     // to the register itself, but to the _SET version of it.
     GPIO->TIMERROUTE_SET[TIMER_NUM(TIMER0)].ROUTEEN = 1 << (channel + _GPIO_TIMER_ROUTEEN_CC0PEN_SHIFT);
 }
 
-// Disables the Compare/Capture Module for the selected channel on TIMER0
-// Parameters: channel: the channel whose CC module is going to be disabled
+/**
+ * @brief Disables the Compare/Capture Module for the selected channel on TIMER0
+ * @param channel the channel whose CC module is going to be disabled
+ */
 void TIMHW_disableChannelCompCapUnit(CCChannel_t channel) {
     // We don't need to read the current value of the register and OR it with the new value because we are not writing
     // to the register itself, but to the _CLR version of it.
     GPIO->TIMERROUTE_CLR[TIMER_NUM(TIMER0)].ROUTEEN = 1 << (channel + _GPIO_TIMER_ROUTEEN_CC0PEN_SHIFT);
 }
 
-// Configures the Capture/Compare module in PWM mode for one of the CC channels of TIMER0
-//  Parameters: channel: the channel to set in PWM mode
-//              polarity: a polarity_t data type with the required polarity of the PWM signal
-//  Asserts if channel is invalid (when calling TIMER_InitCC())
+/**
+ * @brief Configures the Capture/Compare module in PWM mode for one of the CC channels of TIMER0
+ * Asserts if channel is invalid (when calling TIMER_InitCC())
+ * @param channel the channel to set in PWM mode
+ * @param polarity a polarity_t data type with the required polarity of the PWM signal
+ */
 void TIMHW_configCCChannelPWM(CCChannel_t channel, polarity_t polarity) {
     // Set CC channel parameters. Based on TIMER_INITCC_DEFAULT, but mode is PWM, match action set to toggle, detection
     // edges set to both and polarity defined by parameter.
@@ -350,8 +287,120 @@ void TIMHW_configCCChannelPWM(CCChannel_t channel, polarity_t polarity) {
     enableTIMER0Int();
 }
 
-// Starts TIMER0
-void TIMHW_startTimer0(void) { TIMER_Enable(TIMER0, true); }
+////
+// Setters and Getters
+////
 
-// Stops TIMER0
-void TIMHW_stopTimer0(void) { TIMER_Enable(TIMER0, false); }
+/**
+ * @brief Sets the value of the Compare Register (unbuffered)
+ * NOTE: WRITES TO A SYNC type register, requires TIMER0 module to be ENABLED
+ *
+ * @param channel the channel to set
+ * @param compareValue the new value of the compare Register
+ * @return timerStatus_t TIMER_OK on success, TIMER_DISABLED_BEFORE_WRITING_SYNC if the timer0 module was disabled
+ *          before calling this function
+ */
+timerStatus_t TIMHW_setT0ChannelOutputCompare(CCChannel_t channel, uint32_t compareValue) {
+    // TIMER_CompareSet writes to TIMER_CC0_OC -> RWH Sync -> module needs to be enabled
+    if (TIMER0->EN == 0) {  // Timer module is disabled!
+        app_log_error("Enable TIMER0 module before calling setChannelOutputCompare()!\r\n");
+        return TIMER_DISBLED_BEFORE_WRITING_SYNC;
+    }  // else, timer module is enabled, we can proceed
+    TIMER_CompareSet(TIMER0, channel, compareValue);  // GCOV_EXCL_LINE
+    return TIMER_OK;
+}
+
+/**
+ * @brief Sets the value of the buffered Compare Register (buffered). The change will be effective on the
+ * next compare match.
+ * NOTE: WRITES TO A SYNC type register, requires TIMER0 module to be ENABLED
+ * @param channel the channel to set
+ * @param compareValue the new value of the compare Register
+ * @return timerStatus_t TIMER_OK on success, TIMER_DISABLED_BEFORE_WRITING_SYNC if the timer0 module was disabled
+ */
+timerStatus_t TIMHW_setT0ChannelOutputCompareBuffered(CCChannel_t channel, uint32_t compareValue) {
+    // TIMER_CompareSet writes to TIMER_CC0_OCB -> RWH Sync -> module needs to be enabled
+    if (TIMER0->EN == 0) {  // Timer module is disabled!
+        app_log_error("Enable TIMER0 module before calling setChannelBufferedOutputCompare()!\r\n");
+        return TIMER_DISBLED_BEFORE_WRITING_SYNC;
+    }  // else, timer module is enabled, we can proceed
+    TIMER_CompareBufSet(TIMER0, channel, compareValue);
+    return TIMER_OK;
+}
+
+/**
+ * @brief Set the value of the TOP register on TIMER0
+ * NOTE: WRITES TO A SYNC type register, requires TIMER0 module to be ENABLED
+ * @param top the value to set as the top value for the count on TIMER0
+ * @return timerStatus_t TIMER_OK on success, TIMER_DISABLED_BEFORE_WRITING_SYNC if the timer0 module was disabled
+ */
+timerStatus_t TIMHW_setTimer0TopValue(const uint32_t top) {
+    // TIMER_CompareSet writes to TIMER_TOP -> RWH Sync -> module needs to be enabled
+    if (TIMER0->EN == 0) {  // Timer module is disabled!
+        app_log_error("Enable TIMER0 module before calling setTimer0TopValue()!\r\n");
+        // TODO: This and similar could be an assert
+        return TIMER_DISBLED_BEFORE_WRITING_SYNC;
+    }  // else, timer module is enabled, we can proceed
+    TIMER_TopSet(TIMER0, top);
+    uint32_t newTop = 0;
+    do {
+        newTop = TIMER_TopGet(TIMER0);
+    } while (newTop != top);
+    return TIMER_OK;
+}
+
+/**
+ * @brief Set the value of the TOP register on TIMER0
+ * NOTE: WRITES TO A SYNC type register, requires TIMER0 module to be ENABLED
+ * @param top the value to set as the top value for the count on TIMER0
+  * @return timerStatus_t TIMER_OK on success, TIMER_DISABLED_BEFORE_WRITING_SYNC if the timer0 module was disabled
+ */
+timerStatus_t TIMHW_setTimer0TopValueBuffered(const uint32_t top) {
+    // TIMER_CompareSet writes to TIMER_TOP -> RWH Sync -> module needs to be enabled
+    if (TIMER0->EN == 0) {  // Timer module is disabled!
+        app_log_error("Enable TIMER0 module before calling setTimer0TopValueBuffered()!\r\n");
+        // TODO: This and similar could be an assert
+        return TIMER_DISBLED_BEFORE_WRITING_SYNC;
+    }  // else, timer module is enabled, we can proceed
+    TIMER_TopBufSet(TIMER0, top);
+    return TIMER_OK;
+}
+
+/**
+ * @brief gets the TOP value (NOTE: ACTUAL VALUE, NOT THE BUFFER)
+ * @return the value of the TOP register (which might be different than the buffered value)
+ */
+uint32_t TIMHW_getTimer0TopValue(void) { return TIMER_TopGet(TIMER0); }
+
+/**
+ * @brief gets the Compare / Capture value (NOTE: ACTUAL VALUE, NOT THE BUFFER)
+ * @return the value of the compare/capture register (which might be different than the buffered value)
+ */
+uint32_t TIMHW_getTimer0CompareValue(const CCChannel_t channel) {
+    // A bit convoluted, but I feel it's better than relying on CCChannel being the same values than the SDK needs
+    uint32_t auxChannel = 0;
+    switch (channel) {
+        case CC_CHANNEL_0: {
+            auxChannel = 0;
+            break;
+        }
+        case CC_CHANNEL_1: {
+            auxChannel = 1;
+            break;
+        }
+        case CC_CHANNEL_2: {
+            auxChannel = 2;
+            break;
+        }
+        default: {
+            break;
+        }
+    }
+    return TIMER_CaptureGet(TIMER0, auxChannel);
+}
+
+/**
+ * @brief Returns the clock frequency of TIMER0 taking the prescaler into account
+ * @return uint32_t the frequency of TIMER0 in Hz
+ */
+uint32_t TIMHW_getTimer0Frequency(void) { return CMU_ClockFreqGet(cmuClock_TIMER0) / (timerInit.prescale + 1); }

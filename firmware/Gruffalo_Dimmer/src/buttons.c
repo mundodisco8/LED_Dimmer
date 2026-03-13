@@ -1,16 +1,18 @@
-////
-// Buttons
-//
-// A library to handle the buttons on this project.
-// Provides a button_t object that is debounced via software using Kenneth A. Kuhn's integrator algo (see integrator.c)
-//
-////
-
-/*
- * buttons.c
- *
- *  Created on: 11 Nov 2022
- *      Author: joel.santos
+/**
+ * @file buttons.c
+ * @author Joel Santos (jsantosrico@gmail.com)
+ * @brief Implementation of debounced button logic and quadrature encoder state machines.
+ * @version 0.1
+ * @date 2026-03-13
+ * * @copyright Copyright (c) 2026
+ * * @details
+ * Implements the core logic for the Button and Encoder hardware abstraction.
+ * Key implementation details include:
+ * * **Long-Press Threshold:** Set to **3000ms** by default (@ref LONGPRESS_TIME_MS).
+ * * **Encoder Logic:** Decodes rotation by sampling the B-signal phase upon a falling
+ * edge interrupt on the A-signal.
+ * * **Safety:** Uses hardware-level asserts to ensure valid pointers and
+ * timer availability during runtime.
  */
 
 #include "buttons.h"

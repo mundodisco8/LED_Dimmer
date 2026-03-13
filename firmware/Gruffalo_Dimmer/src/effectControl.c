@@ -1,12 +1,23 @@
 /**
- * LED Effect Control
- *
- * Because in this iteration of the code I'm went baremetal, I will control the LED effects via interrupts instead of
- * relying in timings. Let's see if it's the right decision or if I regret it and move back to an RTOS and use timers :)
- *
- * The tick for an effect will be the completion of a PWM cycle. The overflow interrupt will determine if changes need
- * to be done in the current PWM.
- * */
+ * @file effectControl.c
+ * @author Joel Santos (jsantosrico@gmail.com)
+ * @brief Implementation of the LED effect control loop and animation logic.
+ * @version 0.1
+ * @date 2026-03-13
+ * * @copyright Copyright (c) 2026
+ * * @details
+ * Implements the core logic for the LED state machine. Key implementation
+ * details include:
+ * * **Control Loop:** The @ref effectControlLoop is designed to be triggered
+ * by a TIMER0 overflow interrupt, running at the PWM frequency to ensure
+ * glitch-free updates.
+ * * **Smooth Transitions:** Employs a ramp-up/down mechanism that adjusts
+ * the compare value by 1 on each PWM cycle until the target brightness
+ * is reached.
+ * * **Persistence:** Maintains the state of each LED channel (target
+ * brightness, current animation, and timing) in internal `LED_t`
+ * structures.
+ */
 
 #include "effectControl.h"
 

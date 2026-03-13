@@ -13,6 +13,13 @@
 
 #include "brightnessLUT.h"
 
+/**
+ * @brief Contains the gamma-corrected brightness values, mapping percentage with two decimal places (as a uint) to the
+ * compare register value required to obtain that perceived level of brightness
+ *
+ * Gamma-value -> 2.3
+ *
+ */
 const uint32_t brightnessLookUp[GAMMA_LUT_SIZE] = {
     0,     0,     0,     0,     0,     0,     0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
     0,     0,     0,     0,     0,     0,     0,     0,     0,     0,     0,     0,     0,     0,     0,     0,

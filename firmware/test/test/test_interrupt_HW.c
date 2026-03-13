@@ -21,7 +21,7 @@ void tearDown(void) {}
 void test_initialiseInterrupts(void) {
     GPIOINT_Init_Expect();
 
-    initialiseInterrupts();
+    enableGPIOInts();
 }
 
 // dummy callback for testing

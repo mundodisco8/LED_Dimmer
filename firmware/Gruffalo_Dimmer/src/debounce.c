@@ -1,6 +1,7 @@
-/*
- * debounce.c
- *
+/**
+ * @file debounce.c
+ * @author Joel Santos (jsantosrico@gmail.com)
+ * @brief Implementation of the button debounce algorithm
  * Adaptation of Kuhn's debounce code using an integrator.
  * An interrupt in a button will start a timer. While the timer is running, the
  * button will be polled frequently and it's value integrated. If the value of
@@ -8,9 +9,11 @@
  * is stopped. If, on the other hand, if the integrator doesn't reach the expected
  * value, then the button press is rejected and the old state of the button is
  * preserved
+ * @version 0.1
+ * @date 2022-11-15
  *
- *  Created on: 15 Nov 2022
- *      Author: joel.santos
+ * @copyright Copyright (c) 2026
+ *
  */
 
 #include "debounce.h"

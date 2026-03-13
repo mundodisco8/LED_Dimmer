@@ -1,3 +1,22 @@
+/**
+ * @file gpio_HW.c
+ * @author Joel Santos (jsantosrico@gmail.com)
+ * @brief Implementation of Silicon Labs specific GPIO hardware wrappers.
+ * @version 0.1
+ * @date 2026-03-13
+ * * @copyright Copyright (c) 2026
+ * * @details
+ * Implements the translation layer between the project's generic GPIO API and
+ * the `em_gpio` SDK.
+ * * ### Internal Logic
+ * * **Port Mapping:** The `getSiLabsPort` helper ensures that only ports
+ * physically present on the BGM220P (Ports A through D) are utilized,
+ * triggering @ref app_assert on invalid port requests.
+ * * **EM4 Wake-up:** Hard-codes the specific pin/port combinations (e.g., PC05
+ * for EM4WU7) that are hardware-capable of waking the core from deep sleep.
+ * * **Safety:** Uses diagnostic pragmas to suppress cast-alignment warnings
+ * common in vendor-provided CMSIS headers.
+ */
 #include "gpio_HW.h"
 
 // Silabs SDK headers

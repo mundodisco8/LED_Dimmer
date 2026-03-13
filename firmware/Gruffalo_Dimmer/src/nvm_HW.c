@@ -1,14 +1,24 @@
 /**
- * @file nvm.c
+ * @file nvm_HW.c
  * @author Joel Santos (jsantosrico@gmail.com)
- * @brief General use of the NVM3 module to store stuff in the internal flash of the chip.
+ * @brief Implementation of NVM3 flash storage for LED state persistence.
  * @version 0.1
- * @date 2026-03-09
- *
- * @copyright Copyright (c) 2026
- *
+ * @date 2026-03-13
+ * * @copyright Copyright (c) 2026
+ * * @details
+ * Implements the storage logic using the Silicon Labs NVM3 default instance
+ * handles.
+ * * ### Internal Logic & Implementation Details
+ * * **Default Instance:** This implementation utilizes the `nvm3_default_handle`.
+ * This approach avoids the need to modify auto-generated linker scripts,
+ * ensuring compatibility with standard Silicon Labs project structures.
+ * * **Repack Management:** The module automatically handles NVM3 repacking
+ * (garbage collection) during initialization to ensure sufficient free space
+ * for new writes.
+ * * **Error Handling:** Extensive use of `Ecode_t` checks ensures that
+ * hardware flash failures or "Object Not Found" errors are logged via
+ * @ref app_log for easier debugging.
  */
-
 #include "nvm_HW.h"
 
 #include <string.h>

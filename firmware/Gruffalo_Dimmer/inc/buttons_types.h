@@ -1,3 +1,13 @@
+/**
+ * @file buttons_types.h
+ * @author Joel Santos (jsantosrico@gmail.com)
+ * @brief Data types from buttons.h
+ * @version 0.1
+ * @date 2026-03-13
+ *
+ * @copyright Copyright (c) 2026
+ *
+ */
 #ifndef _BUTTONS_TYPES_H_
 #define _BUTTONS_TYPES_H_
 

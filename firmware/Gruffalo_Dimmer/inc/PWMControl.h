@@ -1,3 +1,34 @@
+/**
+ * @file PWMControl.h
+ * @version 0.1
+ * @brief Pulse Width Modulation (PWM) Controller for LED Brightness.
+ * @defgroup PWM_CONTROL PWM Control Module
+ * @{
+ *
+ * ### Detailed Description
+ * This module provides an interface to configure and control **TIMER0** in PWM mode
+ * specifically for LED intensity management. It supports up to three channels
+ * (defined by @ref PWM_CHANNELS) and implements hardware-level timing control.
+ *
+ * ### Key Features
+ * * **Gamma Correction:** Uses a pre-computed Look-Up Table (LUT) to map percentage
+ * brightness to hardware compare values, ensuring linear visual perception.
+ * * **Frequency Constraints:** Operates within a safe range of 250Hz to 1000Hz to
+ * maintain high resolution (minimum 12-bit) and avoid flicker.
+ * * **Hardware Abstraction:** Interfaces with `timer_HW` and `gpio_HW` to manage
+ * registers and pin multiplexing.
+ *
+ * ### Initialization Sequence
+ * 1. Initialize the timer hardware and set frequency: @ref initTimer0PWM.
+ * 2. Configure specific Capture/Compare (CC) channels and pins: @ref initTimer0CCChannel.
+ * 3. Set the desired duty cycle (0-10000): @ref setDutyCycle.
+ * * @note Changing @ref PWM_FREQUENCY requires a rebuild of the Gamma LUT to maintain
+ * accuracy.
+ *
+ * @author Joel Santos (jsantosrico@gmail.com)
+ * @date 2026-03-13
+ */
+
 #ifndef _PWMCONTROL_H_
 #define _PWMCONTROL_H_
 
@@ -6,11 +37,6 @@
 
 #include "gpio_HW_types.h"
 #include "timer_HW_types.h"
-
-// TODO: THis is probably bad
-extern volatile uint32_t dutyCycle0;
-extern volatile uint32_t dutyCycle1;
-extern volatile uint32_t dutyCycle2;
 
 ////
 // Defines and Consts
@@ -25,8 +51,7 @@ extern volatile uint32_t dutyCycle2;
 #define MIN_BRIGHTNESS 0UL
 
 /**
- * @brief
- *
+ * @brief The current PWM Frequency
  */
 extern const uint32_t PWM_FREQUENCY;
 
