@@ -1,0 +1,6 @@
+---
+# Generated with https://clang-format-configurator.site/
+BasedOnStyle: Google
+ColumnLimit: 120
+IndentWidth: 4
+ReflowComments: false

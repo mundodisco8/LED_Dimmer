@@ -19,15 +19,24 @@ This is more or less how it looks like. The renders are done with pcb2blender, a
 
 <p align="center"> <img src="support/img/LED_Dimmer-3D_blenderTop.png" height="300px" title="Top"> <img src="support/img/LED_Dimmer-3D_blenderTopSlanted.png" height="300px" title="Top Slanted"></p>
 
+## Working with this project.
+
+It has two elements:
+
+* The hardware is included as a KiCad project. All the files needed are in the `hardware` folder. Make sure you read the [`Readme.md`](hardware/Readme.md) file present there if you want to open it or modify something.
+* The firmware is provided as a Simplicity Studio project (Silicon Labs' IDE). You can find it in the `src` folder. Like the HW project, check the [`Readme.md`](src/readme.md) file to get more details about it.
+
 ## Tools I'm Using / Stuff I'm Stealing.
 
 Made with:
 
-* KiCad, obs.
+* KiCad for the HW design, Simplicity Studio / VS Code for the Firmware.
+* Unity for unit testing.
 * Inkscape, for the art manipulation.
 * Fusion360, for 3D model generation, as a source for my Fab layers and for the enclosure.
 * Blender + [pcb2blender](https://github.com/30350n/pcb2blender), to generate my renders.
 * I'm using [KiBot](https://github.com/INTI-CMNB/KiBot) as the main tool in my CI/CD pipeline.
+* I used the Pacifico font in some text elements in the PCB ([link](https://fonts.google.com/specimen/Pacifico))
 
 Things I definitely didn't do:
 
