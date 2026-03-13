@@ -1,0 +1,31 @@
+{
+    "configurations": [
+        {
+            "name": "Gruffalo_Dimmer_silabs_debug:default_config",
+            "cwd": "${workspaceFolder}",
+            "type": "cortex-debug",
+            "request": "launch",
+            "serverpath": "C:\\Users\\mundo\\.silabs\\slt\\installs\\archive\\exx32-v6.0.31\\JLinkGDBServerCL.exe",
+            "servertype": "jlink",
+            "gdbPath": "C:\\Users\\mundo\\.silabs\\slt\\installs\\archive\\exx32-v6.0.31\\arm-none-eabi-gdb.exe",
+            "device": "BGM220PC22WGA",
+            "svdFile": "C:\\Users\\mundo\\AppData\\Local\\Temp\\silabs_extension\\silabs_extension\\svd\\BGM220PC22WGA.svd",
+            "runToEntryPoint": "main",
+            "rtos": "FreeRTOS",
+            "showDevDebugOutput": "raw",
+            "executable": "c:/Users/mundo/OneDrive/Desktop/LED_Dimmer/firmware/Gruffalo_Dimmer/cmake_gcc/build/base/Gruffalo_Dimmer.out",
+            "preLaunchTask": "Gruffalo_Dimmer_silabs_debug:default_config_combined",
+            "breakAfterReset": true,
+            "serialNumber": "440270126",
+            "overrideLaunchCommands": [
+                "exec-file c:/Users/mundo/OneDrive/Desktop/LED_Dimmer/firmware/Gruffalo_Dimmer/cmake_gcc/build/base/Gruffalo_Dimmer.out",
+                "symbol-file c:/Users/mundo/OneDrive/Desktop/LED_Dimmer/firmware/Gruffalo_Dimmer/cmake_gcc/build/base/Gruffalo_Dimmer.out"
+            ],
+            "overrideResetCommands": [
+                "monitor reset",
+                "set $pc = __Vectors[1]",
+                "set $sp = __Vectors[0]"
+            ]
+        }
+    ]
+}

@@ -43,8 +43,20 @@ _autosave-*
 LED_Dimmer-*rc.html
 
 ## Silabs FW
+# From SS6 Tips and Tricks Git Ignore section
+**/.projectlinkstore
+
+# Rubbish - Not needed as indicated by SiLabs
+**/.trash
+**/.uceditor
+**/*.bak*
+
 # Artifacts
-**/GNU*/
+**/cmake_gcc/build/**
 
 # Test Artifacts
 **/test/build/
+
+# CPPCheck
+**/cppCheck_html_report/**
+**/cppCheck_build/**

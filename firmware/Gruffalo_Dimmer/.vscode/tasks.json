@@ -1,0 +1,47 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Gruffalo_Dimmer_silabs_debug:default_config_setup",
+            "type": "shell",
+            "command": "C:/Users/mundo/.silabs/slt/installs/conan/p/cmakefa35ab0687064/p/bin/cmake.exe --preset project",
+            "options": {
+                "cwd": "c:/Users/mundo/OneDrive/Desktop/LED_Dimmer/firmware/Gruffalo_Dimmer/cmake_gcc"
+            }
+        },
+        {
+            "label": "Gruffalo_Dimmer_silabs_debug:default_config_build",
+            "type": "shell",
+            "command": "C:/Users/mundo/.silabs/slt/installs/conan/p/cmakefa35ab0687064/p/bin/cmake.exe --build --preset default_config",
+            "options": {
+                "cwd": "c:/Users/mundo/OneDrive/Desktop/LED_Dimmer/firmware/Gruffalo_Dimmer/cmake_gcc"
+            }
+        },
+        {
+            "label": "Gruffalo_Dimmer_silabs_debug:default_config_flash",
+            "type": "shell",
+            "command": "C:/Users/mundo/.silabs/slt/installs/archive/Simplicity Commander/commander.exe",
+            "args": [
+                "flash",
+                "c:/Users/mundo/OneDrive/Desktop/LED_Dimmer/firmware/Gruffalo_Dimmer/cmake_gcc/build/base/Gruffalo_Dimmer.hex",
+                "--halt",
+                "--serialno",
+                "440270126",
+                "--device",
+                "BGM220PC22WGA"
+            ]
+        },
+        {
+            "label": "Gruffalo_Dimmer_silabs_debug:default_config_combined",
+            "dependsOrder": "sequence",
+            "presentation": {
+                "reveal": "never"
+            },
+            "dependsOn": [
+                "Gruffalo_Dimmer_silabs_debug:default_config_setup",
+                "Gruffalo_Dimmer_silabs_debug:default_config_build",
+                "Gruffalo_Dimmer_silabs_debug:default_config_flash"
+            ]
+        }
+    ]
+}

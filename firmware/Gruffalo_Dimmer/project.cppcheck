@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="1">
+    <builddir>cppcheck_build</builddir>
+    <platform>bgm220.xml</platform>
+
+    <analyze-all-vs-configs>false</analyze-all-vs-configs>
+    <check-headers>true</check-headers>
+
+    <paths>
+        <dir name="."/>
+    </paths>
+
+    <exclude>
+        <path name="*autogen/*"/>
+        <path name="*config/*"/>
+        <path name="*simplicity_sdk_*/*"/>
+        <path name="*cmake_gcc/*"/>
+    </exclude>
+
+    <libraries>
+        <library>gnu</library>
+    </libraries>
+
+    <defines>
+        <define name="__GNUC__"/>
+    </defines>
+
+    <!-- Don't do <suppresions> here, use .cppcheck_ignore -->
+
+    <importproject>cmake_gcc/build/compile_commands.json</importproject>
+</project>

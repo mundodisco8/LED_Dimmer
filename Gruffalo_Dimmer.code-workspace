@@ -1,0 +1,33 @@
+{
+    "folders": [
+        {
+            "name": "Source",
+            "path": "firmware/Gruffalo_Dimmer"
+        },
+        {
+            "name": "Ceedling Tests",
+            "path": "firmware/test"
+        }
+    ],
+    "settings": {
+        "files.associations": {
+            "*.h": "c",
+            "cstdio": "c"
+        },
+        "workbench.colorCustomizations": {
+            "activityBar.activeBackground": "#f30000",
+            "activityBar.background": "#f30000",
+            "activityBar.foreground": "#e7e7e7",
+            "activityBar.inactiveForeground": "#e7e7e799",
+            "activityBarBadge.background": "#00df00",
+            "activityBarBadge.foreground": "#15202b",
+            "sash.hoverBorder": "#f30000",
+            "statusBar.background": "#f30000",
+            "statusBar.foreground": "#e7e7e7",
+            "statusBarItem.hoverBackground": "#ff2727",
+            "statusBarItem.remoteBackground": "#f30000",
+            "statusBarItem.remoteForeground": "#e7e7e7"
+        },
+        "peacock.color": "#F30000"
+    }
+}
