@@ -275,12 +275,12 @@ void quad1ClockWise(void* ctx) {
 
     if (LED_CHANNELS_ALL != LEDChannelArray[channelIdx]) {
         // Increase only this channel
-        updateBreathePeriod(LEDChannelArray[channelIdx], -BREATHE_PERIOD_MS_DELTA);
+        updateBreathePeriod(LEDChannelArray[channelIdx], BREATHE_PERIOD_MS_DELTA);
     } else {
         // increase all channels
-        updateBreathePeriod(LED_CHANNEL_1, -BREATHE_PERIOD_MS_DELTA);
-        updateBreathePeriod(LED_CHANNEL_2, -BREATHE_PERIOD_MS_DELTA);
-        updateBreathePeriod(LED_CHANNEL_3, -BREATHE_PERIOD_MS_DELTA);
+        updateBreathePeriod(LED_CHANNEL_1, BREATHE_PERIOD_MS_DELTA);
+        updateBreathePeriod(LED_CHANNEL_2, BREATHE_PERIOD_MS_DELTA);
+        updateBreathePeriod(LED_CHANNEL_3, BREATHE_PERIOD_MS_DELTA);
     }
 }
 
@@ -296,11 +296,11 @@ void quad1CounterClockWise(void* ctx) {
     const uint32_t BREATHE_PERIOD_MS_DELTA = -(BREATHE_LUT_SIZE * 1000UL / PWM_FREQUENCY);  // can't be a global :S
     if (LED_CHANNELS_ALL != LEDChannelArray[channelIdx]) {
         // Increase only this channel
-        updateBreathePeriod(LEDChannelArray[channelIdx], -BREATHE_PERIOD_MS_DELTA);
+        updateBreathePeriod(LEDChannelArray[channelIdx], BREATHE_PERIOD_MS_DELTA);
     } else {
         // increase all channels
-        updateBreathePeriod(LED_CHANNEL_1, -BREATHE_PERIOD_MS_DELTA);
-        updateBreathePeriod(LED_CHANNEL_2, -BREATHE_PERIOD_MS_DELTA);
-        updateBreathePeriod(LED_CHANNEL_3, -BREATHE_PERIOD_MS_DELTA);
+        updateBreathePeriod(LED_CHANNEL_1, BREATHE_PERIOD_MS_DELTA);
+        updateBreathePeriod(LED_CHANNEL_2, BREATHE_PERIOD_MS_DELTA);
+        updateBreathePeriod(LED_CHANNEL_3, BREATHE_PERIOD_MS_DELTA);
     }
 }

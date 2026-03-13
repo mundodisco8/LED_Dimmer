@@ -34,6 +34,13 @@
 // our headers
 #include "effectControl.h"
 
+// Trickery to allow testing of static elements. Better to mess a bit with the code than to overcomplicate tests
+#ifdef TEST
+#define STATIC
+#else
+#define STATIC static
+#endif
+
 /**
  * @brief Use default nvm3 area
  * I explored a bit and there was no simpler way that I found to this without having to modify the linkerscript. Nothing
@@ -48,7 +55,7 @@ extern const uint32_t linker_vectors_begin[];  // Start of vector table / beginn
 #define MAIN_FLASH_BASE ((uint32_t)linker_vectors_begin)
 #define MAIN_FLASH_END ((uint32_t)linker_nvm_begin)
 #define NVM3_BASE MAIN_FLASH_END
-nvm3_Init_t nvm3_init_data = {
+STATIC nvm3_Init_t nvm3_init_data = {
     (nvm3_HalPtr_t)NVM3_BASE,
     NVM3_DEFAULT_NVM_SIZE,
 #if (NVM3_DEFAULT_CACHE_SIZE != 0)
@@ -66,7 +73,7 @@ nvm3_Init_t nvm3_init_data = {
 nvm3_Init_t nvm3_init_data = {0};
 #endif  // TEST
 
-static nvm3_Handle_t handle;
+STATIC nvm3_Handle_t handle;
 
 /**
  * @brief Initialises the NVM
@@ -80,7 +87,7 @@ void nvm_init(void) {
     // Open NVM3
     status = nvm3_open(&handle, &nvm3_init_data);
     if (status != SL_STATUS_OK) {
-        // Handle error
+        // TODO: Handle error
         return;
     }
 }
@@ -152,6 +159,7 @@ void nvm_writeLEDContext(const nvmKeys_t key, const LEDContext_t* ptrContext) {
 void nvm_checkForRepack(void) {
     // TODO: check for status
     if (nvm3_repackNeeded(&handle)) {
+        // TODO: check returns
         nvm3_repack(&handle);
     }
 }

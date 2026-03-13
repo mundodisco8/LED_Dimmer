@@ -371,13 +371,13 @@ void test_startButtonTimer_WrongTypeOfTimer(void) {
 }
 
 void test_startButtonTimer_StartTimerReturnsError(void) {
-    button_t testButton = {.samplingTimerPtr = samplingTimerPtr};
+    button_t testButton = {.longPressTimerPtr = longPressTimerPtr};
 
-    SLP_isTimerRunning_ExpectAndReturn(testButton.samplingTimerPtr, false);
-    SLP_startTimer_ExpectAndReturn(testButton.samplingTimerPtr, DEBOUNCE_SAMPLING_PERIOD_MS, TIMER_ONE_SHOT,
-                                   samplingTimerCallback, &testButton, SLPTIMER_ERROR);
+    SLP_isTimerRunning_ExpectAndReturn(testButton.longPressTimerPtr, false);
+    SLP_startTimer_ExpectAndReturn(testButton.longPressTimerPtr, LONGPRESS_TIME_MS, TIMER_ONE_SHOT,
+                                   longPressTimerCallback, &testButton, SLPTIMER_ERROR);
 
-    uint32_t retVal = startButtonTimer(&testButton, TIMER_SAMPLE);
+    uint32_t retVal = startButtonTimer(&testButton, TIMER_LONGPRESS);
     TEST_ASSERT_EQUAL_UINT32(BTN_ERROR, retVal);
 }
 

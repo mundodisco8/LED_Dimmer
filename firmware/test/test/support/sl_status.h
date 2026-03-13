@@ -16,5 +16,6 @@ typedef uint32_t sl_status_t;
 #define SL_STATUS_INVALID_STATE ((sl_status_t)0x0002)  ///< Generic invalid state error.
 #define SL_STATUS_NULL_POINTER ((sl_status_t)0x0022)   ///< Invalid null pointer received as argument.
 #define SL_STATUS_NOT_FOUND ((sl_status_t)0x002D)      ///< Item could not be found.
+#define SL_STATUS_INVALID_KEY ((sl_status_t)0x0029)    ///< Invalid key.
 
 #endif  // SL_STATUS_H

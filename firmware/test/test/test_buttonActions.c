@@ -82,22 +82,32 @@ void test_gpioCallBackQuad(void) {
 
 // button0 changes the current PWM channel active. Third press resets channel to 0
 void test_button0ReleasedAfterShortPress(void) {
-    uint32_t expectedCh = 1;
+    LEDChannel_t testChannel = LED_CHANNEL_1;
     button_t testBtn = {.prevState = BUTTON_PRESSED};  // So all releases will be "short" releases
+    channelIdx = (uint32_t)testChannel;
+
+    // Set Expectations - 1st press, switch to ch2
+    LEDChannel_t expectedCh = LED_CHANNEL_2;
+
+    button0Released(&testBtn);
+    TEST_ASSERT_EQUAL(expectedCh, channelIdx);
+
+    // Second press gets channel 3
+    expectedCh = LED_CHANNEL_3;
 
     // Set Expectations
     button0Released(&testBtn);
     TEST_ASSERT_EQUAL(expectedCh, channelIdx);
 
-    // Second press gets channel 2
-    expectedCh = 2;
+    // Third press sets to ALL
+    expectedCh = LED_CHANNELS_ALL;
 
     // Set Expectations
     button0Released(&testBtn);
     TEST_ASSERT_EQUAL(expectedCh, channelIdx);
 
-    // Third press rests to 0;
-    expectedCh = 0;
+    // And fourth resets
+    expectedCh = LED_CHANNEL_1;
 
     // Set Expectations
     button0Released(&testBtn);
@@ -123,7 +133,7 @@ void test_button0LongPressed(void) { button0LongPressed(NULL); }
 // Rotating CW increases channel's % by 5, and CCW decreases it
 // Rotating while any press rises/lowers all channels
 
-void test_quad0ClockWise(void) {
+void test_quad0ClockWise_SingleChannelSuccess(void) {
     uint32_t expectedInitialBrightness = 1000;
     uint32_t expectedFinalBrightness = expectedInitialBrightness + BRIGHTNESS_DELTA;
     LEDChannel_t expectedChannel = LED_CHANNEL_1;
@@ -145,7 +155,7 @@ void test_quad0ClockWise(void) {
     quad0ClockWise(NULL);
 }
 
-void test_quad0ClockWise_MaxBrightness(void) {
+void test_quad0ClockWise_SingleChannelMaxBrightness(void) {
     uint32_t expectedInitialBrightness = MAX_BRIGHTNESS;
     LEDChannel_t expectedChannel = LED_CHANNEL_1;
 
@@ -155,11 +165,12 @@ void test_quad0ClockWise_MaxBrightness(void) {
     quad0ClockWise(NULL);
 }
 
-void test_quad0ClockWise_WhileShortPressed(void) {
+void test_quad0ClockWise_AllChannelsPressed(void) {
     uint32_t testBrightnessCh1 = 1000;
     uint32_t testBrightnessCh2 = 2000;
     uint32_t testBrightnessCh3 = 3000;
-    button_t testButton = {.state = BUTTON_PRESSED};
+    LEDChannel_t testChannel = LED_CHANNELS_ALL;
+    channelIdx = (uint32_t)testChannel;
 
     // Set Expectations
     uint32_t expectedBirghtnessCh1 = testBrightnessCh1 + BRIGHTNESS_DELTA;
@@ -176,7 +187,7 @@ void test_quad0ClockWise_WhileShortPressed(void) {
     quad0ClockWise(NULL);
 }
 
-void test_quad0CounterClockWise(void) {
+void test_quad0CounterClockWise_SingleChannelSuccess(void) {
     uint32_t expectedInitialBrightness = 9000;
     uint32_t expectedFinalBrightness = expectedInitialBrightness - BRIGHTNESS_DELTA;
     LEDChannel_t expectedChannel = LED_CHANNEL_1;
@@ -198,12 +209,34 @@ void test_quad0CounterClockWise(void) {
     quad0CounterClockWise(NULL);
 }
 
-void test_quad0CounterClockWise_MinBrightness(void) {
+void test_quad0CounterClockWise_SingleChannelMinBrightness(void) {
     uint32_t expectedInitialBrightness = MIN_BRIGHTNESS;
     LEDChannel_t expectedChannel = LED_CHANNEL_1;
 
     // Set Expectations
     getLEDBrightness_ExpectAndReturn(expectedChannel, expectedInitialBrightness);
+
+    quad0CounterClockWise(NULL);
+}
+
+void test_quad0CounterClockWise_AllChannelsPressed(void) {
+    uint32_t testBrightnessCh1 = 1000;
+    uint32_t testBrightnessCh2 = 2000;
+    uint32_t testBrightnessCh3 = 3000;
+    LEDChannel_t testChannel = LED_CHANNELS_ALL;
+    channelIdx = (uint32_t)testChannel;
+
+    // Set Expectations
+    uint32_t expectedBirghtnessCh1 = testBrightnessCh1 - BRIGHTNESS_DELTA;
+    uint32_t expectedBirghtnessCh2 = testBrightnessCh2 - BRIGHTNESS_DELTA;
+    uint32_t expectedBirghtnessCh3 = testBrightnessCh3 - BRIGHTNESS_DELTA;
+
+    getLEDBrightness_ExpectAndReturn(LED_CHANNEL_1, testBrightnessCh1);
+    setLEDBrightness_ExpectAndReturn(LED_CHANNEL_1, expectedBirghtnessCh1, EFF_OK);
+    getLEDBrightness_ExpectAndReturn(LED_CHANNEL_2, testBrightnessCh2);
+    setLEDBrightness_ExpectAndReturn(LED_CHANNEL_2, expectedBirghtnessCh2, EFF_OK);
+    getLEDBrightness_ExpectAndReturn(LED_CHANNEL_3, testBrightnessCh3);
+    setLEDBrightness_ExpectAndReturn(LED_CHANNEL_3, expectedBirghtnessCh3, EFF_OK);
 
     quad0CounterClockWise(NULL);
 }
@@ -222,6 +255,7 @@ void test_button1Released_FixedToBreathe(void) {
     LEDChannel_t testChannel = LED_CHANNEL_1;
     anim_t testCurrAnimation = ANIM_FIXED;
     anim_t expectedNewAnimation = ANIM_BREATHE;
+    channelIdx = testChannel;
 
     // Set Expectations
     getAnimation_ExpectAndReturn(testChannel, testCurrAnimation);
@@ -235,16 +269,37 @@ void test_button1Released_BreatheToFixed(void) {
     // Shortpress, current lastPressMs is 0
     button_t testBtn = {
         .prevState = BUTTON_PRESSED  // so release is "short" release
-
     };
     LEDChannel_t testChannel = LED_CHANNEL_1;
     anim_t testCurrAnimation = ANIM_BREATHE;
     anim_t expectedNewAnimation = ANIM_FIXED;
+    channelIdx = testChannel;
 
     // Set Expectations
     getAnimation_ExpectAndReturn(testChannel, testCurrAnimation);
     setAnimation_ExpectAndReturn(testChannel, expectedNewAnimation, EFF_OK);
     getEffectName_ExpectAndReturn(expectedNewAnimation, "Fixed Brightness");
+
+    button1Released(&testBtn);
+}
+
+void test_button1Released_AllChannelsFixedToBreathe(void) {
+    // Shortpress, current lastPressMs is 0
+    button_t testBtn = {
+        .prevState = BUTTON_PRESSED  // so release is "short" release
+    };
+    LEDChannel_t testChannel = LED_CHANNELS_ALL;
+    anim_t testCurrAnimation = ANIM_FIXED;
+    anim_t expectedNewAnimation = ANIM_BREATHE;
+    channelIdx = testChannel;
+
+    // Set Expectations
+    LEDChannel_t expectedChannelGetEffect = LED_CHANNEL_1;
+    getAnimation_ExpectAndReturn(expectedChannelGetEffect, testCurrAnimation);
+    setAnimation_ExpectAndReturn(LED_CHANNEL_1, expectedNewAnimation, EFF_OK);
+    setAnimation_ExpectAndReturn(LED_CHANNEL_2, expectedNewAnimation, EFF_OK);
+    setAnimation_ExpectAndReturn(LED_CHANNEL_3, expectedNewAnimation, EFF_OK);
+    getEffectName_ExpectAndReturn(expectedNewAnimation, "Breathe Effect");
 
     button1Released(&testBtn);
 }
@@ -271,7 +326,7 @@ void test_button1LongPressed(void) { button1LongPressed(NULL); }
  *
  */
 
-void test_quad1Clockwise_IncreaseBreathePeriod(void) {
+void test_quad1Clockwise_IncreaseBreathePeriod_SingleChannelSuccess(void) {
     uint32_t currentPeriod = 1000;
     LEDChannel_t expectedChannel = LED_CHANNEL_1;
 
@@ -284,12 +339,35 @@ void test_quad1Clockwise_IncreaseBreathePeriod(void) {
     quad1ClockWise(NULL);
 }
 
+void test_quad1ClockWise_AllChannelsPressed(void) {
+    uint32_t testPeriodCh1 = 1000;
+    uint32_t testPeriodCh2 = 2000;
+    uint32_t testPeriodCh3 = 3000;
+    LEDChannel_t testChannel = LED_CHANNELS_ALL;
+    channelIdx = (uint32_t)testChannel;
+    uint32_t BREATHE_PERIOD_MS_DELTA = BREATHE_LUT_SIZE * 1000UL / PWM_FREQUENCY;
+
+    // Set Expectations
+    uint32_t expectedPeriodCh1 = testPeriodCh1 + BREATHE_PERIOD_MS_DELTA;
+    uint32_t expectedPeriodCh2 = testPeriodCh2 + BREATHE_PERIOD_MS_DELTA;
+    uint32_t expectedPeriodCh3 = testPeriodCh3 + BREATHE_PERIOD_MS_DELTA;
+
+    getBreathePeriod_ExpectAndReturn(LED_CHANNEL_1, testPeriodCh1);
+    setBreathePeriod_ExpectAndReturn(LED_CHANNEL_1, expectedPeriodCh1, EFF_OK);
+    getBreathePeriod_ExpectAndReturn(LED_CHANNEL_2, testPeriodCh2);
+    setBreathePeriod_ExpectAndReturn(LED_CHANNEL_2, expectedPeriodCh2, EFF_OK);
+    getBreathePeriod_ExpectAndReturn(LED_CHANNEL_3, testPeriodCh3);
+    setBreathePeriod_ExpectAndReturn(LED_CHANNEL_3, expectedPeriodCh3, EFF_OK);
+
+    quad1ClockWise(NULL);
+}
+
 /**
  * quad1CounterClockwise
  *
  */
 
-void test_quad1CounterClockwise_DecreaseBreathePeriod(void) {
+void test_quad1CounterClockwise_DecreaseBreathePeriod_SingleChannel(void) {
     uint32_t currentPeriod = 1000;
     LEDChannel_t expectedChannel = LED_CHANNEL_1;
 
@@ -302,7 +380,7 @@ void test_quad1CounterClockwise_DecreaseBreathePeriod(void) {
     quad1CounterClockWise(NULL);
 }
 
-void test_quad1CounterClockwise_DontGoBelowMinimum(void) {
+void test_quad1CounterClockwise_DontGoBelowMinimum_SingleChannel(void) {
     uint32_t currentPeriod = BREATHE_MIN_PERIOD_MS;
     LEDChannel_t expectedChannel = LED_CHANNEL_1;
 
@@ -311,6 +389,29 @@ void test_quad1CounterClockwise_DontGoBelowMinimum(void) {
     // Set expecations
     getBreathePeriod_ExpectAndReturn(expectedChannel, currentPeriod);
     setBreathePeriod_ExpectAndReturn(expectedChannel, expectedPeriod, EFF_OK);
+
+    quad1CounterClockWise(NULL);
+}
+
+void test_quad1CounterClockWise_AllChannelsPressed(void) {
+    uint32_t testPeriodCh1 = 1000;
+    uint32_t testPeriodCh2 = 2000;
+    uint32_t testPeriodCh3 = 3000;
+    LEDChannel_t testChannel = LED_CHANNELS_ALL;
+    channelIdx = (uint32_t)testChannel;
+    uint32_t BREATHE_PERIOD_MS_DELTA = -(BREATHE_LUT_SIZE * 1000UL / PWM_FREQUENCY);
+
+    // Set Expectations
+    uint32_t expectedPeriodCh1 = testPeriodCh1 + BREATHE_PERIOD_MS_DELTA;
+    uint32_t expectedPeriodCh2 = testPeriodCh2 + BREATHE_PERIOD_MS_DELTA;
+    uint32_t expectedPeriodCh3 = testPeriodCh3 + BREATHE_PERIOD_MS_DELTA;
+
+    getBreathePeriod_ExpectAndReturn(LED_CHANNEL_1, testPeriodCh1);
+    setBreathePeriod_ExpectAndReturn(LED_CHANNEL_1, expectedPeriodCh1, EFF_OK);
+    getBreathePeriod_ExpectAndReturn(LED_CHANNEL_2, testPeriodCh2);
+    setBreathePeriod_ExpectAndReturn(LED_CHANNEL_2, expectedPeriodCh2, EFF_OK);
+    getBreathePeriod_ExpectAndReturn(LED_CHANNEL_3, testPeriodCh3);
+    setBreathePeriod_ExpectAndReturn(LED_CHANNEL_3, expectedPeriodCh3, EFF_OK);
 
     quad1CounterClockWise(NULL);
 }

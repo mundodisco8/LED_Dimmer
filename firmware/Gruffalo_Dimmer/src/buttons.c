@@ -244,7 +244,7 @@ btnError_t startButtonTimer(button_t* btnPtr, const btnTimerType_t timerType) {
     if (!SLP_isTimerRunning(timerPtr)) {
         // Don't restart it if it's already running, or noise would extend the debounce time
         if (SLPTIMER_OK != SLP_startTimer(timerPtr, time, behaviour, callbackPtr, btnPtr)) {
-            app_log_error("Error starting %s timer\r\n", getTimerTypeString(timerType));
+            app_log_error("Error starting %s\r\n", getTimerTypeString(timerType));
             return BTN_ERROR;
         }
     }

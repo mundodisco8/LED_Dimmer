@@ -190,6 +190,9 @@
     - __fastcall
   :treat_externs: :exclude # the options being :include or :exclud
   :treat_inlines: :exclude # the options being :include or :exclud
+  # Detect inline functions even when "inline" is hidden behind a macro
+  :inline_function_patterns:
+    #- 'static\s+inline'
 
   # Type handling configuration
   #:unity_helper_path: ''          # specify a string of where to find a unity_helper.h file to discover custom type assertions
