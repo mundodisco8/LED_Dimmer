@@ -1413,6 +1413,315 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "Device:LED_Small"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0.254)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "D"
+				(at -1.27 3.175 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Value" "LED_Small"
+				(at -4.445 -2.54 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 90)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "~"
+				(at 0 0 90)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Light emitting diode, small symbol"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Sim.Pin" "1=K 2=A"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "LED diode light-emitting-diode"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "LED* LED_SMD:* LED_THT:*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "LED_Small_0_1"
+				(polyline
+					(pts
+						(xy -0.762 -1.016) (xy -0.762 1.016)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 0.762) (xy -0.508 1.27) (xy -0.254 1.27) (xy -0.508 1.27) (xy -0.508 1.016)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.508 1.27) (xy 0 1.778) (xy 0.254 1.778) (xy 0 1.778) (xy 0 1.524)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.762 -1.016) (xy -0.762 0) (xy 0.762 1.016) (xy 0.762 -1.016)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 1.016 0) (xy -0.762 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "LED_Small_1_1"
+				(pin passive line
+					(at -2.54 0 0)
+					(length 1.778)
+					(name "K"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 2.54 0 180)
+					(length 1.778)
+					(name "A"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "Device:R"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "R"
+				(at 2.032 0 90)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "R"
+				(at 0 0 90)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at -1.778 0 90)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "~"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Resistor"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "R res resistor"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "R_*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "R_0_1"
+				(rectangle
+					(start -1.016 -2.54)
+					(end 1.016 2.54)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "R_1_1"
+				(pin passive line
+					(at 0 3.81 270)
+					(length 1.27)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -3.81 90)
+					(length 1.27)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "Gruffalo_Dimmer:L78L33A"
 			(exclude_from_sim no)
 			(in_bom yes)
@@ -9370,6 +9679,12 @@
 		(uuid "828b9d1a-3b39-4228-aa33-c87a26dbfeec")
 	)
 	(junction
+		(at 127 120.65)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "82aa1350-156c-4771-9347-b7494e853d3b")
+	)
+	(junction
 		(at 38.1 45.72)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -9380,12 +9695,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "98ce6f8c-634f-4e31-bebe-c87c7260bd19")
-	)
-	(junction
-		(at 68.58 44.45)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "9a0e09d4-a04f-4f08-93f3-ac18756c8bc8")
 	)
 	(junction
 		(at 187.96 88.9)
@@ -9418,6 +9727,10 @@
 		(uuid "dc2f0ed5-6e91-44ff-9cef-ee74262cb817")
 	)
 	(no_connect
+		(at 29.21 81.28)
+		(uuid "0ba5dbaf-b781-4201-a6b5-688fd32f8b14")
+	)
+	(no_connect
 		(at 66.04 26.67)
 		(uuid "1b183983-52ac-4137-af18-16b3708f77ee")
 	)
@@ -9438,6 +9751,10 @@
 		(uuid "1b183983-52ac-4137-af18-16b3708f77f3")
 	)
 	(no_connect
+		(at 63.5 69.85)
+		(uuid "1cd43cfb-046d-476c-9d68-a2644ddf6565")
+	)
+	(no_connect
 		(at 63.5 105.41)
 		(uuid "533f02f1-8486-4945-a2c2-36d31a2ba2c6")
 	)
@@ -9446,28 +9763,16 @@
 		(uuid "533f02f1-8486-4945-a2c2-36d31a2ba2c7")
 	)
 	(no_connect
-		(at 63.5 85.09)
-		(uuid "533f02f1-8486-4945-a2c2-36d31a2ba2c8")
-	)
-	(no_connect
-		(at 63.5 77.47)
-		(uuid "533f02f1-8486-4945-a2c2-36d31a2ba2c9")
-	)
-	(no_connect
-		(at 29.21 97.79)
-		(uuid "9c6f1624-b643-439a-adf3-29433c12b400")
-	)
-	(no_connect
-		(at 29.21 100.33)
-		(uuid "9c6f1624-b643-439a-adf3-29433c12b401")
-	)
-	(no_connect
-		(at 29.21 102.87)
-		(uuid "9c6f1624-b643-439a-adf3-29433c12b402")
+		(at 63.5 72.39)
+		(uuid "9173c56e-5387-4c3d-a3f9-7e07b5e059ce")
 	)
 	(no_connect
 		(at 29.21 105.41)
-		(uuid "bfa8a06e-3f24-4517-98ca-58973e56b104")
+		(uuid "925df779-e76a-4993-9043-d2e3f4763c97")
+	)
+	(no_connect
+		(at 63.5 74.93)
+		(uuid "a5d659a4-f88b-43e4-908d-7e74fe4b370e")
 	)
 	(no_connect
 		(at 63.5 100.33)
@@ -9476,16 +9781,6 @@
 	(no_connect
 		(at 38.1 33.02)
 		(uuid "df3b44f5-a2c5-4d88-a214-80220b82e9d7")
-	)
-	(wire
-		(pts
-			(xy 26.67 78.74) (xy 31.75 78.74)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "01a5a092-b721-4e9e-8384-036c85694a03")
 	)
 	(wire
 		(pts
@@ -9557,6 +9852,16 @@
 		)
 		(uuid "0e7c1412-faf8-4021-9f4f-85bfe5ffcafa")
 	)
+	(wire
+		(pts
+			(xy 29.21 81.28) (xy 31.75 81.28)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "134b7fe9-79a0-4c04-8b2a-dfe8f559ebdd")
+	)
 	(polyline
 		(pts
 			(xy 12.7 166.37) (xy 96.52 166.37)
@@ -9589,6 +9894,16 @@
 	)
 	(wire
 		(pts
+			(xy 140.97 100.33) (xy 140.97 102.87)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1e1c7254-c43b-4ec0-b6a3-a6ae5e66c60c")
+	)
+	(wire
+		(pts
 			(xy 63.5 105.41) (xy 66.04 105.41)
 		)
 		(stroke
@@ -9606,6 +9921,16 @@
 			(type default)
 		)
 		(uuid "28492e58-06d7-4284-8375-d5956c9d2570")
+	)
+	(wire
+		(pts
+			(xy 66.04 44.45) (xy 68.58 44.45)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "298df52e-2e2a-4107-95ff-600ee4c165c9")
 	)
 	(wire
 		(pts
@@ -9649,6 +9974,26 @@
 	)
 	(wire
 		(pts
+			(xy 140.97 120.65) (xy 140.97 118.11)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "33542bdb-82b1-4c6a-825e-31bdc2d8296a")
+	)
+	(wire
+		(pts
+			(xy 127 110.49) (xy 127 113.03)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "33994067-d8f3-46c2-86bc-ef92c2d6414a")
+	)
+	(wire
+		(pts
 			(xy 52.07 144.78) (xy 52.07 147.32)
 		)
 		(stroke
@@ -9679,6 +10024,16 @@
 	)
 	(wire
 		(pts
+			(xy 26.67 76.2) (xy 31.75 76.2)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "404721f1-87c1-4392-a067-7935105cf0bc")
+	)
+	(wire
+		(pts
 			(xy 63.5 77.47) (xy 66.04 77.47)
 		)
 		(stroke
@@ -9686,6 +10041,16 @@
 			(type default)
 		)
 		(uuid "4292ff50-e729-4ab5-b94d-f117a0616f3b")
+	)
+	(wire
+		(pts
+			(xy 113.03 100.33) (xy 113.03 102.87)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "42d15aa9-e854-419b-9273-76ad9f7a2594")
 	)
 	(wire
 		(pts
@@ -9707,6 +10072,16 @@
 		)
 		(uuid "46ca34e3-faea-4abd-8b84-82568dd8d516")
 	)
+	(wire
+		(pts
+			(xy 113.03 118.11) (xy 113.03 120.65)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4bf2b35f-b437-4e7c-be2a-d68e6318bbf5")
+	)
 	(polyline
 		(pts
 			(xy 96.52 12.7) (xy 96.52 119.38)
@@ -9716,6 +10091,16 @@
 			(type default)
 		)
 		(uuid "4df47d60-53f7-435a-8ff2-bb89f8a8e980")
+	)
+	(wire
+		(pts
+			(xy 26.67 78.74) (xy 31.75 78.74)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4fabb51b-029e-4ed4-b277-d86a50ccf24e")
 	)
 	(wire
 		(pts
@@ -9789,16 +10174,6 @@
 	)
 	(wire
 		(pts
-			(xy 66.04 44.45) (xy 68.58 44.45)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "61ab527d-83bc-4066-8173-4b2455ff90d9")
-	)
-	(wire
-		(pts
 			(xy 196.85 86.36) (xy 199.39 86.36)
 		)
 		(stroke
@@ -9839,13 +10214,13 @@
 	)
 	(wire
 		(pts
-			(xy 26.67 81.28) (xy 31.75 81.28)
+			(xy 113.03 120.65) (xy 127 120.65)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "721c7c47-9b44-4bd7-9bd9-dc72657460d5")
+		(uuid "71afb403-02be-467c-a3f7-03e6b3a045ff")
 	)
 	(wire
 		(pts
@@ -9899,6 +10274,16 @@
 	)
 	(wire
 		(pts
+			(xy 140.97 110.49) (xy 140.97 113.03)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7ca09430-90d7-4d5e-9914-cd2763a7f787")
+	)
+	(wire
+		(pts
 			(xy 29.21 105.41) (xy 31.75 105.41)
 		)
 		(stroke
@@ -9919,16 +10304,6 @@
 	)
 	(wire
 		(pts
-			(xy 68.58 46.99) (xy 68.58 44.45)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "8358e100-29ed-472d-a8cb-c2ee1e5bf271")
-	)
-	(wire
-		(pts
 			(xy 50.8 147.32) (xy 52.07 147.32)
 		)
 		(stroke
@@ -9936,6 +10311,16 @@
 			(type default)
 		)
 		(uuid "84a1cefd-c384-4670-bd8f-841b06ea48e7")
+	)
+	(wire
+		(pts
+			(xy 113.03 110.49) (xy 113.03 113.03)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "84bf740d-79c0-45a6-b22f-490b2aa4a401")
 	)
 	(polyline
 		(pts
@@ -9996,16 +10381,6 @@
 			(type default)
 		)
 		(uuid "9067583d-c875-4443-9f92-b57a9ac9697a")
-	)
-	(wire
-		(pts
-			(xy 26.67 76.2) (xy 31.75 76.2)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "90b590a3-bf23-42cb-bcd1-2e1e96e74bd2")
 	)
 	(wire
 		(pts
@@ -10076,6 +10451,26 @@
 			(type default)
 		)
 		(uuid "aa2ad5a0-170a-4256-8da0-5e1828aeca73")
+	)
+	(wire
+		(pts
+			(xy 127 120.65) (xy 127 123.19)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "aaccd6b3-88e3-4a11-86c7-dad37cf031ca")
+	)
+	(wire
+		(pts
+			(xy 127 120.65) (xy 140.97 120.65)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "abbbb432-3c94-4f85-850a-da820ed29f0c")
 	)
 	(wire
 		(pts
@@ -10229,16 +10624,6 @@
 	)
 	(wire
 		(pts
-			(xy 68.58 44.45) (xy 71.12 44.45)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "cee71c31-78f0-40f4-a12c-cb9243989cbe")
-	)
-	(wire
-		(pts
 			(xy 19.05 185.42) (xy 19.05 187.96)
 		)
 		(stroke
@@ -10256,6 +10641,16 @@
 			(type default)
 		)
 		(uuid "d190e8fa-91d3-4488-84af-69ea5aaad47f")
+	)
+	(wire
+		(pts
+			(xy 127 118.11) (xy 127 120.65)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d6190386-2b2b-48dd-b2f8-1dfec78eee71")
 	)
 	(wire
 		(pts
@@ -10429,6 +10824,16 @@
 	)
 	(wire
 		(pts
+			(xy 127 100.33) (xy 127 102.87)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ef1a517f-6e93-4eec-889a-e3953340835b")
+	)
+	(wire
+		(pts
 			(xy 38.1 43.18) (xy 38.1 45.72)
 		)
 		(stroke
@@ -10469,7 +10874,7 @@
 	)
 	(global_label "BTN1"
 		(shape input)
-		(at 71.12 44.45 0)
+		(at 68.58 46.99 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -10479,34 +10884,12 @@
 		)
 		(uuid "03975ee5-ff73-4e93-86b5-f16a2c459784")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 78.3107 44.5294 0)
+			(at 75.7707 47.0694 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 				(justify left)
-				(hide yes)
-			)
-		)
-	)
-	(global_label "BTN0"
-		(shape input)
-		(at 26.67 76.2 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "05b0e91d-c25a-4645-bab7-438ba2091f10")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 19.4793 76.1206 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
 				(hide yes)
 			)
 		)
@@ -10599,9 +10982,53 @@
 			)
 		)
 	)
+	(global_label "LED5"
+		(shape input)
+		(at 26.67 73.66 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "440bc778-d254-4bf7-88d8-2fef407b0254")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 19.0282 73.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "LED3"
+		(shape input)
+		(at 113.03 100.33 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "49f08993-a3e7-4426-af64-a2762ad09dac")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 105.3882 100.33 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
 	(global_label "ENC1_A"
 		(shape input)
-		(at 26.67 71.12 180)
+		(at 26.67 76.2 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -10611,7 +11038,7 @@
 		)
 		(uuid "4f30445e-a891-426a-b17a-a0a68b72f120")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 17.2417 71.0406 0)
+			(at 17.2417 76.1206 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10667,7 +11094,7 @@
 	)
 	(global_label "PWM0"
 		(shape input)
-		(at 63.5 74.93 180)
+		(at 29.21 102.87 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -10677,7 +11104,7 @@
 		)
 		(uuid "5307f21b-ce4d-4a7b-846d-d837c7970510")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 55.7045 74.8506 0)
+			(at 21.4145 102.7906 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10711,7 +11138,7 @@
 	)
 	(global_label "ENC0_A"
 		(shape input)
-		(at 26.67 78.74 180)
+		(at 63.5 85.09 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -10721,7 +11148,7 @@
 		)
 		(uuid "589e05e3-77d4-4943-9602-446fc8e6847c")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 17.2417 78.6606 0)
+			(at 54.0717 85.0106 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10733,7 +11160,7 @@
 	)
 	(global_label "ENC1_B"
 		(shape input)
-		(at 26.67 73.66 180)
+		(at 26.67 78.74 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -10743,7 +11170,7 @@
 		)
 		(uuid "5a053aaa-040a-4283-a1fb-5af5b0a50c51")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 17.0602 73.7394 0)
+			(at 17.0602 78.8194 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10799,7 +11226,7 @@
 	)
 	(global_label "ENC0_B"
 		(shape input)
-		(at 26.67 81.28 180)
+		(at 63.5 77.47 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -10809,7 +11236,29 @@
 		)
 		(uuid "7f9ac52f-469c-4227-885e-7722ff58e89a")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 17.0602 81.3594 0)
+			(at 53.8902 77.5494 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "LED4"
+		(shape input)
+		(at 127 100.33 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "8317dc95-cbdd-49d0-9b50-b2be15416d10")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 119.3582 100.33 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10885,6 +11334,50 @@
 			)
 		)
 	)
+	(global_label "LED4"
+		(shape input)
+		(at 26.67 71.12 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "a0a7d1f6-37e7-4624-8deb-c65d00e58f41")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 19.0282 71.12 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "LED5"
+		(shape input)
+		(at 140.97 100.33 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "a83a2d6f-a2ce-46cc-8f0f-7312be27786f")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 133.3282 100.33 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
 	(global_label "BTN0"
 		(shape input)
 		(at 113.03 43.18 180)
@@ -10909,7 +11402,7 @@
 	)
 	(global_label "PWM1"
 		(shape input)
-		(at 63.5 72.39 180)
+		(at 29.21 100.33 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -10919,7 +11412,7 @@
 		)
 		(uuid "b7d4fe24-9f96-4dc0-b596-167f63dff05b")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 55.7045 72.3106 0)
+			(at 21.4145 100.2506 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10951,9 +11444,31 @@
 			)
 		)
 	)
+	(global_label "LED3"
+		(shape input)
+		(at 68.58 44.45 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "d6f3c3b9-5b61-4da7-97a2-12d37d8f6663")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 76.2218 44.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
 	(global_label "PWM2"
 		(shape input)
-		(at 63.5 69.85 180)
+		(at 29.21 97.79 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -10963,7 +11478,7 @@
 		)
 		(uuid "dcfabaa4-7574-418a-b3ff-5bad2fe64d89")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 55.7045 69.7706 0)
+			(at 21.4145 97.7106 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11144,6 +11659,85 @@
 			(project "LED_Dimmer"
 				(path "/682943ce-d527-4ae2-be9e-cc5eaf184b84"
 					(reference "#PWR08")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 127 106.68 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "04f4d8f5-5fe8-4c49-a6a0-f3b1cd79fc67")
+		(property "Reference" "R12"
+			(at 129.54 105.4099 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "R"
+			(at 129.54 107.9499 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Gruffalo_Dimmer:0805-R_Handsolder"
+			(at 125.222 106.68 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 127 106.68 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor"
+			(at 127 106.68 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Enable" ""
+			(at 127 106.68 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "976ab28a-45b2-4d17-97e9-efed55747aa2")
+		)
+		(pin "2"
+			(uuid "fe27836f-5a64-4c91-a3f0-527364c49a4a")
+		)
+		(instances
+			(project "LED_Dimmer"
+				(path "/682943ce-d527-4ae2-be9e-cc5eaf184b84"
+					(reference "R12")
 					(unit 1)
 				)
 			)
@@ -11333,6 +11927,15 @@
 				(hide yes)
 			)
 		)
+		(property "Sim.Enable" ""
+			(at 40.64 140.97 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "7068b3df-1139-4733-b14f-a65b6076bac9")
 		)
@@ -11448,6 +12051,15 @@
 				(hide yes)
 			)
 		)
+		(property "Sim.Enable" ""
+			(at 222.25 41.91 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "00d65ced-634f-4fe0-8c17-10dcf7773964")
 		)
@@ -11461,6 +12073,94 @@
 			(project "LED_Dimmer"
 				(path "/682943ce-d527-4ae2-be9e-cc5eaf184b84"
 					(reference "Q2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:LED_Small")
+		(at 127 115.57 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "0f5aaed3-0757-431d-b91f-e633152d42d0")
+		(property "Reference" "D3"
+			(at 129.54 114.2364 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Value" "LED_Small"
+			(at 129.54 116.7764 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" "Gruffalo_Dimmer:0603-1.6x0.8mm-LED_Handsolder"
+			(at 127 115.57 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 127 115.57 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Light emitting diode, small symbol"
+			(at 127 115.57 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Pin" "1=K 2=A"
+			(at 127 115.57 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Enable" ""
+			(at 127 115.57 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "60451faa-a58f-44de-83be-5135ff538990")
+		)
+		(pin "2"
+			(uuid "524e4663-fc8d-4e34-b4d5-ddeb5960a0aa")
+		)
+		(instances
+			(project "LED_Dimmer"
+				(path "/682943ce-d527-4ae2-be9e-cc5eaf184b84"
+					(reference "D3")
 					(unit 1)
 				)
 			)
@@ -11556,6 +12256,15 @@
 			)
 		)
 		(property "Manufacturer" "Silabs"
+			(at 53.34 36.83 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Enable" ""
 			(at 53.34 36.83 0)
 			(effects
 				(font
@@ -11972,6 +12681,15 @@
 				(hide yes)
 			)
 		)
+		(property "Sim.Enable" ""
+			(at 204.47 83.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "be8dc043-9696-40a0-bba2-020990d1be85")
 		)
@@ -12159,6 +12877,15 @@
 				(hide yes)
 			)
 		)
+		(property "Sim.Enable" ""
+			(at 73.66 102.87 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "ba555b66-710c-4a2d-999f-99a819ef028a")
 		)
@@ -12263,6 +12990,72 @@
 	)
 	(symbol
 		(lib_id "power:GND")
+		(at 127 123.19 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "4df91575-4cd5-4955-be77-1dbbf2630c92")
+		(property "Reference" "#PWR029"
+			(at 127 129.54 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 127 128.27 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 127 123.19 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 127 123.19 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 127 123.19 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "7875eb91-5297-4643-8a31-63122816a9b8")
+		)
+		(instances
+			(project "LED_Dimmer"
+				(path "/682943ce-d527-4ae2-be9e-cc5eaf184b84"
+					(reference "#PWR029")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
 		(at 38.1 48.26 0)
 		(unit 1)
 		(exclude_from_sim no)
@@ -12322,6 +13115,94 @@
 			(project "LED_Dimmer"
 				(path "/682943ce-d527-4ae2-be9e-cc5eaf184b84"
 					(reference "#PWR06")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:LED_Small")
+		(at 113.03 115.57 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "541636ed-0431-44df-afef-4669fa13143c")
+		(property "Reference" "D2"
+			(at 115.57 114.2364 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Value" "LED_Small"
+			(at 115.57 116.7764 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" "Gruffalo_Dimmer:0603-1.6x0.8mm-LED_Handsolder"
+			(at 113.03 115.57 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 113.03 115.57 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Light emitting diode, small symbol"
+			(at 113.03 115.57 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Pin" "1=K 2=A"
+			(at 113.03 115.57 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Enable" ""
+			(at 113.03 115.57 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "712a5b46-8de6-4668-a617-4c5257b18371")
+		)
+		(pin "2"
+			(uuid "fc545f4c-16c1-426b-b315-f8b90a14c1ad")
+		)
+		(instances
+			(project ""
+				(path "/682943ce-d527-4ae2-be9e-cc5eaf184b84"
+					(reference "D2")
 					(unit 1)
 				)
 			)
@@ -12444,6 +13325,15 @@
 				(hide yes)
 			)
 		)
+		(property "Sim.Enable" ""
+			(at 60.96 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "04fc77e0-8254-452a-b41f-bceb7cc6930d")
 		)
@@ -12454,6 +13344,94 @@
 			(project "LED_Dimmer"
 				(path "/682943ce-d527-4ae2-be9e-cc5eaf184b84"
 					(reference "C3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:LED_Small")
+		(at 140.97 115.57 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "5e0008ee-f98d-425a-a3ca-7ab8e8428147")
+		(property "Reference" "D4"
+			(at 143.51 114.2364 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Value" "LED_Small"
+			(at 143.51 116.7764 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" "Gruffalo_Dimmer:0603-1.6x0.8mm-LED_Handsolder"
+			(at 140.97 115.57 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 140.97 115.57 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Light emitting diode, small symbol"
+			(at 140.97 115.57 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Pin" "1=K 2=A"
+			(at 140.97 115.57 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Enable" ""
+			(at 140.97 115.57 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "1bfcb558-2395-4082-a2e8-f993a061ab0f")
+		)
+		(pin "2"
+			(uuid "fe8581c6-ad16-45b8-85a0-5e028c1a168c")
+		)
+		(instances
+			(project "LED_Dimmer"
+				(path "/682943ce-d527-4ae2-be9e-cc5eaf184b84"
+					(reference "D4")
 					(unit 1)
 				)
 			)
@@ -12617,6 +13595,15 @@
 			)
 		)
 		(property "Manufacturer" "Diodes Inc."
+			(at 186.69 41.91 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Enable" ""
 			(at 186.69 41.91 0)
 			(effects
 				(font
@@ -12817,6 +13804,15 @@
 			)
 		)
 		(property "Sim.Pins" "1=K 2=A"
+			(at 66.04 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Enable" ""
 			(at 66.04 134.62 0)
 			(effects
 				(font
@@ -13060,6 +14056,15 @@
 				(hide yes)
 			)
 		)
+		(property "Sim.Enable" ""
+			(at 50.8 137.16 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "ce8a320d-3230-45d2-99c5-bd5247770aad")
 		)
@@ -13193,6 +14198,15 @@
 				(hide yes)
 			)
 		)
+		(property "Sim.Enable" ""
+			(at 73.66 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "f820b6a2-a2cf-4a56-b05f-765ec9a76efb")
 		)
@@ -13291,6 +14305,85 @@
 				(path "/682943ce-d527-4ae2-be9e-cc5eaf184b84"
 					(reference "U1")
 					(unit 4)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 113.03 106.68 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "98da6a21-fb89-40e3-821c-9fbdcf5e3b3e")
+		(property "Reference" "R11"
+			(at 115.57 105.4099 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "R"
+			(at 115.57 107.9499 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Gruffalo_Dimmer:0805-R_Handsolder"
+			(at 111.252 106.68 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 113.03 106.68 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor"
+			(at 113.03 106.68 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Enable" ""
+			(at 113.03 106.68 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "a3e728c5-58bc-419f-9d46-281bb17feb2d")
+		)
+		(pin "2"
+			(uuid "2bb7f1be-ad2f-414a-b503-1fd31889ffbc")
+		)
+		(instances
+			(project ""
+				(path "/682943ce-d527-4ae2-be9e-cc5eaf184b84"
+					(reference "R11")
+					(unit 1)
 				)
 			)
 		)
@@ -13461,6 +14554,15 @@
 				(hide yes)
 			)
 		)
+		(property "Sim.Enable" ""
+			(at 257.81 41.91 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "523d915c-d11c-4dfa-a91a-749976b3d8a1")
 		)
@@ -13571,6 +14673,15 @@
 			)
 		)
 		(property "Manufacturer" "Silabs"
+			(at 39.37 76.2 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Enable" ""
 			(at 39.37 76.2 0)
 			(effects
 				(font
@@ -13847,6 +14958,15 @@
 				(hide yes)
 			)
 		)
+		(property "Sim.Enable" ""
+			(at 39.37 101.6 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "67c4cce0-9555-4f73-ae6a-9727d8c7c429")
 		)
@@ -13953,7 +15073,7 @@
 		(lib_id "Gruffalo_Dimmer:PCB Art")
 		(at 262.255 88.9 0)
 		(unit 1)
-		(exclude_from_sim yes)
+		(exclude_from_sim no)
 		(in_bom no)
 		(on_board yes)
 		(dnp no)
@@ -13996,6 +15116,15 @@
 			)
 		)
 		(property "Description" "Gruffalo PCB Art"
+			(at 262.255 88.9 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Enable" ""
 			(at 262.255 88.9 0)
 			(effects
 				(font
@@ -14195,6 +15324,15 @@
 				(hide yes)
 			)
 		)
+		(property "Sim.Enable" ""
+			(at 175.26 83.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "e4fb1a0c-0d97-4f48-9e91-14f76b9ff462")
 		)
@@ -14342,6 +15480,85 @@
 		)
 	)
 	(symbol
+		(lib_id "Device:R")
+		(at 140.97 106.68 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "ed258401-1d9d-40a5-b841-a166d0dce422")
+		(property "Reference" "R13"
+			(at 143.51 105.4099 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "R"
+			(at 143.51 107.9499 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Gruffalo_Dimmer:0805-R_Handsolder"
+			(at 139.192 106.68 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 140.97 106.68 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor"
+			(at 140.97 106.68 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Enable" ""
+			(at 140.97 106.68 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "124899de-5679-4f7c-b369-b06ba45399ce")
+		)
+		(pin "2"
+			(uuid "f6c3aa91-8842-4417-85d3-24f7dc5b03a8")
+		)
+		(instances
+			(project "LED_Dimmer"
+				(path "/682943ce-d527-4ae2-be9e-cc5eaf184b84"
+					(reference "R13")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Connector_Generic:Conn_01x04")
 		(at 204.47 93.98 0)
 		(mirror x)
@@ -14442,6 +15659,15 @@
 			)
 		)
 		(property "Vrating" "300V / 6A"
+			(at 204.47 93.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Enable" ""
 			(at 204.47 93.98 0)
 			(effects
 				(font

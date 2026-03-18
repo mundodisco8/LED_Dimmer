@@ -1325,6 +1325,15 @@
 				(hide yes)
 			)
 		)
+		(property "Sim.Enable" ""
+			(at 82.55 48.26 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "76b12bb9-2f96-4219-b2d1-56054f06a9ee")
 		)
@@ -1436,6 +1445,15 @@
 			)
 		)
 		(property "Manufacturer" "Yageo"
+			(at 87.63 41.91 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Enable" ""
 			(at 87.63 41.91 0)
 			(effects
 				(font
@@ -1562,6 +1580,15 @@
 				(hide yes)
 			)
 		)
+		(property "Sim.Enable" ""
+			(at 62.23 72.39 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "b2f73712-f8b2-4c1c-b05b-61c181e6e699")
 		)
@@ -1674,6 +1701,15 @@
 		)
 		(property "Manufacturer" "Bourns"
 			(at 59.69 58.42 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Enable" ""
+			(at 59.69 58.42 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1872,6 +1908,15 @@
 			)
 		)
 		(property "Manufacturer" "Yageo"
+			(at 31.75 41.91 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Enable" ""
 			(at 31.75 41.91 0)
 			(effects
 				(font
@@ -2301,6 +2346,15 @@
 				(hide yes)
 			)
 		)
+		(property "Sim.Enable" ""
+			(at 43.18 54.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "ac487618-f919-43de-800c-493313685669")
 		)
@@ -2411,6 +2465,15 @@
 		)
 		(property "Manufacturer" "Yageo"
 			(at 36.83 48.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Enable" ""
+			(at 36.83 48.26 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2617,6 +2680,15 @@
 			)
 		)
 		(property "Vrating" "50V"
+			(at 76.2 54.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Enable" ""
 			(at 76.2 54.61 0)
 			(effects
 				(font

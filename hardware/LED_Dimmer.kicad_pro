@@ -59,7 +59,44 @@
           "width": 0.0
         }
       ],
-      "drc_exclusions": [],
+      "drc_exclusions": [
+        [
+          "silk_edge_clearance|135000000|108750000|464f5349-5367-4b6e-b06c-f72d5afc1f5e|1a77bc28-33dd-4dc0-bffc-8118bb31c5f5",
+          ""
+        ],
+        [
+          "silk_edge_clearance|135000000|98750000|464f5349-5367-4b6e-b06c-f72d5afc1f5e|d32c1c26-f463-4f82-86ce-d62796553f10",
+          ""
+        ],
+        [
+          "silk_over_copper|119098973|94090465|962156b1-03f8-48aa-84cb-39c750989216|00000000-0000-0000-0000-000000000000",
+          ""
+        ],
+        [
+          "silk_over_copper|124403359|110583462|6b6cb089-b2f7-454e-b1fc-59c60edb1d5a|00000000-0000-0000-0000-000000000000",
+          ""
+        ],
+        [
+          "silk_over_copper|124423253|108748173|1a77bc28-33dd-4dc0-bffc-8118bb31c5f5|00000000-0000-0000-0000-000000000000",
+          ""
+        ],
+        [
+          "silk_over_copper|124435150|110748456|6e767cc7-6cf4-460a-a778-c72e855debe2|00000000-0000-0000-0000-000000000000",
+          ""
+        ],
+        [
+          "silk_over_copper|124541632|109081365|8b7d2e9a-6f27-4d8e-9664-84cda0954c87|00000000-0000-0000-0000-000000000000",
+          ""
+        ],
+        [
+          "silk_over_copper|125913355|105830398|401e2d5a-7777-4389-ac37-15a94a8b256f|00000000-0000-0000-0000-000000000000",
+          ""
+        ],
+        [
+          "silk_overlap|124500000|109250000|6b6cb089-b2f7-454e-b1fc-59c60edb1d5a|8b7d2e9a-6f27-4d8e-9664-84cda0954c87",
+          ""
+        ]
+      ],
       "meta": {
         "filename": "board_design_settings.json",
         "version": 2
@@ -648,6 +685,12 @@
           "label": "Description",
           "name": "Description",
           "show": true
+        },
+        {
+          "group_by": false,
+          "label": "Sim.Pin",
+          "name": "Sim.Pin",
+          "show": false
         }
       ],
       "filter_string": "",
@@ -655,7 +698,7 @@
       "include_excluded_from_bom": false,
       "name": "",
       "sort_asc": true,
-      "sort_field": "Digikey PN"
+      "sort_field": "Reference"
     },
     "connection_grid_size": 50.0,
     "drawing": {
