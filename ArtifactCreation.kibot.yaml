@@ -124,14 +124,14 @@ preflight:
   # This is a replacement for the *run_drc* preflight that needs KiCad 8 or newer.
   # GUI exclusions and schematic parity are supported .
   # [boolean|dict=false] Use a boolean for simple cases or fine-tune its behavior.
-  drc: false
+  drc: true
   #
   # ERC
   # Runs the ERC (Electrical Rules Check). To ensure the schematic is electrically correct.
   # You need a valid *sym-lib-table* installed. If not KiBot will try to temporarily install the template.
   # This is a replacement for the *run_erc* preflight that needs KiCad 8 or newer .
   # [boolean|dict=false] Use a boolean for simple cases or fine-tune its behavior.
-  erc: false
+  erc: true
   #
   # Fill Zones
   # Fill all zones again and save the PCB .
