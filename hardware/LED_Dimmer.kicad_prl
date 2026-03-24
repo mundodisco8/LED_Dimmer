@@ -39,18 +39,16 @@
       "footprints_back",
       "footprint_values",
       "footprint_references",
-      "tracks",
       "drc_errors",
       "drawing_sheet",
       "bitmaps",
-      "pads",
       "zones",
       "drc_warnings",
       "locked_item_shadows",
       "conflict_shadows",
       "shapes"
     ],
-    "visible_layers": "00000000_00000000_0000000a_220288ad",
+    "visible_layers": "00000000_00000000_55555555_57555551",
     "zone_display_mode": 0
   },
   "git": {
@@ -90,16 +88,16 @@
       9
     ],
     "col_widths": [
-      186,
-      171,
-      112,
-      79,
-      112,
-      112,
-      112,
-      83,
-      112,
-      112
+      10,
+      10,
+      10,
+      10,
+      10,
+      10,
+      10,
+      10,
+      10,
+      51
     ],
     "custom_group_rules": [],
     "expanded_rows": [],

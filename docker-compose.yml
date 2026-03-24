@@ -1,4 +1,3 @@
-version: '3'
 services:
   GruffaloDev:
     image: ghcr.io/inti-cmnb/kicad9_auto_full:dev
@@ -11,9 +10,35 @@ services:
       # Project will be mounted on /Gruffalo
       - .:/Gruffalo
       # The KiCost Cache, so we have access to previous searches and tokens
-      - C:\Users\joel.santos\.cache:/root/.cache
-      # Some KiCad crap, to reduce the number of warnings
-      - C:\Users\joel.santos\AppData\Roaming\kicad\7.0\:/root/.config/kicad/7.0/
-      - C:\Program Files\KiCad\7.0\share\kicad\template:/root/kicad/template
+      # - C:\Users\joel.santos\.cache:/root/.cache
+      # Need to share these two resources for GUI apps
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - ${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY}:${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY}
+      - /usr/lib/wsl:/usr/lib/wsl
+    # This ENVS help sharing a display with docker, so we can run the container's KiCad
+    environment:
+      - DISPLAY=${DISPLAY}
+      - WAYLAND_DISPLAY=${WAYLAND_DISPLAY}
+      - XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR}
+      - LD_LIBRARY_PATH=/usr/lib/wsl/lib
+      - LIBGL_ALWAYS_SOFTWARE=0
+      - MESA_D3D12_DEFAULT_ADAPTER_NAME=Intel
+    devices:
+      - /dev/dxg:/dev/dxg
+
+# services:
+  # gui-app:
+    # image: my-intel-gui-app  # Or 'ubuntu:latest' if you haven't built the Dockerfile yet
+    # container_name: intel-gui-container
     # environment:
-    #   MYSQL_HOST: localhost
+      # - DISPLAY=${DISPLAY}
+      # - WAYLAND_DISPLAY=${WAYLAND_DISPLAY}
+      # - XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR}
+    # volumes:
+      # - /tmp/.X11-unix:/tmp/.X11-unix
+      # This matches the Wayland socket for WSLg
+      # - ${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY}:/tmp/${WAYLAND_DISPLAY}
+    # network_mode: host
+    # Keep the container alive so you can exec into it or run an app
+    # tty: true
+    # stdin_open: true
