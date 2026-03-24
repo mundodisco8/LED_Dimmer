@@ -38,4 +38,35 @@ typedef enum ports {
     portF,
 } pinPort_t;
 
+/**
+ * @brief Translates from SiLabs ports to our ports without having to share "em_gpio.h"!
+ */
+// 1. The Lookup Table (This doesn't redefine SL_GPIO_PORT_A)
+#define AS_SHORT_SL_GPIO_PORT_A portA
+#define AS_SHORT_SL_GPIO_PORT_B portB
+#define AS_SHORT_SL_GPIO_PORT_C portC
+#define AS_SHORT_SL_GPIO_PORT_D portD
+#define AS_SHORT_SL_GPIO_PORT_E portE
+#define AS_SHORT_SL_GPIO_PORT_F portF
+
+// 2. The Conversion Macro
+#define TO_PORT(p) AS_SHORT_##p
+// --- Usage ---
+// If you use it like this:
+// TO_PORT(SL_GPIO_PORT_A)
+// It expands to: AS_SHORT_SL_GPIO_PORT_A which finally becomes: portA
+
+// 3. Need this to be able to translate #defines
+#define MY_PORT(p) TO_PORT(p)
+// --- Usage ---
+// If you use it like this:
+// #define PMW0_PORT SL_GPIO_PORT_A
+// MY_PORT(PWM0_PORT)
+// It expands to: TO_PORT(SL_GPIO_PORT_A) which expands to AS_SHORT_SL_GPIO_PORT_A wich finally becomes: portA
+
+/**
+ * @brief Silly enum for enhanced clarity when setting output pins' states
+ */
+typedef enum pinState { PIN_CLEAR = 0, PIN_SET = 1 } pinState_t;
+
 #endif  // _GPIO_HW_TYPES_H_

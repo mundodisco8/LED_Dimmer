@@ -49,7 +49,6 @@
 // #pragma GCC diagnostic pop
 
 #include "em_emu.h"
-#include "em_gpio.h"
 #include "em_timer.h"
 
 // Ignore a sign conversion warning in sl_sleeptimer.h
@@ -71,6 +70,7 @@
 #include "sl_assert.h"
 
 // My Headers
+#include "LEDIndicator.h"
 #include "PWMControl.h"
 #include "buttonActions.h"
 #include "buttons.h"
@@ -130,29 +130,29 @@ void app_init(void) {
     // If anything, it could be stored internally in the button_t struct
     // Init GPIOs for buttons and quads
     uint32_t button0GPIOIntNo = 0;
-    uint32_t quad0GPIOIntNo = 0;
+    uint32_t quad0GPIOIntNo   = 0;
     uint32_t button1GPIOIntNo = 0;
-    uint32_t quad1GPIOIntNo = 0;
-    initButton(&button0, (pinPort_t)btn0_PORT, btn0_PIN, button0ShortPressed, button0LongPressed, button0Released);
-    initQuadEncoder(&quad0, (pinPort_t)quad0_0_PORT, quad0_0_PIN, (pinPort_t)quad0_1_PORT, quad0_1_PIN, quad0ClockWise,
+    uint32_t quad1GPIOIntNo   = 0;
+    initButton(&button0, MY_PORT(btn0_PORT), btn0_PIN, button0ShortPressed, button0LongPressed, button0Released);
+    initQuadEncoder(&quad0, MY_PORT(quad0_0_PORT), quad0_0_PIN, MY_PORT(quad0_1_PORT), quad0_1_PIN, quad0ClockWise,
                     quad0CounterClockWise);
-    initButton(&button1, (pinPort_t)btn1_PORT, btn1_PIN, button1ShortPressed, button1LongPressed, button1Released);
-    initQuadEncoder(&quad1, (pinPort_t)quad1_0_PORT, quad1_0_PIN, (pinPort_t)quad1_1_PORT, quad1_1_PIN, quad1ClockWise,
+    initButton(&button1, MY_PORT(btn1_PORT), btn1_PIN, button1ShortPressed, button1LongPressed, button1Released);
+    initQuadEncoder(&quad1, MY_PORT(quad1_0_PORT), quad1_0_PIN, MY_PORT(quad1_1_PORT), quad1_1_PIN, quad1ClockWise,
                     quad1CounterClockWise);
     configureButtonInterrupts(&button0, gpioCallbackButton, &button0GPIOIntNo);
     configureQuadratureInterrupts(&quad0, gpioCallbackQuad, &quad0GPIOIntNo);
     configureButtonInterrupts(&button1, gpioCallbackButton, &button1GPIOIntNo);
     configureQuadratureInterrupts(&quad1, gpioCallbackQuad, &quad1GPIOIntNo);
 
-    // Set pins for EM4 wakeup
-    setPinUpForEM4WakeUp((pinPort_t)btn0_EM4_WakeUp_PORT, btn0_EM4_WakeUp_PIN);
-    setPinUpForEM4WakeUp((pinPort_t)btn1_EM4_WakeUp_PORT, btn1_EM4_WakeUp_PIN);
+    // LED indicator - Init and set Channel 1 on
+    LEDIndicator_init();
+    LEDIndicator_setChannel(CHANNEL_1);
 
     // Init PWM on TIMER0
     initTimer0PWM(PWM_FREQUENCY);
-    initTimer0CCChannel(CC_CHANNEL_0, (pinPort_t)pwm0_PORT, pwm0_PIN, PWM_ACTIVE_HIGH);
-    initTimer0CCChannel(CC_CHANNEL_1, (pinPort_t)pwm1_PORT, pwm1_PIN, PWM_ACTIVE_HIGH);
-    initTimer0CCChannel(CC_CHANNEL_2, (pinPort_t)pwm2_PORT, pwm2_PIN, PWM_ACTIVE_HIGH);
+    initTimer0CCChannel(CC_CHANNEL_0, MY_PORT(PWM0_PORT), PWM0_PIN, PWM_ACTIVE_HIGH);
+    initTimer0CCChannel(CC_CHANNEL_1, MY_PORT(PWM1_PORT), PWM1_PIN, PWM_ACTIVE_HIGH);
+    initTimer0CCChannel(CC_CHANNEL_2, MY_PORT(PWM2_PORT), PWM2_PIN, PWM_ACTIVE_HIGH);
 
     breatheParams_t breatheEffectParams = DEFAULT_BREATHE_PARAMS;
 
@@ -334,20 +334,20 @@ static void enter_EM4(void) {
     // Store context in nvm3
     app_log_debug("Saving LED context...\r\n");
     // STORE CONTEXT 1
-    LEDContext_t context = {0};
-    context.currAnimation = getAnimation(LED_CHANNEL_1);
+    LEDContext_t context      = {0};
+    context.currAnimation     = getAnimation(LED_CHANNEL_1);
     context.currBreathePeriod = getBreathePeriod(LED_CHANNEL_1);
-    context.currBrightness = getLEDBrightness(LED_CHANNEL_1);
+    context.currBrightness    = getLEDBrightness(LED_CHANNEL_1);
     nvm_writeLEDContext(NVM3_KEY_LED1_CONTEXT, &context);
     // STORE CONTEXT 2
-    context.currAnimation = getAnimation(LED_CHANNEL_2);
+    context.currAnimation     = getAnimation(LED_CHANNEL_2);
     context.currBreathePeriod = getBreathePeriod(LED_CHANNEL_2);
-    context.currBrightness = getLEDBrightness(LED_CHANNEL_2);
+    context.currBrightness    = getLEDBrightness(LED_CHANNEL_2);
     nvm_writeLEDContext(NVM3_KEY_LED2_CONTEXT, &context);
     // STORE CONTEXT 3
-    context.currAnimation = getAnimation(LED_CHANNEL_3);
+    context.currAnimation     = getAnimation(LED_CHANNEL_3);
     context.currBreathePeriod = getBreathePeriod(LED_CHANNEL_3);
-    context.currBrightness = getLEDBrightness(LED_CHANNEL_3);
+    context.currBrightness    = getLEDBrightness(LED_CHANNEL_3);
     nvm_writeLEDContext(NVM3_KEY_LED3_CONTEXT, &context);
     // Check for NVM repack
     nvm_checkForRepack();

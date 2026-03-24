@@ -235,4 +235,8 @@ void GPIO_IntEnable(uint32_t flags);
 
 void GPIO_EM4EnablePinWakeup(uint32_t pinmask, uint32_t polaritymask);
 
+void GPIO_PortOutSetVal(GPIO_Port_TypeDef port, uint32_t val, uint32_t mask);
+
+GPIO_Mode_TypeDef GPIO_PinModeGet(GPIO_Port_TypeDef port, unsigned int pin);
+
 #endif  // EM_GPIO_H

@@ -12,6 +12,7 @@ target_sources(Gruffalo_Dimmer PRIVATE
 	"../src/effectControl.c"
 	"../src/gpio_HW.c"
 	"../src/interrupt_HW.c"
+	"../src/LEDIndicator.c"
 	"../src/nvm_HW.c"
 	"../src/PWMControl.c"
 	"../src/sleepyTimers_HW.c"

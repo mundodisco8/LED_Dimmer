@@ -48,6 +48,10 @@ void enableGPIOClock(void);
  * @brief Reads an input pin's value
  */
 uint32_t readPin(pinPort_t port, uint8_t pinNo);
+/**
+ * @brief Sets the state of an output pin
+ */
+void writePin(pinPort_t port, pinState_t newState, uint8_t pinNo);
 
 /**
  * @brief Set a pin Up (Wrapper for GPIO_PinModeSet)

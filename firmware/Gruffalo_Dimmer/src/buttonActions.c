@@ -16,6 +16,7 @@
 #pragma GCC diagnostic pop
 
 // Project Libraries
+#include "LEDIndicator.h"
 #include "PWMControl.h"
 #include "buttons.h"
 #include "debounce.h"
@@ -125,6 +126,17 @@ void button0Released(void* ctx) {
             app_log_info("Selected Ch%d\r\n", channelIdx);
         } else {
             app_log_info("Selected all channels\r\n");
+        }
+        // turn the correct channel select indicator LEDs
+        if (LED_CHANNEL_1 == LEDChannelArray[channelIdx]) {
+            LEDIndicator_setChannel(CHANNEL_1);
+        } else if (LED_CHANNEL_2 == LEDChannelArray[channelIdx]) {
+            LEDIndicator_setChannel(CHANNEL_2);
+        } else if (LED_CHANNEL_3 == LEDChannelArray[channelIdx]) {
+            LEDIndicator_setChannel(CHANNEL_3);
+        } else {
+            // Else, ALL Channels
+            LEDIndicator_setChannel(CHANNEL_ALL);
         }
     }
 }

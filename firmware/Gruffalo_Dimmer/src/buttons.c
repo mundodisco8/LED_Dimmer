@@ -80,10 +80,12 @@ void initButton(button_t* btnPtr, const pinPort_t pinPort, const uint8_t pinNo, 
     btnPtr->releasedAction = releasedAction;
 
     slpTimerStatus_t retVal = SLP_reserveTimer(&(btnPtr->longPressTimerPtr));
-    //TODO: Test Asserts on error
+    // TODO: Test Asserts on error
     app_assert((retVal == SLPTIMER_OK), "No timer available. Increase the number of timers\r\n");
     retVal = SLP_reserveTimer(&(btnPtr->samplingTimerPtr));
     app_assert((retVal == SLPTIMER_OK), "No timer available. Increase the number of timers\r\n");
+    // Set pin for EM4 wakeup
+    setPinUpForEM4WakeUp((pinPort_t)pinPort, pinNo);
 }
 
 /**

@@ -21,12 +21,8 @@
 
 // Silabs SDK headers
 #include "app_assert.h"
-// Ignore a cast-align warning in some cmsis header
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wcast-align"
-#include "em_gpio.h"
-#pragma GCC diagnostic pop
 #include "em_cmu.h"
+#include "em_gpio.h"
 
 #ifdef TEST
 #define STATIC
@@ -136,6 +132,19 @@ void setPinMode(pinPort_t port, uint8_t pin, pinMode_t mode, bool dout) {
 uint32_t readPin(pinPort_t port, uint8_t pinNo) { return GPIO_PinInGet(getSiLabsPort(port), pinNo); }
 
 /**
+ * @brief Sets the state of an output pin
+ *
+ * @param port the pin's port
+ * @param pinState_t newState the new state for the pin
+ * @param pinNo the pin's number
+ */
+void writePin(pinPort_t port, pinState_t newState, uint8_t pinNo) {
+    // This function takes a mask as pinNo, so you can set as many pins on the port as you want, but we are limiting it
+    // to one here to make things simpler (otherwise I have to pass a mask, instead of a pin number)
+    GPIO_PortOutSetVal(getSiLabsPort(port), (uint8_t)newState, pinNo);
+}
+
+/**
  * @brief Configures a GPIO interrupt
  * @param port the port of the pin to read
  * @param pinNo the number of pin to read
@@ -190,7 +199,10 @@ void setPinUpForEM4WakeUp(pinPort_t port, uint8_t pin) {
         app_assert(false, "Pin %u in port %u is not an EM4 WakeUp pin", pin, port);
     }
     // The pin has to be set as input
-    GPIO_PinModeSet(port, pin, MODE_INPUT_PULL_FILTER, true);
+    GPIO_Mode_TypeDef pinMode = GPIO_PinModeGet(getSiLabsPort(port), pin);
+    if ((gpioModeInput != pinMode) || (gpioModeInputPull != pinMode) || (gpioModeInputPullFilter != pinMode)) {
+        app_assert(false, "Pin %u in port %u is not an INPUT pin", pin, port);
+    }
     // And then enable it as EM4 wakeup pin
     GPIO_EM4EnablePinWakeup(EM4WakeUpPinMask, 0);
 }
