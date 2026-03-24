@@ -75,28 +75,28 @@
 // [GPIO]$
 
 // $[TIMER0]
-// TIMER0 CC0 on PC00
+// TIMER0 CC0 on PB01
 #ifndef TIMER0_CC0_PORT                         
-#define TIMER0_CC0_PORT                          SL_GPIO_PORT_C
+#define TIMER0_CC0_PORT                          SL_GPIO_PORT_B
 #endif
 #ifndef TIMER0_CC0_PIN                          
-#define TIMER0_CC0_PIN                           0
+#define TIMER0_CC0_PIN                           1
 #endif
 
-// TIMER0 CC1 on PC01
+// TIMER0 CC1 on PB02
 #ifndef TIMER0_CC1_PORT                         
-#define TIMER0_CC1_PORT                          SL_GPIO_PORT_C
+#define TIMER0_CC1_PORT                          SL_GPIO_PORT_B
 #endif
 #ifndef TIMER0_CC1_PIN                          
-#define TIMER0_CC1_PIN                           1
+#define TIMER0_CC1_PIN                           2
 #endif
 
-// TIMER0 CC2 on PC02
+// TIMER0 CC2 on PB03
 #ifndef TIMER0_CC2_PORT                         
-#define TIMER0_CC2_PORT                          SL_GPIO_PORT_C
+#define TIMER0_CC2_PORT                          SL_GPIO_PORT_B
 #endif
 #ifndef TIMER0_CC2_PIN                          
-#define TIMER0_CC2_PIN                           2
+#define TIMER0_CC2_PIN                           3
 #endif
 
 // [TIMER0]$
@@ -170,88 +170,94 @@
 
 
 
+#ifndef LED1_PORT                               
+#define LED1_PORT                                SL_GPIO_PORT_A
+#endif
+#ifndef LED1_PIN                                
+#define LED1_PIN                                 4
+#endif
+
+#ifndef LED2_PORT                               
+#define LED2_PORT                                SL_GPIO_PORT_A
+#endif
+#ifndef LED2_PIN                                
+#define LED2_PIN                                 5
+#endif
+
 #ifndef quad1_0_PORT                            
 #define quad1_0_PORT                             SL_GPIO_PORT_A
 #endif
 #ifndef quad1_0_PIN                             
-#define quad1_0_PIN                              4
+#define quad1_0_PIN                              6
 #endif
 
 #ifndef quad1_1_PORT                            
 #define quad1_1_PORT                             SL_GPIO_PORT_A
 #endif
 #ifndef quad1_1_PIN                             
-#define quad1_1_PIN                              5
+#define quad1_1_PIN                              7
 #endif
 
-#ifndef btn0_PORT                               
-#define btn0_PORT                                SL_GPIO_PORT_A
+
+
+#ifndef PWM2_PORT                               
+#define PWM2_PORT                                SL_GPIO_PORT_B
 #endif
-#ifndef btn0_PIN                                
-#define btn0_PIN                                 6
+#ifndef PWM2_PIN                                
+#define PWM2_PIN                                 1
 #endif
+
+#ifndef PWM1_PORT                               
+#define PWM1_PORT                                SL_GPIO_PORT_B
+#endif
+#ifndef PWM1_PIN                                
+#define PWM1_PIN                                 2
+#endif
+
+#ifndef PWM0_PORT                               
+#define PWM0_PORT                                SL_GPIO_PORT_B
+#endif
+#ifndef PWM0_PIN                                
+#define PWM0_PIN                                 3
+#endif
+
+
+
+
 
 #ifndef quad0_0_PORT                            
-#define quad0_0_PORT                             SL_GPIO_PORT_A
+#define quad0_0_PORT                             SL_GPIO_PORT_C
 #endif
 #ifndef quad0_0_PIN                             
-#define quad0_0_PIN                              7
+#define quad0_0_PIN                              3
 #endif
 
-#ifndef quad0_1_PORT                            
-#define quad0_1_PORT                             SL_GPIO_PORT_A
+#ifndef LED0_PORT                               
+#define LED0_PORT                                SL_GPIO_PORT_C
 #endif
-#ifndef quad0_1_PIN                             
-#define quad0_1_PIN                              8
+#ifndef LED0_PIN                                
+#define LED0_PIN                                 4
 #endif
-
-
-
-
-
-
-#ifndef pwm0_PORT                               
-#define pwm0_PORT                                SL_GPIO_PORT_C
-#endif
-#ifndef pwm0_PIN                                
-#define pwm0_PIN                                 0
-#endif
-
-#ifndef pwm1_PORT                               
-#define pwm1_PORT                                SL_GPIO_PORT_C
-#endif
-#ifndef pwm1_PIN                                
-#define pwm1_PIN                                 1
-#endif
-
-#ifndef pwm2_PORT                               
-#define pwm2_PORT                                SL_GPIO_PORT_C
-#endif
-#ifndef pwm2_PIN                                
-#define pwm2_PIN                                 2
-#endif
-
 
 #ifndef btn1_PORT                               
 #define btn1_PORT                                SL_GPIO_PORT_C
 #endif
 #ifndef btn1_PIN                                
-#define btn1_PIN                                 4
+#define btn1_PIN                                 5
 #endif
 
-#ifndef btn1_EM4_WakeUp_PORT                    
-#define btn1_EM4_WakeUp_PORT                     SL_GPIO_PORT_C
+#ifndef quad0_1_PORT                            
+#define quad0_1_PORT                             SL_GPIO_PORT_C
 #endif
-#ifndef btn1_EM4_WakeUp_PIN                     
-#define btn1_EM4_WakeUp_PIN                      5
+#ifndef quad0_1_PIN                             
+#define quad0_1_PIN                              6
 #endif
 
-
-#ifndef btn0_EM4_WakeUp_PORT                    
-#define btn0_EM4_WakeUp_PORT                     SL_GPIO_PORT_C
+#ifndef btn0_PORT                               
+#define btn0_PORT                                SL_GPIO_PORT_C
 #endif
-#ifndef btn0_EM4_WakeUp_PIN                     
-#define btn0_EM4_WakeUp_PIN                      7
+#ifndef btn0_PIN                                
+#define btn0_PIN                                 7
 #endif
 
 
