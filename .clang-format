@@ -1,6 +1,8 @@
 ---
 # Generated with https://clang-format-configurator.site/
 BasedOnStyle: Google
+AlignConsecutiveAssignments:
+  Enabled: true
 ColumnLimit: 120
 IndentWidth: 4
 ReflowComments: false

@@ -43,8 +43,8 @@
 #include "timer_HW_types.h"
 
 /**
-  * @brief Size of the Breathe Effect brightness LUT. 0% + 99 samples ascending + 100% + 99 samples descending
-  */
+ * @brief Size of the Breathe Effect brightness LUT. 0% + 99 samples ascending + 100% + 99 samples descending
+ */
 #define BREATHE_LUT_SIZE 200U
 
 /**
@@ -60,10 +60,10 @@ extern const uint32_t NUM_LED_CHANNELS;
  * @brief Error Codes for the effect Control library
  */
 typedef enum efferr {
-    EFF_OK = 0,
-    EFF_NULLPTR = 1,
-    EFF_BADPERIOD = 2,
-    EFF_BADCHANNEL = 3,
+    EFF_OK           = 0,
+    EFF_NULLPTR      = 1,
+    EFF_BADPERIOD    = 2,
+    EFF_BADCHANNEL   = 3,
     EFF_BADANIMATION = 4,
     EFF_ERROR,
 } efferr_t;
@@ -82,7 +82,7 @@ typedef enum channelNo {
  * @brief Type with the valid animation effects for an LED
  */
 typedef enum anim {
-    ANIM_FIXED = 0,    // Constant Brightness
+    ANIM_FIXED   = 0,  // Constant Brightness
     ANIM_BREATHE = 1,  // Breathe Effect
     ANIM_MAX_EFFECTS
 } anim_t;

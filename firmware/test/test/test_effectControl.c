@@ -89,15 +89,15 @@ void test_initLEDStrips_success(void) {
     efferr_t expectedRetVal = EFF_OK;
 
     // Expectations
-    LED_t defaultLEDConfig = {.currAnimation = ANIM_FIXED,
-                              .brightnessCtrl.targetBrightness = 5000UL,
-                              .brightnessCtrl.delta = 0UL,
+    LED_t defaultLEDConfig = {.currAnimation                            = ANIM_FIXED,
+                              .brightnessCtrl.targetBrightness          = 5000UL,
+                              .brightnessCtrl.delta                     = 0UL,
                               .brightnessCtrl.brightChangeRequestedFlag = true,
-                              .pmwPeriodms = 1UL,
-                              .breatheCtrl.currLUTIndex = 0UL,
-                              .breatheCtrl.currWave = 0UL,
-                              .breatheCtrl.periodms = BREATHE_DEFAULT_PERIOD_MS,
-                              .breatheCtrl.wavesPerSample = BREATHE_DEFAULT_PERIOD_MS / BREATHE_LUT_SIZE};
+                              .pmwPeriodms                              = 1UL,
+                              .breatheCtrl.currLUTIndex                 = 0UL,
+                              .breatheCtrl.currWave                     = 0UL,
+                              .breatheCtrl.periodms                     = BREATHE_DEFAULT_PERIOD_MS,
+                              .breatheCtrl.wavesPerSample               = BREATHE_DEFAULT_PERIOD_MS / BREATHE_LUT_SIZE};
 
     // Expectations - Use 38400
     getPWMFrequency_ExpectAndReturn(1000);
@@ -203,7 +203,7 @@ void test_getLEDStruct_Success(void) {
 
 void test_setLEDBrightness_Success(void) {
     LEDChannel_t testChannel = LED_CHANNEL_1;
-    uint32_t testPercent = 7600;
+    uint32_t testPercent     = 7600;
     uint32_t expectedPercent = testPercent;
 
     efferr_t percentSet = setLEDBrightness(testChannel, testPercent);
@@ -215,7 +215,7 @@ void test_setLEDBrightness_Success(void) {
 
 void test_setLEDBrightness_BrightnessOverflow(void) {
     LEDChannel_t testChannel = LED_CHANNEL_1;
-    uint32_t testPercent = 12000;
+    uint32_t testPercent     = 12000;
     uint32_t expectedPercent = 10000;
 
     uint32_t percentSet = setLEDBrightness(testChannel, testPercent);
@@ -227,7 +227,7 @@ void test_setLEDBrightness_BrightnessOverflow(void) {
 
 void test_setLEDBrightness_BrightnessUnderflow(void) {
     LEDChannel_t testChannel = LED_CHANNEL_1;
-    uint32_t testPercent = (uint32_t)-1000;
+    uint32_t testPercent     = (uint32_t)-1000;
     uint32_t expectedPercent = 0;
 
     uint32_t percentSet = setLEDBrightness(testChannel, testPercent);
@@ -257,7 +257,7 @@ void test_getEffectName_Success(void) {
 
 void test_getLEDBrightness_Success(void) {
     uint32_t expectedBrightness = 1234UL;  // default brightness
-    LEDChannel_t testChannel = LED_CHANNEL_1;
+    LEDChannel_t testChannel    = LED_CHANNEL_1;
     // Prepare test
     setLEDBrightness(testChannel, expectedBrightness);
 
@@ -265,7 +265,7 @@ void test_getLEDBrightness_Success(void) {
 
     TEST_ASSERT_EQUAL_UINT32(expectedBrightness, retVal);
 
-    testChannel = LED_CHANNEL_2;
+    testChannel                    = LED_CHANNEL_2;
     uint32_t expectedCh2Brightness = 1000;
     setLEDBrightness(testChannel, expectedCh2Brightness);
 
@@ -273,7 +273,7 @@ void test_getLEDBrightness_Success(void) {
 
     TEST_ASSERT_EQUAL_UINT32(expectedCh2Brightness, retVal);
 
-    testChannel = LED_CHANNEL_3;
+    testChannel                    = LED_CHANNEL_3;
     uint32_t expectedCh3Brightness = 1500;
     setLEDBrightness(testChannel, expectedCh3Brightness);
 
@@ -293,7 +293,7 @@ void test_setBreathePeriod_Success(void) {
     // Set up
     uint32_t testNewPeriod = 1000;  // in ms
 
-    uint32_t expectedPWMFreq = 1000;
+    uint32_t expectedPWMFreq        = 1000;
     uint32_t expectedWavesPerSample = 5;  // 200 samples at 1ms per sample -> 1000ms / (200 * 1ms) = 5
 
     LEDCh1.pmwPeriodms = 1000 / expectedPWMFreq;
@@ -307,7 +307,7 @@ void test_setBreathePeriod_Success(void) {
 
 void test_setBreathePeriod_PeriodIs0(void) {
     efferr_t expectedRetVal = EFF_BADPERIOD;
-    uint32_t testPeriod = 0;
+    uint32_t testPeriod     = 0;
 
     efferr_t retVal = setBreathePeriod(LED_CHANNEL_1, testPeriod);
 
@@ -317,10 +317,10 @@ void test_setBreathePeriod_PeriodIs0(void) {
 void test_setBreathePeriod_PeriodIsNotMultiplePWM(void) {
     // Set up
     efferr_t expectedRetVal = EFF_OK;
-    uint32_t testPWMFreq = 100;  // 100Hz, period is 10ms
+    uint32_t testPWMFreq    = 100;  // 100Hz, period is 10ms
     // LUT size is 200
-    uint32_t testPeriod = 10550;          // won't be a multiple of the PWM period: 10ms * 200 samples
-    uint32_t expectedwavesPerSample = 5;  // waves per sample is rounded, in this case down
+    uint32_t testPeriod             = 10550;  // won't be a multiple of the PWM period: 10ms * 200 samples
+    uint32_t expectedwavesPerSample = 5;      // waves per sample is rounded, in this case down
 
     LEDCh1.pmwPeriodms = 1000 / testPWMFreq;
 
@@ -331,8 +331,8 @@ void test_setBreathePeriod_PeriodIsNotMultiplePWM(void) {
     TEST_ASSERT_EQUAL_UINT32(expectedwavesPerSample, LEDCh1.breatheCtrl.wavesPerSample);
 
     // Number is always floored
-    testPeriod = 11550;          // won't be a multiple of the PWM period: 10ms * 200 samples
-    expectedwavesPerSample = 6;  // number must be rounded up this time
+    testPeriod             = 11550;  // won't be a multiple of the PWM period: 10ms * 200 samples
+    expectedwavesPerSample = 6;      // number must be rounded up this time
 
     retVal = setBreathePeriod(LED_CHANNEL_1, testPeriod);
 
@@ -350,7 +350,7 @@ void test_getBreathePeriod_Success(void) {
     LEDChannel_t testLEDChannel = LED_CHANNEL_3;
 
     // Set Expectations
-    uint32_t expectedPeriod = 1000;
+    uint32_t expectedPeriod                            = 1000;
     getLEDStruct(testLEDChannel)->breatheCtrl.periodms = expectedPeriod;
 
     uint32_t breathePeriod = getBreathePeriod(testLEDChannel);
@@ -365,7 +365,7 @@ void test_getBreathePeriod_Success(void) {
 
 void test_setAnimationType_Success(void) {
     LEDChannel_t testChannel = LED_CHANNEL_1;
-    anim_t testAnimation = ANIM_BREATHE;
+    anim_t testAnimation     = ANIM_BREATHE;
 
     // Set Expectations
     efferr_t expectedRetVal = EFF_OK;
@@ -377,10 +377,10 @@ void test_setAnimationType_Success(void) {
 
 void test_setAnimation_WrongAnimType(void) {
     LEDChannel_t testChannel = LED_CHANNEL_1;
-    anim_t testAnimation = (anim_t)0xFF;
+    anim_t testAnimation     = (anim_t)0xFF;
 
     // Set Expectations
-    efferr_t expectedRetVal = EFF_BADANIMATION;
+    efferr_t expectedRetVal                  = EFF_BADANIMATION;
     getLEDStruct(testChannel)->currAnimation = testAnimation;
 
     efferr_t retVal = setAnimation(testChannel, testAnimation);
@@ -391,11 +391,11 @@ void test_setAnimation_WrongAnimType(void) {
 
 void test_getAnimationType_Success(void) {
     LEDChannel_t testChannel = LED_CHANNEL_1;
-    anim_t testAnimation = ANIM_BREATHE;
+    anim_t testAnimation     = ANIM_BREATHE;
 
     // Set Expectations
     getLEDStruct(testChannel)->currAnimation = testAnimation;
-    anim_t expectedAnimation = testAnimation;
+    anim_t expectedAnimation                 = testAnimation;
 
     anim_t channelAnimation = getAnimation(testChannel);
     TEST_ASSERT_EQUAL_UINT32(expectedAnimation, channelAnimation);
@@ -408,12 +408,12 @@ void test_getAnimationType_Success(void) {
 
 // // This case tests that when the current brightness level is not the target level, the brightness is changed.
 void test_effectControl_FadeBrightness_IncreaseBrightness(void) {
-    LEDChannel_t expectedChannel = LED_CHANNEL_1;
+    LEDChannel_t expectedChannel   = LED_CHANNEL_1;
     uint32_t testCurrentBrightness = 0;
     // Instead of dealing with LUTs, set an arbitrary target compare  for an arbitrary target percent
     uint32_t testTargetBrightness = 5000;
-    uint32_t testPWMFreq = 250;  // 250 updates of brightness per second
-    uint32_t expectedDelta = (testTargetBrightness - testCurrentBrightness) / testPWMFreq;
+    uint32_t testPWMFreq          = 250;  // 250 updates of brightness per second
+    uint32_t expectedDelta        = (testTargetBrightness - testCurrentBrightness) / testPWMFreq;
     uint32_t expectedPercentToSet = testCurrentBrightness + expectedDelta;
 
     // Prepare test
@@ -429,12 +429,12 @@ void test_effectControl_FadeBrightness_IncreaseBrightness(void) {
 
 // This test the case where the brightness is decreased
 void test_effectControl_FadeBrightness_DecreaseBrightness(void) {
-    LEDChannel_t expectedChannel = LED_CHANNEL_1;
+    LEDChannel_t expectedChannel   = LED_CHANNEL_1;
     uint32_t testCurrentBrightness = 8000;
     // Instead of dealing with LUTs, set an arbitrary target compare  for an arbitrary target percent
     uint32_t testTargetBrightness = 4000;
-    uint32_t testPWMFreq = 250;  // 250 updates of brightness per second
-    uint32_t expectedDelta = (testCurrentBrightness - testTargetBrightness) / testPWMFreq;
+    uint32_t testPWMFreq          = 250;  // 250 updates of brightness per second
+    uint32_t expectedDelta        = (testCurrentBrightness - testTargetBrightness) / testPWMFreq;
     uint32_t expectedPercentToSet = testCurrentBrightness - expectedDelta;
 
     // Prepare test
@@ -450,7 +450,7 @@ void test_effectControl_FadeBrightness_DecreaseBrightness(void) {
 
 // This test the case where the brightness is decreased
 void test_effectControl_FadeBrightness_DoNothingIfNoChangesRequired(void) {
-    LEDChannel_t expectedChannel = LED_CHANNEL_1;
+    LEDChannel_t expectedChannel   = LED_CHANNEL_1;
     uint32_t testCurrentBrightness = 2000;
     // Instead of dealing with LUTs, set an arbitrary target compare  for an arbitrary target percent
     uint32_t testTargetBrightness = 2000;
@@ -468,15 +468,15 @@ void test_effectControl_FadeBrightness_IncreaseBrightnessLessThanDelta(void) {
     LEDChannel_t expectedChannel = LED_CHANNEL_1;
 
     uint32_t testCurrentBrightness = 998;
-    uint32_t testTargetBrightness = 1000;
-    uint32_t testDelta = 100;  // delta is way more than the required change in brightness
+    uint32_t testTargetBrightness  = 1000;
+    uint32_t testDelta             = 100;  // delta is way more than the required change in brightness
 
     uint32_t expectedPercentToSet = testTargetBrightness;
 
     // Prepare test
-    LEDCh1.brightnessCtrl.currentBrightness = testCurrentBrightness;
-    LEDCh1.brightnessCtrl.targetBrightness = testTargetBrightness;
-    LEDCh1.brightnessCtrl.delta = testDelta;
+    LEDCh1.brightnessCtrl.currentBrightness         = testCurrentBrightness;
+    LEDCh1.brightnessCtrl.targetBrightness          = testTargetBrightness;
+    LEDCh1.brightnessCtrl.delta                     = testDelta;
     LEDCh1.brightnessCtrl.brightChangeRequestedFlag = false;  // make sure we don't recalculate the delta!
 
     // Set Expectations
@@ -487,11 +487,11 @@ void test_effectControl_FadeBrightness_IncreaseBrightnessLessThanDelta(void) {
 
 // Tests that, if the freq is too high for the difference, we step at the smallest delta, which is 1
 void test_effectControl_FadeBrightness_DeltaCantBe0(void) {
-    LEDChannel_t expectedChannel = LED_CHANNEL_1;
+    LEDChannel_t expectedChannel   = LED_CHANNEL_1;
     uint32_t testCurrentBrightness = 0;
-    uint32_t testTargetBrightness = 1000;
-    uint32_t testPWMFreq = 10000;  // 10000 updates of brightness per second, way more than leves of difference
-    uint32_t expectedDelta = 1;
+    uint32_t testTargetBrightness  = 1000;
+    uint32_t testPWMFreq          = 10000;  // 10000 updates of brightness per second, way more than leves of difference
+    uint32_t expectedDelta        = 1;
     uint32_t expectedPercentToSet = testCurrentBrightness + expectedDelta;
 
     // Prepare test
@@ -509,12 +509,12 @@ void test_effectControl_FadeBrightness_DeltaCantBe0(void) {
 // target brightness is still reached a second after the last change (not the first change)
 void test_effectControl_FadeBrightness_ChangeDuringChange(void) {
     // First Change - Sets the delta to 4, so we do 250 updates at 4, reaching from 0 to 1000 in 250 updates
-    LEDChannel_t expectedChannel = LED_CHANNEL_1;
+    LEDChannel_t expectedChannel   = LED_CHANNEL_1;
     uint32_t testCurrentBrightness = 0;
-    uint32_t testTargetBrightness = 500;
-    uint32_t testPWMFreq = 250;  // 250 updates of brightness per second
-    uint32_t expectedDelta = (testTargetBrightness - testCurrentBrightness) / testPWMFreq;  // 500 / 250 = 4
-    uint32_t expectedPercentToSet = testCurrentBrightness + expectedDelta;
+    uint32_t testTargetBrightness  = 500;
+    uint32_t testPWMFreq           = 250;  // 250 updates of brightness per second
+    uint32_t expectedDelta         = (testTargetBrightness - testCurrentBrightness) / testPWMFreq;  // 500 / 250 = 4
+    uint32_t expectedPercentToSet  = testCurrentBrightness + expectedDelta;
 
     // Prepare test
     LEDCh1.brightnessCtrl.currentBrightness = testCurrentBrightness;
@@ -539,7 +539,7 @@ void test_effectControl_FadeBrightness_ChangeDuringChange(void) {
     uint32_t newTargetBrightness = 8008;  // the 8 at the end is just so delta is a round number
     setLEDBrightness(LED_CHANNEL_1, newTargetBrightness);
     // Delta should be 8008 - 8 / 250 = 32
-    expectedDelta = (newTargetBrightness - LEDCh1.brightnessCtrl.currentBrightness) / testPWMFreq;
+    expectedDelta        = (newTargetBrightness - LEDCh1.brightnessCtrl.currentBrightness) / testPWMFreq;
     expectedPercentToSet = LEDCh1.brightnessCtrl.currentBrightness + expectedDelta;
 
     // Set Expectations
@@ -553,9 +553,9 @@ void test_effectControl_FadeBrightness_ChangeDuringChange(void) {
 void test_effectControl_FadeBrightness_CoverageTestAllChannels(void) {
     // Set target and current to same value so _ChangeBrightness leaves at the earliest
     uint32_t testCurrentBrightness = 500;
-    uint32_t testTargetBrightness = 500;
-    LEDChannel_t testChA = LED_CHANNEL_2;
-    LEDChannel_t testChB = LED_CHANNEL_3;
+    uint32_t testTargetBrightness  = 500;
+    LEDChannel_t testChA           = LED_CHANNEL_2;
+    LEDChannel_t testChB           = LED_CHANNEL_3;
 
     // Prepare test
     LEDCh2.brightnessCtrl.currentBrightness = testCurrentBrightness;
@@ -580,19 +580,19 @@ void test_effectControl_FadeBrightness_CoverageTestAllChannels(void) {
  */
 
 void test_effectControl_Breathe_setsBrightness(void) {
-    LEDChannel_t testLEDChannel = LED_CHANNEL_1;
-    uint32_t testCurrWave = 0;            // played n waves...
-    uint32_t testWavesPerSample = 10;     // ... and we reset in the next
+    LEDChannel_t testLEDChannel  = LED_CHANNEL_1;
+    uint32_t testCurrWave        = 0;     // played n waves...
+    uint32_t testWavesPerSample  = 10;    // ... and we reset in the next
     uint32_t testBrightnessScale = 8000;  // scale brightness to 80%
-    uint32_t testSampleToPlay = 10;
+    uint32_t testSampleToPlay    = 10;
 
     CCChannel_t expectedPWMChannel = CC_CHANNEL_0;
-    uint32_t expectedPercentToSet = (gausianBreatheLUT[testSampleToPlay] * testBrightnessScale) / MAX_BRIGHTNESS;
-    uint32_t expectedCurrWave = getLEDStruct(testLEDChannel)->breatheCtrl.currWave + 1;
+    uint32_t expectedPercentToSet  = (gausianBreatheLUT[testSampleToPlay] * testBrightnessScale) / MAX_BRIGHTNESS;
+    uint32_t expectedCurrWave      = getLEDStruct(testLEDChannel)->breatheCtrl.currWave + 1;
 
-    getLEDStruct(testLEDChannel)->breatheCtrl.currWave = testCurrWave;
-    getLEDStruct(testLEDChannel)->breatheCtrl.wavesPerSample = testWavesPerSample;
-    getLEDStruct(testLEDChannel)->breatheCtrl.currLUTIndex = testSampleToPlay;
+    getLEDStruct(testLEDChannel)->breatheCtrl.currWave            = testCurrWave;
+    getLEDStruct(testLEDChannel)->breatheCtrl.wavesPerSample      = testWavesPerSample;
+    getLEDStruct(testLEDChannel)->breatheCtrl.currLUTIndex        = testSampleToPlay;
     getLEDStruct(testLEDChannel)->brightnessCtrl.targetBrightness = testBrightnessScale;
 
     // Set Expectations
@@ -604,20 +604,20 @@ void test_effectControl_Breathe_setsBrightness(void) {
 }
 
 void test_effectControl_Breathe_MoveToNextSample(void) {
-    LEDChannel_t testLEDChannel = LED_CHANNEL_1;
-    uint32_t testCurrWave = 4;                       // played n waves...
-    uint32_t testWavesPerSample = testCurrWave + 1;  // ... and we reset in the next
-    uint32_t testSampleToPlay = 10;
+    LEDChannel_t testLEDChannel  = LED_CHANNEL_1;
+    uint32_t testCurrWave        = 4;                 // played n waves...
+    uint32_t testWavesPerSample  = testCurrWave + 1;  // ... and we reset in the next
+    uint32_t testSampleToPlay    = 10;
     uint32_t testBrightnessScale = 1234;  // scale brightness to 80%
 
     CCChannel_t expectedPWMChannel = CC_CHANNEL_0;
-    uint32_t expectedCurrWave = 0;  // currWave should reset
-    uint32_t expectedLUTIdx = testSampleToPlay + 1;
-    uint32_t expectedPercentToSet = (gausianBreatheLUT[testSampleToPlay] * testBrightnessScale) / MAX_BRIGHTNESS;
+    uint32_t expectedCurrWave      = 0;  // currWave should reset
+    uint32_t expectedLUTIdx        = testSampleToPlay + 1;
+    uint32_t expectedPercentToSet  = (gausianBreatheLUT[testSampleToPlay] * testBrightnessScale) / MAX_BRIGHTNESS;
 
-    getLEDStruct(testLEDChannel)->breatheCtrl.currLUTIndex = testSampleToPlay;
-    getLEDStruct(testLEDChannel)->breatheCtrl.currWave = testCurrWave;
-    getLEDStruct(testLEDChannel)->breatheCtrl.wavesPerSample = testWavesPerSample;
+    getLEDStruct(testLEDChannel)->breatheCtrl.currLUTIndex        = testSampleToPlay;
+    getLEDStruct(testLEDChannel)->breatheCtrl.currWave            = testCurrWave;
+    getLEDStruct(testLEDChannel)->breatheCtrl.wavesPerSample      = testWavesPerSample;
     getLEDStruct(testLEDChannel)->brightnessCtrl.targetBrightness = testBrightnessScale;
     // Set Expectations
     setDutyCycle_Expect(expectedPWMChannel, expectedPercentToSet,
@@ -632,17 +632,17 @@ void test_effectControl_Breathe_MoveToNextSample(void) {
 
 void test_effectControl_Breathe_CurrWaveOverWavesPerSample(void) {
     LEDChannel_t testLEDChannel = LED_CHANNEL_1;
-    uint32_t testLUTIndex = 5;
-    uint32_t testCurrWave = 10;  // supose our current wave is 10
+    uint32_t testLUTIndex       = 5;
+    uint32_t testCurrWave       = 10;  // supose our current wave is 10
     // And we reduce period so that we only play...
     uint32_t testWavesPerSample = 5;  // 5 waves per sample
 
-    getLEDStruct(testLEDChannel)->breatheCtrl.currLUTIndex = testLUTIndex;
-    getLEDStruct(testLEDChannel)->breatheCtrl.currWave = testCurrWave;
+    getLEDStruct(testLEDChannel)->breatheCtrl.currLUTIndex   = testLUTIndex;
+    getLEDStruct(testLEDChannel)->breatheCtrl.currWave       = testCurrWave;
     getLEDStruct(testLEDChannel)->breatheCtrl.wavesPerSample = testWavesPerSample;
 
     uint32_t expectedCurrWave = 0;  // currWave should reset
-    uint32_t expectedLUTIdx = getLEDStruct(testLEDChannel)->breatheCtrl.currLUTIndex + 1;
+    uint32_t expectedLUTIdx   = getLEDStruct(testLEDChannel)->breatheCtrl.currLUTIndex + 1;
 
     // Set Expectations
     setDutyCycle_ExpectAnyArgs();  // No need to check args of this in this test, it's out of its scope
@@ -655,16 +655,16 @@ void test_effectControl_Breathe_CurrWaveOverWavesPerSample(void) {
 }
 
 void test_effectControl_Breathe_LUTIndexOverflow(void) {
-    LEDChannel_t testLEDChannel = LED_CHANNEL_1;
-    uint32_t testCurrWave = 4;                       // played n waves...
-    uint32_t testWavesPerSample = testCurrWave + 1;  // ... and we reset in the next
-    uint32_t testLUTIdx = BREATHE_LUT_SIZE;
-    getLEDStruct(testLEDChannel)->breatheCtrl.currLUTIndex = testLUTIdx;
-    getLEDStruct(testLEDChannel)->breatheCtrl.currWave = testCurrWave;
+    LEDChannel_t testLEDChannel                              = LED_CHANNEL_1;
+    uint32_t testCurrWave                                    = 4;                 // played n waves...
+    uint32_t testWavesPerSample                              = testCurrWave + 1;  // ... and we reset in the next
+    uint32_t testLUTIdx                                      = BREATHE_LUT_SIZE;
+    getLEDStruct(testLEDChannel)->breatheCtrl.currLUTIndex   = testLUTIdx;
+    getLEDStruct(testLEDChannel)->breatheCtrl.currWave       = testCurrWave;
     getLEDStruct(testLEDChannel)->breatheCtrl.wavesPerSample = testWavesPerSample;
 
     uint32_t expectedCurrWave = 0;  // currWave should reset
-    uint32_t expectedLUTIdx = 0;    // lutIndex should reset
+    uint32_t expectedLUTIdx   = 0;  // lutIndex should reset
 
     // Set Expectations
     setDutyCycle_ExpectAnyArgs();
@@ -678,11 +678,11 @@ void test_effectControl_Breathe_LUTIndexOverflow(void) {
 
 void test_effectControl_Breathe_WavesPerSampleIs0(void) {
     LEDChannel_t testLEDChannel = LED_CHANNEL_1;
-    uint32_t testWavesPerSample = 0;         //
-    uint32_t testCurrWave = 4;               // just put some values here to see that they don't change
-    uint32_t testLUTIdx = BREATHE_LUT_SIZE;  // same here
-    getLEDStruct(testLEDChannel)->breatheCtrl.currLUTIndex = testLUTIdx;
-    getLEDStruct(testLEDChannel)->breatheCtrl.currWave = testCurrWave;
+    uint32_t testWavesPerSample = 0;                 //
+    uint32_t testCurrWave       = 4;                 // just put some values here to see that they don't change
+    uint32_t testLUTIdx         = BREATHE_LUT_SIZE;  // same here
+    getLEDStruct(testLEDChannel)->breatheCtrl.currLUTIndex   = testLUTIdx;
+    getLEDStruct(testLEDChannel)->breatheCtrl.currWave       = testCurrWave;
     getLEDStruct(testLEDChannel)->breatheCtrl.wavesPerSample = testWavesPerSample;
 
     // Set Expectations - expectation is that setDutyCycle is not called!
@@ -705,38 +705,38 @@ void test_effectControlLoop_Success(void) {
     anim_t testAnimationCh3 = ANIM_FIXED;
 
     // Channel 1 brigtness levels
-    uint32_t testCh1CurrBrightness = 1000;
+    uint32_t testCh1CurrBrightness   = 1000;
     uint32_t testCh1TargetBrightness = 9000;
-    uint32_t testCh1Delta = 50;
-    bool testCh1ChangeReqFlag = false;
+    uint32_t testCh1Delta            = 50;
+    bool testCh1ChangeReqFlag        = false;
 
     // Channel 2 breathe params
     uint32_t testCh2TargetBrightness = 8000;
-    uint32_t testCh2CurrLUTIdx = 10;
+    uint32_t testCh2CurrLUTIdx       = 10;
 
     // Channel 1 brigtness levels
-    uint32_t testCh3CurrBrightness = 2000;
+    uint32_t testCh3CurrBrightness   = 2000;
     uint32_t testCh3TargetBrightness = 8000;
-    uint32_t testCh3Delta = 20;
-    bool testCh3ChangeReqFlag = false;
+    uint32_t testCh3Delta            = 20;
+    bool testCh3ChangeReqFlag        = false;
 
     // Set Expectations
-    getLEDStruct(LED_CHANNEL_1)->currAnimation = testAnimationCh1;
-    getLEDStruct(LED_CHANNEL_1)->brightnessCtrl.currentBrightness = testCh1CurrBrightness;
-    getLEDStruct(LED_CHANNEL_1)->brightnessCtrl.targetBrightness = testCh1TargetBrightness;
-    getLEDStruct(LED_CHANNEL_1)->brightnessCtrl.delta = testCh1Delta;
+    getLEDStruct(LED_CHANNEL_1)->currAnimation                            = testAnimationCh1;
+    getLEDStruct(LED_CHANNEL_1)->brightnessCtrl.currentBrightness         = testCh1CurrBrightness;
+    getLEDStruct(LED_CHANNEL_1)->brightnessCtrl.targetBrightness          = testCh1TargetBrightness;
+    getLEDStruct(LED_CHANNEL_1)->brightnessCtrl.delta                     = testCh1Delta;
     getLEDStruct(LED_CHANNEL_1)->brightnessCtrl.brightChangeRequestedFlag = testCh1ChangeReqFlag;
 
     uint32_t expectedCh2BrightnessLevel =
         gausianBreatheLUT[testCh2CurrLUTIdx] * testCh2TargetBrightness / MAX_BRIGHTNESS;
-    getLEDStruct(LED_CHANNEL_2)->currAnimation = testAnimationCh2;
-    getLEDStruct(LED_CHANNEL_2)->breatheCtrl.currLUTIndex = testCh2CurrLUTIdx;
+    getLEDStruct(LED_CHANNEL_2)->currAnimation                   = testAnimationCh2;
+    getLEDStruct(LED_CHANNEL_2)->breatheCtrl.currLUTIndex        = testCh2CurrLUTIdx;
     getLEDStruct(LED_CHANNEL_2)->brightnessCtrl.targetBrightness = testCh2TargetBrightness;
 
-    getLEDStruct(LED_CHANNEL_3)->currAnimation = testAnimationCh3;
-    getLEDStruct(LED_CHANNEL_3)->brightnessCtrl.currentBrightness = testCh3CurrBrightness;
-    getLEDStruct(LED_CHANNEL_3)->brightnessCtrl.targetBrightness = testCh3TargetBrightness;
-    getLEDStruct(LED_CHANNEL_3)->brightnessCtrl.delta = testCh3Delta;
+    getLEDStruct(LED_CHANNEL_3)->currAnimation                            = testAnimationCh3;
+    getLEDStruct(LED_CHANNEL_3)->brightnessCtrl.currentBrightness         = testCh3CurrBrightness;
+    getLEDStruct(LED_CHANNEL_3)->brightnessCtrl.targetBrightness          = testCh3TargetBrightness;
+    getLEDStruct(LED_CHANNEL_3)->brightnessCtrl.delta                     = testCh3Delta;
     getLEDStruct(LED_CHANNEL_3)->brightnessCtrl.brightChangeRequestedFlag = testCh3ChangeReqFlag;
 
     // Expectations for Channel 1 - fixed brightness

@@ -50,8 +50,8 @@
  * @brief The possible restart behaviours of a timer
  */
 typedef enum restartBehaviour {
-    TIMER_RESTART = 0,  // Timer will restart after expiring
-    TIMER_ONE_SHOT = 1  // Timer will not restart after expiring
+    TIMER_RESTART  = 0,  // Timer will restart after expiring
+    TIMER_ONE_SHOT = 1   // Timer will not restart after expiring
 } expBehaviour_t;
 
 /**

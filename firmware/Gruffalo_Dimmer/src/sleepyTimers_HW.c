@@ -38,7 +38,7 @@
 typedef sl_sleeptimer_timer_handle_t timerHandle_t;
 
 static sl_sleeptimer_timer_handle_t timerArray[SL_BT_CONFIG_MAX_SOFTWARE_TIMERS] = {0};
-static uint8_t timersUsed = 0;
+static uint8_t timersUsed                                                        = 0;
 
 /**
  * @brief Resets the number of timers used to 0

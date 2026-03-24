@@ -29,7 +29,7 @@ typedef void (*timerCallback_t)(timerHandlePtr_t handlePtr, void* data);
  * @brief Error codes for the module
  */
 typedef enum slpTimerStatus {
-    SLPTIMER_OK = 0,
+    SLPTIMER_OK                  = 0,
     SLPTIMER_NO_TIMERS_AVAILABLE = 1,  // No more timers available, allocate more
     SLPTIMER_ERROR,                    // Generic error
 } slpTimerStatus_t;

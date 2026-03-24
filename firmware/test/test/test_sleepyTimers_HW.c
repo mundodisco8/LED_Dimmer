@@ -27,7 +27,7 @@ void tearDown(void) {}
 
 void test_reserveTimer_success(void) {
     slpTimerStatus_t expectedRetVal = SLPTIMER_OK;
-    timerHandlePtr_t testPtr = NULL;
+    timerHandlePtr_t testPtr        = NULL;
 
     slpTimerStatus_t retVal = SLP_reserveTimer(&testPtr);
     TEST_ASSERT_EQUAL(expectedRetVal, retVal);
@@ -35,7 +35,7 @@ void test_reserveTimer_success(void) {
 }
 
 void test_reserveTimer_ReserveNTimersSuccess(void) {
-    slpTimerStatus_t expectedRetVal = SLPTIMER_OK;
+    slpTimerStatus_t expectedRetVal                                 = SLPTIMER_OK;
     timerHandlePtr_t testPtrArray[SL_BT_CONFIG_MAX_SOFTWARE_TIMERS] = {NULL};
 
     for (uint32_t i = 0; i < SL_BT_CONFIG_MAX_SOFTWARE_TIMERS; i++) {
@@ -56,8 +56,8 @@ void test_reserveTimer_ReserveNTimersSuccess(void) {
 
 void test_reserveTimer_ReserveNPlusOneTimer(void) {
     slpTimerStatus_t expectedRetVal = SLPTIMER_NO_TIMERS_AVAILABLE;
-    timerHandlePtr_t testPtr = NULL;  // I will overwrite this pointer
-    slpTimerStatus_t retVal = SLPTIMER_OK;
+    timerHandlePtr_t testPtr        = NULL;  // I will overwrite this pointer
+    slpTimerStatus_t retVal         = SLPTIMER_OK;
     // Call N+1 times
     for (uint32_t i = 0; i < SL_BT_CONFIG_MAX_SOFTWARE_TIMERS + 1; i++) {
         retVal = SLP_reserveTimer(&testPtr);
@@ -74,11 +74,11 @@ void test_reserveTimer_ReserveNPlusOneTimer(void) {
 
 void test_startTimer_Success(void) {
     slpTimerStatus_t expectedRetVal = SLPTIMER_OK;
-    timerHandlePtr_t testPtr = NULL;
-    uint32_t testTimeOut = 100;
-    uint32_t testContext = 4;  // Context passed to the callback, can be anything
-    uint8_t testPriority = 0;
-    uint16_t testFlags = 0;
+    timerHandlePtr_t testPtr        = NULL;
+    uint32_t testTimeOut            = 100;
+    uint32_t testContext            = 4;  // Context passed to the callback, can be anything
+    uint8_t testPriority            = 0;
+    uint16_t testFlags              = 0;
 
     // Set Expectations
     sl_sleeptimer_start_timer_ms_ExpectAndReturn((sl_sleeptimer_timer_handle_t*)testPtr, testTimeOut,
@@ -91,9 +91,9 @@ void test_startTimer_Success(void) {
 
 void test_startTimer_WarningTimerRunning(void) {
     slpTimerStatus_t expectedRetVal = SLPTIMER_OK;
-    timerHandlePtr_t testPtr = NULL;
-    uint32_t testTimeOut = 100;
-    uint32_t testContext = 4;  // Context passed to the callback, can be anything
+    timerHandlePtr_t testPtr        = NULL;
+    uint32_t testTimeOut            = 100;
+    uint32_t testContext            = 4;  // Context passed to the callback, can be anything
 
     // Set Expectations
     sl_sleeptimer_start_timer_ms_ExpectAnyArgsAndReturn(SL_STATUS_NOT_READY);
@@ -104,9 +104,9 @@ void test_startTimer_WarningTimerRunning(void) {
 
 void test_startTimer_Error(void) {
     slpTimerStatus_t expectedRetVal = SLPTIMER_ERROR;
-    timerHandlePtr_t testPtr = NULL;
-    uint32_t testTimeOut = 100;
-    uint32_t testContext = 4;  // Context passed to the callback, can be anything
+    timerHandlePtr_t testPtr        = NULL;
+    uint32_t testTimeOut            = 100;
+    uint32_t testContext            = 4;  // Context passed to the callback, can be anything
 
     // Set Expectations
     sl_sleeptimer_start_timer_ms_ExpectAnyArgsAndReturn(SL_STATUS_NULL_POINTER);
@@ -117,11 +117,11 @@ void test_startTimer_Error(void) {
 
 void test_startPeriodicTimer_Success(void) {
     slpTimerStatus_t expectedRetVal = SLPTIMER_OK;
-    timerHandlePtr_t testPtr = NULL;
-    uint32_t testTimeOut = 100;
-    uint32_t testContext = 4;  // Context passed to the callback, can be anything
-    uint8_t testPriority = 0;
-    uint16_t testFlags = 0;
+    timerHandlePtr_t testPtr        = NULL;
+    uint32_t testTimeOut            = 100;
+    uint32_t testContext            = 4;  // Context passed to the callback, can be anything
+    uint8_t testPriority            = 0;
+    uint16_t testFlags              = 0;
 
     // Set Expectations
     sl_sleeptimer_start_periodic_timer_ms_ExpectAndReturn((sl_sleeptimer_timer_handle_t*)testPtr, testTimeOut,
@@ -134,9 +134,9 @@ void test_startPeriodicTimer_Success(void) {
 
 void test_startTimer_UnexpectedError(void) {
     slpTimerStatus_t expectedRetVal = SLPTIMER_ERROR;
-    timerHandlePtr_t testPtr = NULL;
-    uint32_t testTimeOut = 100;
-    uint32_t testContext = 4;  // Context passed to the callback, can be anything
+    timerHandlePtr_t testPtr        = NULL;
+    uint32_t testTimeOut            = 100;
+    uint32_t testContext            = 4;  // Context passed to the callback, can be anything
 
     // Set Expectations
     sl_sleeptimer_start_timer_ms_ExpectAnyArgsAndReturn(SL_STATUS_FAIL);
@@ -151,7 +151,7 @@ void test_startTimer_UnexpectedError(void) {
 
 void test_stopTimer_Success(void) {
     slpTimerStatus_t expectedRetVal = SLPTIMER_OK;
-    timerHandlePtr_t testPtr = NULL;
+    timerHandlePtr_t testPtr        = NULL;
 
     // Set Expectations
     sl_sleeptimer_stop_timer_ExpectAndReturn((sl_sleeptimer_timer_handle_t*)testPtr, SL_STATUS_OK);
@@ -163,7 +163,7 @@ void test_stopTimer_Success(void) {
 
 void test_stopTimer_Error(void) {
     slpTimerStatus_t expectedRetVal = SLPTIMER_ERROR;
-    timerHandlePtr_t testPtr = NULL;
+    timerHandlePtr_t testPtr        = NULL;
 
     // Set Expectations
     sl_sleeptimer_stop_timer_ExpectAndReturn((sl_sleeptimer_timer_handle_t*)testPtr, SL_STATUS_INVALID_STATE);
@@ -178,7 +178,7 @@ void test_stopTimer_Error(void) {
 // - Error checking for the timer, and returns false
 
 void test_isTimerRunning_Success(void) {
-    bool expectedRetVal = true;
+    bool expectedRetVal      = true;
     timerHandlePtr_t testPtr = NULL;
 
     // Set Expectations
@@ -192,7 +192,7 @@ void test_isTimerRunning_Success(void) {
 }
 
 void test_isTimerRunning_Error(void) {
-    bool expectedRetVal = false;
+    bool expectedRetVal      = false;
     timerHandlePtr_t testPtr = NULL;
 
     // Set Expectations
@@ -221,7 +221,7 @@ void test_getSystemTicksInMs_Error(void) {
     uint64_t expectedRetVal = 0;
 
     uint64_t expectedTicks = 100;
-    uint64_t dummyValue = 200;
+    uint64_t dummyValue    = 200;
     sl_sleeptimer_get_tick_count64_ExpectAndReturn(100);
     sl_sleeptimer_tick64_to_ms_ExpectAndReturn(expectedTicks, NULL, SL_STATUS_INVALID_STATE);
     sl_sleeptimer_tick64_to_ms_IgnoreArg_ms();

@@ -145,28 +145,28 @@ void TIMHW_initTimer0(bool startTimerOnInit) {
  */
 timerStatus_t TIMHW_setCCChannelPin(pinPort_t pinPort, uint8_t pinNo, CCChannel_t channel) {
     volatile uint32_t* routeRegister = NULL;
-    uint32_t portShift = 0;
-    uint8_t pinShift = 0;
+    uint32_t portShift               = 0;
+    uint8_t pinShift                 = 0;
 
     // Associate the pin with the correct channel's CC pin
     // Select the right register and bit displacements for that register
     switch (channel) {
         case CC_CHANNEL_0: {
             routeRegister = &GPIO->TIMERROUTE[TIMER_NUM(TIMER0)].CC0ROUTE;
-            portShift = _GPIO_TIMER_CC0ROUTE_PORT_SHIFT;
-            pinShift = _GPIO_TIMER_CC0ROUTE_PIN_SHIFT;
+            portShift     = _GPIO_TIMER_CC0ROUTE_PORT_SHIFT;
+            pinShift      = _GPIO_TIMER_CC0ROUTE_PIN_SHIFT;
             break;
         }
         case CC_CHANNEL_1: {
             routeRegister = &GPIO->TIMERROUTE[TIMER_NUM(TIMER0)].CC1ROUTE;
-            portShift = _GPIO_TIMER_CC1ROUTE_PORT_SHIFT;
-            pinShift = _GPIO_TIMER_CC1ROUTE_PIN_SHIFT;
+            portShift     = _GPIO_TIMER_CC1ROUTE_PORT_SHIFT;
+            pinShift      = _GPIO_TIMER_CC1ROUTE_PIN_SHIFT;
             break;
         }
         case CC_CHANNEL_2: {
             routeRegister = &GPIO->TIMERROUTE[TIMER_NUM(TIMER0)].CC2ROUTE;
-            portShift = _GPIO_TIMER_CC2ROUTE_PORT_SHIFT;
-            pinShift = _GPIO_TIMER_CC2ROUTE_PIN_SHIFT;
+            portShift     = _GPIO_TIMER_CC2ROUTE_PORT_SHIFT;
+            pinShift      = _GPIO_TIMER_CC2ROUTE_PIN_SHIFT;
             break;
         }
         default: {
@@ -353,7 +353,7 @@ timerStatus_t TIMHW_setTimer0TopValue(const uint32_t top) {
  * @brief Set the value of the TOP register on TIMER0
  * NOTE: WRITES TO A SYNC type register, requires TIMER0 module to be ENABLED
  * @param top the value to set as the top value for the count on TIMER0
-  * @return timerStatus_t TIMER_OK on success, TIMER_DISABLED_BEFORE_WRITING_SYNC if the timer0 module was disabled
+ * @return timerStatus_t TIMER_OK on success, TIMER_DISABLED_BEFORE_WRITING_SYNC if the timer0 module was disabled
  */
 timerStatus_t TIMHW_setTimer0TopValueBuffered(const uint32_t top) {
     // TIMER_CompareSet writes to TIMER_TOP -> RWH Sync -> module needs to be enabled

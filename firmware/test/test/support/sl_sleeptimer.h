@@ -35,18 +35,21 @@ struct sl_sleeptimer_timer_handle {
     sl_sleeptimer_timer_callback_t callback;  ///< Function to call when timer expires.
     uint32_t timeout_periodic;                ///< Periodic timeout.
     uint32_t delta;                           ///< Delay relative to previous element in list.
-    uint32_t timeout_expected_tc;             ///< Expected tick count of the next timeout (only used for periodic timer).
-    uint16_t conversion_error;                ///< The error when converting ms to ticks (thousandths of ticks)
-    uint16_t accumulated_error;               ///< Accumulated conversion error (thousandths of ticks)
+    uint32_t timeout_expected_tc;  ///< Expected tick count of the next timeout (only used for periodic timer).
+    uint16_t conversion_error;     ///< The error when converting ms to ticks (thousandths of ticks)
+    uint16_t accumulated_error;    ///< Accumulated conversion error (thousandths of ticks)
 };
 
-sl_status_t sl_sleeptimer_start_timer_ms(sl_sleeptimer_timer_handle_t* handle, uint32_t timeout_ms, sl_sleeptimer_timer_callback_t callback, void* callback_data, uint8_t priority,
+sl_status_t sl_sleeptimer_start_timer_ms(sl_sleeptimer_timer_handle_t* handle, uint32_t timeout_ms,
+                                         sl_sleeptimer_timer_callback_t callback, void* callback_data, uint8_t priority,
                                          uint16_t option_flags);
 sl_status_t sl_sleeptimer_ms32_to_tick(uint32_t time_ms, uint32_t* tick);
-sl_status_t sl_sleeptimer_start_timer_ms(sl_sleeptimer_timer_handle_t* handle, uint32_t timeout_ms, sl_sleeptimer_timer_callback_t callback, void* callback_data, uint8_t priority,
+sl_status_t sl_sleeptimer_start_timer_ms(sl_sleeptimer_timer_handle_t* handle, uint32_t timeout_ms,
+                                         sl_sleeptimer_timer_callback_t callback, void* callback_data, uint8_t priority,
                                          uint16_t option_flags);
-sl_status_t sl_sleeptimer_start_periodic_timer_ms(sl_sleeptimer_timer_handle_t* handle, uint32_t timeout_ms, sl_sleeptimer_timer_callback_t callback, void* callback_data, uint8_t priority,
-                                                  uint16_t option_flags);
+sl_status_t sl_sleeptimer_start_periodic_timer_ms(sl_sleeptimer_timer_handle_t* handle, uint32_t timeout_ms,
+                                                  sl_sleeptimer_timer_callback_t callback, void* callback_data,
+                                                  uint8_t priority, uint16_t option_flags);
 sl_status_t sl_sleeptimer_stop_timer(sl_sleeptimer_timer_handle_t* handle);
 sl_status_t sl_sleeptimer_is_timer_running(sl_sleeptimer_timer_handle_t* handle, bool* running);
 uint64_t sl_sleeptimer_get_tick_count64(void);

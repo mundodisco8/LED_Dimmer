@@ -111,8 +111,8 @@ in the presence of noise.
  * INTEGRATOR_TARGET is the number of sampling events the pin has to remain in the new position to consider it a valid
  * press. A button press won't be valid until is pressed at least for INTEGRATOR_TARGET * DEBOUNCE_SAMPLING_PERIOD_MS
  */
-const uint32_t DEBOUNCE_SAMPLING_PERIOD_MS = 5UL;            // read the button every this ms
-STATIC const uint32_t DEBOUNCE_TIME_MS = 75UL;               // Max time for the button to settle in the new state
+const uint32_t DEBOUNCE_SAMPLING_PERIOD_MS          = 5UL;   // read the button every this ms
+STATIC const uint32_t DEBOUNCE_TIME_MS              = 75UL;  // Max time for the button to settle in the new state
 STATIC const uint32_t DEBOUNCE_STABLE_INPUT_TIME_MS = 25UL;  // Min time of input stability required to change the state
 // Value the integrator must hit to change states. There's a +1 because of how we increment/decrement. Don't worry about
 // it
@@ -173,10 +173,10 @@ void debounceButton(button_t* btnPtr) {
         // else, we have reached the debounce max time and button is still in undefined state, leave things as they
         // are and stop sampling. Reset the button state based on whatever it's state is
         if (btnPtr->state == BUTTON_RELEASED) {
-            btnPtr->integrator = 0UL;
+            btnPtr->integrator     = 0UL;
             btnPtr->debounceCycles = 0UL;
         } else {  // Button is PRESSED or LONG_PRESSED
-            btnPtr->integrator = INTEGRATOR_TARGET;
+            btnPtr->integrator     = INTEGRATOR_TARGET;
             btnPtr->debounceCycles = 0UL;
         }
     }

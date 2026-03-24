@@ -266,7 +266,7 @@ void button1Released(void* ctx) {
  */
 static void updateBreathePeriod(LEDChannel_t channel, int32_t delta) {
     uint32_t currentPeriod = getBreathePeriod(channel);
-    uint32_t newPeriod = currentPeriod + delta;
+    uint32_t newPeriod     = currentPeriod + delta;
     if (newPeriod < BREATHE_MIN_PERIOD_MS) {
         newPeriod = BREATHE_MIN_PERIOD_MS;
     }

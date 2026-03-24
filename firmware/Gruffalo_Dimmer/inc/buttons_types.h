@@ -17,8 +17,8 @@
 #include "sleepyTimers_HW_types.h"
 
 typedef enum btnError {
-    BTN_OK = 0,
-    BTN_NO_INTS_AVAILABLE = 0x1,
+    BTN_OK                  = 0,
+    BTN_NO_INTS_AVAILABLE   = 0x1,
     BTN_NULL_POINTER_PASSED = 0x2,
     BTN_ERROR,
 } btnError_t;

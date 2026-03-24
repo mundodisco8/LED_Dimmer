@@ -15,10 +15,10 @@ extern void samplingTimerCallback(timerHandlePtr_t handlePtr, void* data);
 extern void longPressTimerCallback(timerHandlePtr_t handlePtr, void* data);
 
 // Some timer handlers for the buttons
-uint32_t dummyA = 0;
-uint32_t dummyB = 0;
+uint32_t dummyA                    = 0;
+uint32_t dummyB                    = 0;
 timerHandlePtr_t longPressTimerPtr = (timerHandlePtr_t)&dummyA;  // give some non-null values to the pointers
-timerHandlePtr_t samplingTimerPtr = (timerHandlePtr_t)&dummyB;
+timerHandlePtr_t samplingTimerPtr  = (timerHandlePtr_t)&dummyB;
 
 // Values for globals lost in the mocking process
 const uint32_t DEBOUNCE_SAMPLING_PERIOD_MS = 5UL;  // read the button every this ms
@@ -50,11 +50,11 @@ void tearDown() {
 ////
 
 void test_initButtonsDoesItsJob(void) {
-    button_t testBtn = {0};
+    button_t testBtn       = {0};
     pinPort_t expectedPort = portA;
-    uint8_t expectedPin = 1;
+    uint8_t expectedPin    = 1;
     pinMode_t expectedMode = MODE_INPUT;
-    bool expectedDout = false;
+    bool expectedDout      = false;
     // Test Magic: I need to return a pointer to valid memory. The "right" thing to do would be to define two timerHandler
     // structs, and get pointers to them, but buttons.c does not know anything about the structs (we are using an
     // incomplete) type. The code is not going to use the memory, so we can just define two variables, and use their
@@ -129,13 +129,13 @@ void fakeCWAction(void* ctx) { (void)ctx; }
 void fakeCCWAction(void* ctx) { (void)ctx; }
 
 void test_initQuadratureDoesItsJob(void) {
-    uint8_t expectedPin0No = 1;
+    uint8_t expectedPin0No     = 1;
     pinPort_t expectedPortPin0 = portB;
-    uint8_t expectedPin1No = 2;
+    uint8_t expectedPin1No     = 2;
     pinPort_t expectedPortPin1 = portC;
-    pinMode_t expectedPinMode = MODE_INPUT_PULL;
-    bool expectedDout = false;
-    quad_encoder_t testQuad = {0};
+    pinMode_t expectedPinMode  = MODE_INPUT_PULL;
+    bool expectedDout          = false;
+    quad_encoder_t testQuad    = {0};
 
     // Set Expectations
     setPinMode_Expect(expectedPortPin0, expectedPin0No, expectedPinMode, expectedDout);
@@ -173,7 +173,7 @@ void fakeButtonCallback(uint8_t intNo, void* ctx) {
 void test_configureButtonInterrupts_Works(void) {
     button_t testBtn = {
         .btnPort = portA,
-        .pinNo = 1,
+        .pinNo   = 1,
     };
     uint32_t intNo = 0;
 
@@ -188,9 +188,9 @@ void test_configureButtonInterrupts_Works(void) {
 void test_configureButtonInterrupts_NoInterruptsAvailable(void) {
     button_t testBtn = {
         .btnPort = portA,
-        .pinNo = 1,
+        .pinNo   = 1,
     };
-    uint32_t testIntNo = 0;
+    uint32_t testIntNo     = 0;
     uint32_t intNoReturned = 0xFF;
 
     // Set expectations
@@ -202,7 +202,7 @@ void test_configureButtonInterrupts_NoInterruptsAvailable(void) {
 }
 
 void test_configButtonInts_PassedButtonPtrIsNull(void) {
-    button_t* btnPtr = NULL;
+    button_t* btnPtr       = NULL;
     uint32_t intNoReturned = 0;
 
     // Set expectations
@@ -232,7 +232,7 @@ void fakeQuadCallback(uint8_t intNo, void* ctx) {
 
 void test_configQuadInts_ConfigsInts(void) {
     quad_encoder_t testQuad = {
-        .pin0No = 1,
+        .pin0No   = 1,
         .pin0Port = portA,
     };
     uint32_t pinNoReturned = 0;
@@ -245,7 +245,7 @@ void test_configQuadInts_ConfigsInts(void) {
 
 void test_configQuadInts_AllIntsInUse(void) {
     quad_encoder_t testQuad = {
-        .pin0No = 1,
+        .pin0No   = 1,
         .pin0Port = portA,
     };
     uint32_t pinNoReturned = 0;
@@ -259,7 +259,7 @@ void test_configQuadInts_AllIntsInUse(void) {
 
 void test_configQuadInts_NullPointerGuards_QuadPointer(void) {
     quad_encoder_t* quadPtr = NULL;
-    uint32_t pinNoReturned = 0;
+    uint32_t pinNoReturned  = 0;
 
     // Set expectations
     assertExpectFailure();
@@ -269,7 +269,7 @@ void test_configQuadInts_NullPointerGuards_QuadPointer(void) {
 
 void test_configQuadInts_NullPointerGuards_IntNumberPointer(void) {
     quad_encoder_t testQuad = {0};
-    uint32_t* pinNoPtr = NULL;
+    uint32_t* pinNoPtr      = NULL;
 
     // Set expectations
     assertExpectFailure();
@@ -284,7 +284,7 @@ void test_configQuadInts_NullPointerGuards_IntNumberPointer(void) {
 ////
 
 void test_buttonSetState_Success(void) {
-    button_t testButton = {0};
+    button_t testButton     = {0};
     buttonState_t testState = BUTTON_PRESSED;
 
     // Set Expectations
@@ -311,7 +311,7 @@ void test_buttonGetState_Success(void) {
 
     // Set expectations
     buttonState_t expectedState = BUTTON_LONGPRESSED;
-    testButton.state = expectedState;
+    testButton.state            = expectedState;
 
     buttonState_t returnedState = buttonGetState(&testButton);
     TEST_ASSERT_EQUAL_UINT32(expectedState, returnedState);

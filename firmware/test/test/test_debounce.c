@@ -18,7 +18,7 @@ extern const uint32_t DEBOUNCE_SAMPLING_PERIOD_MS;
 extern const int32_t INTEGRATOR_TARGET;
 
 // Fake actions, they set a flag so we can check they were called
-static bool fakePressActionFlag = false;
+static bool fakePressActionFlag   = false;
 static bool fakeReleaseActionFlag = false;
 void fakePressAction(void* ctx) {
     (void)ctx;
@@ -30,7 +30,7 @@ void fakeReleaseAction(void* ctx) {
 }
 
 void setUp() {
-    fakePressActionFlag = false;
+    fakePressActionFlag   = false;
     fakeReleaseActionFlag = false;
     // test assertions
     assertSetUp();
@@ -59,22 +59,22 @@ void tearDown() {
 // * State is only changed if the integrator converges and the button is in the right state
 
 void test_IntegratorIncreases(void) {
-    pinPort_t testPort = portA;
-    uint8_t testPin = 1U;
+    pinPort_t testPort      = portA;
+    uint8_t testPin         = 1U;
     buttonState_t testState = BUTTON_RELEASED;
-    int32_t testIntegrator = 0UL;
-    uint32_t testCycles = 0UL;
+    int32_t testIntegrator  = 0UL;
+    uint32_t testCycles     = 0UL;
 
-    button_t testBtn = {.btnPort = testPort,
-                        .pinNo = testPin,
-                        .state = testState,
-                        .integrator = testIntegrator,
+    button_t testBtn = {.btnPort        = testPort,
+                        .pinNo          = testPin,
+                        .state          = testState,
+                        .integrator     = testIntegrator,
                         .debounceCycles = testCycles};
 
     // Expectations
-    uint32_t expectedDebounceCyles = testCycles + 1UL;
+    uint32_t expectedDebounceCyles  = testCycles + 1UL;
     int32_t expectedIntegratorValue = 1UL;
-    uint32_t expectedPinState = 1UL;
+    uint32_t expectedPinState       = 1UL;
     readPin_ExpectAndReturn(testPort, testPin, expectedPinState);
     startButtonTimer_ExpectAndReturn(&testBtn, TIMER_SAMPLE, BTN_OK);
 
@@ -84,22 +84,22 @@ void test_IntegratorIncreases(void) {
 }
 
 void test_IntegratorDecreases(void) {
-    pinPort_t testPort = portA;
-    uint8_t testPin = 1U;
+    pinPort_t testPort      = portA;
+    uint8_t testPin         = 1U;
     buttonState_t testState = BUTTON_RELEASED;
-    int32_t testIntegrator = 2UL;
-    uint32_t testCycles = 0UL;
+    int32_t testIntegrator  = 2UL;
+    uint32_t testCycles     = 0UL;
 
-    button_t testBtn = {.btnPort = testPort,
-                        .pinNo = testPin,
-                        .state = testState,
-                        .integrator = testIntegrator,
+    button_t testBtn = {.btnPort        = testPort,
+                        .pinNo          = testPin,
+                        .state          = testState,
+                        .integrator     = testIntegrator,
                         .debounceCycles = testCycles};
 
     // Expectations
-    uint32_t expectedDebounceCyles = testCycles + 1UL;
+    uint32_t expectedDebounceCyles  = testCycles + 1UL;
     int32_t expectedIntegratorValue = 1UL;
-    uint32_t expectedPinState = 0UL;
+    uint32_t expectedPinState       = 0UL;
     readPin_ExpectAndReturn(testPort, testPin, expectedPinState);
     startButtonTimer_ExpectAndReturn(&testBtn, TIMER_SAMPLE, BTN_OK);
 
@@ -109,22 +109,22 @@ void test_IntegratorDecreases(void) {
 }
 
 void test_IntegratorNotBelow0(void) {
-    pinPort_t testPort = portA;
-    uint8_t testPin = 1U;
+    pinPort_t testPort      = portA;
+    uint8_t testPin         = 1U;
     buttonState_t testState = BUTTON_RELEASED;  // as to not trigger the button state change part of the code
-    int32_t testIntegrator = 0UL;
-    uint32_t testCycles = 0UL;
+    int32_t testIntegrator  = 0UL;
+    uint32_t testCycles     = 0UL;
 
-    button_t testBtn = {.btnPort = testPort,
-                        .pinNo = testPin,
-                        .state = testState,
-                        .integrator = testIntegrator,
+    button_t testBtn = {.btnPort        = testPort,
+                        .pinNo          = testPin,
+                        .state          = testState,
+                        .integrator     = testIntegrator,
                         .debounceCycles = testCycles};
 
     // Expectations
-    uint32_t expectedDebounceCyles = testCycles + 1UL;
+    uint32_t expectedDebounceCyles  = testCycles + 1UL;
     int32_t expectedIntegratorValue = 0UL;
-    uint32_t expectedPinState = 0UL;
+    uint32_t expectedPinState       = 0UL;
     readPin_ExpectAndReturn(testPort, testPin, expectedPinState);
     startButtonTimer_ExpectAndReturn(&testBtn, TIMER_SAMPLE, BTN_OK);
 
@@ -134,22 +134,22 @@ void test_IntegratorNotBelow0(void) {
 }
 
 void test_IntegratorNotAboveMax(void) {
-    pinPort_t testPort = portA;
-    uint8_t testPin = 1U;
+    pinPort_t testPort      = portA;
+    uint8_t testPin         = 1U;
     buttonState_t testState = BUTTON_PRESSED;  // as to not trigger the button state change part of the code
-    int32_t testIntegrator = INTEGRATOR_TARGET;
-    uint32_t testCycles = 0UL;
+    int32_t testIntegrator  = INTEGRATOR_TARGET;
+    uint32_t testCycles     = 0UL;
 
-    button_t testBtn = {.btnPort = testPort,
-                        .pinNo = testPin,
-                        .state = testState,
-                        .integrator = testIntegrator,
+    button_t testBtn = {.btnPort        = testPort,
+                        .pinNo          = testPin,
+                        .state          = testState,
+                        .integrator     = testIntegrator,
                         .debounceCycles = testCycles};
 
     // Expectations
-    uint32_t expectedDebounceCyles = testCycles + 1UL;
+    uint32_t expectedDebounceCyles  = testCycles + 1UL;
     int32_t expectedIntegratorValue = INTEGRATOR_TARGET;
-    uint32_t expectedPinState = 1UL;
+    uint32_t expectedPinState       = 1UL;
 
     readPin_ExpectAndReturn(testPort, testPin, expectedPinState);
     startButtonTimer_ExpectAndReturn(&testBtn, TIMER_SAMPLE, BTN_OK);
@@ -162,11 +162,11 @@ void test_IntegratorNotAboveMax(void) {
 // In the previous test, I realised that if I leave the button actions pointing to NULL, we get an exception when
 // that "action" is called. Add some code to fix it
 void test_ButtonActionIsNull(void) {
-    button_t testBtn = {.btnPort = portA,
-                        .pinNo = 1,
-                        .state = BUTTON_RELEASED,
-                        .integrator = INTEGRATOR_TARGET,
-                        .pressedAction = NULL,
+    button_t testBtn = {.btnPort        = portA,
+                        .pinNo          = 1,
+                        .state          = BUTTON_RELEASED,
+                        .integrator     = INTEGRATOR_TARGET,
+                        .pressedAction  = NULL,
                         .releasedAction = NULL};
 
     // Expectations
@@ -180,7 +180,7 @@ void test_ButtonActionIsNull(void) {
 
     // Same thing with the release action
     testBtn.integrator = 0;
-    testBtn.state = BUTTON_PRESSED;
+    testBtn.state      = BUTTON_PRESSED;
     readPin_ExpectAndReturn(portA, 1, 0);
     buttonSetState_Expect(&testBtn, BUTTON_RELEASED);
     stopButtonTimer_ExpectAndReturn(&testBtn, TIMER_LONGPRESS, BTN_OK);
@@ -191,22 +191,22 @@ void test_ButtonActionIsNull(void) {
 }
 
 void test_IntegratorDecreasesMultiple(void) {
-    pinPort_t testPort = portA;
-    uint8_t testPin = 1U;
+    pinPort_t testPort      = portA;
+    uint8_t testPin         = 1U;
     buttonState_t testState = BUTTON_RELEASED;
-    int32_t testIntegrator = 4UL;
-    uint32_t testCycles = 0UL;
+    int32_t testIntegrator  = 4UL;
+    uint32_t testCycles     = 0UL;
 
-    button_t testBtn = {.btnPort = testPort,
-                        .pinNo = testPin,
-                        .state = testState,
-                        .integrator = testIntegrator,
+    button_t testBtn = {.btnPort        = testPort,
+                        .pinNo          = testPin,
+                        .state          = testState,
+                        .integrator     = testIntegrator,
                         .debounceCycles = testCycles};
 
     // Expectations
-    uint32_t expectedDebounceCyles = testCycles + 3UL;  // we cycle three times with the button released
+    uint32_t expectedDebounceCyles  = testCycles + 3UL;  // we cycle three times with the button released
     int32_t expectedIntegratorValue = testIntegrator - 3UL;
-    uint32_t expectedPinState = 0UL;
+    uint32_t expectedPinState       = 0UL;
     readPin_ExpectAndReturn(testPort, testPin, expectedPinState);
     startButtonTimer_ExpectAndReturn(&testBtn, TIMER_SAMPLE, BTN_OK);
 
@@ -227,22 +227,22 @@ void test_IntegratorDecreasesMultiple(void) {
 }
 
 void test_IntegratorIncreasesMultiple(void) {
-    pinPort_t testPort = portA;
-    uint8_t testPin = 1U;
+    pinPort_t testPort      = portA;
+    uint8_t testPin         = 1U;
     buttonState_t testState = BUTTON_RELEASED;
-    int32_t testIntegrator = 1UL;
-    uint32_t testCycles = 0UL;
+    int32_t testIntegrator  = 1UL;
+    uint32_t testCycles     = 0UL;
 
-    button_t testBtn = {.btnPort = testPort,
-                        .pinNo = testPin,
-                        .state = testState,
-                        .integrator = testIntegrator,
+    button_t testBtn = {.btnPort        = testPort,
+                        .pinNo          = testPin,
+                        .state          = testState,
+                        .integrator     = testIntegrator,
                         .debounceCycles = testCycles};
 
     // Expectations
-    uint32_t expectedDebounceCyles = testCycles + 3UL;  // we cycle three times with the button released
+    uint32_t expectedDebounceCyles  = testCycles + 3UL;  // we cycle three times with the button released
     int32_t expectedIntegratorValue = testIntegrator + 3UL;
-    uint32_t expectedPinState = 1UL;
+    uint32_t expectedPinState       = 1UL;
     readPin_ExpectAndReturn(testPort, testPin, expectedPinState);
     startButtonTimer_ExpectAndReturn(&testBtn, TIMER_SAMPLE, BTN_OK);
 
@@ -263,24 +263,24 @@ void test_IntegratorIncreasesMultiple(void) {
 }
 
 void test_fromReleasedToPressed(void) {
-    pinPort_t testPort = portA;
-    uint8_t testPin = 1U;
+    pinPort_t testPort      = portA;
+    uint8_t testPin         = 1U;
     buttonState_t testState = BUTTON_RELEASED;
-    int32_t testIntegrator = 0UL;
-    uint32_t testCycles = 0UL;
+    int32_t testIntegrator  = 0UL;
+    uint32_t testCycles     = 0UL;
 
-    button_t testBtn = {.btnPort = testPort,
-                        .pinNo = testPin,
-                        .state = testState,
-                        .integrator = testIntegrator,
+    button_t testBtn = {.btnPort        = testPort,
+                        .pinNo          = testPin,
+                        .state          = testState,
+                        .integrator     = testIntegrator,
                         .debounceCycles = testCycles,
-                        .pressedAction = fakePressAction};
+                        .pressedAction  = fakePressAction};
 
     // Expectations
-    uint32_t expectedDebounceCyles = 0UL;  // we reset it on button state change
+    uint32_t expectedDebounceCyles  = 0UL;  // we reset it on button state change
     int32_t expectedIntegratorValue = INTEGRATOR_TARGET;
-    uint32_t expectedPinState = 1UL;
-    buttonState_t expectedState = BUTTON_PRESSED;
+    uint32_t expectedPinState       = 1UL;
+    buttonState_t expectedState     = BUTTON_PRESSED;
 
     for (int32_t i = 0; i < INTEGRATOR_TARGET - 1; i++) {
         readPin_ExpectAndReturn(testPort, testPin, expectedPinState);
@@ -303,24 +303,24 @@ void test_fromReleasedToPressed(void) {
 }
 
 void test_fromPressedToReleased(void) {
-    pinPort_t testPort = portA;
-    uint8_t testPin = 1U;
+    pinPort_t testPort      = portA;
+    uint8_t testPin         = 1U;
     buttonState_t testState = BUTTON_PRESSED;
-    int32_t testIntegrator = INTEGRATOR_TARGET;
-    uint32_t testCycles = 0UL;
+    int32_t testIntegrator  = INTEGRATOR_TARGET;
+    uint32_t testCycles     = 0UL;
 
-    button_t testBtn = {.btnPort = testPort,
-                        .pinNo = testPin,
-                        .state = testState,
-                        .integrator = testIntegrator,
+    button_t testBtn = {.btnPort        = testPort,
+                        .pinNo          = testPin,
+                        .state          = testState,
+                        .integrator     = testIntegrator,
                         .debounceCycles = testCycles,
                         .releasedAction = fakeReleaseAction};
 
     // Expectations
-    uint32_t expectedDebounceCyles = 0UL;  // we reset on button state change
+    uint32_t expectedDebounceCyles  = 0UL;  // we reset on button state change
     int32_t expectedIntegratorValue = 0UL;
-    uint32_t expectedPinState = 0UL;
-    buttonState_t expectedState = BUTTON_RELEASED;
+    uint32_t expectedPinState       = 0UL;
+    buttonState_t expectedState     = BUTTON_RELEASED;
 
     for (int32_t i = 0; i < INTEGRATOR_TARGET - 1; i++) {
         readPin_ExpectAndReturn(testPort, testPin, expectedPinState);
@@ -345,24 +345,24 @@ void test_fromPressedToReleased(void) {
 }
 
 void test_fromLongPressedToReleased(void) {
-    pinPort_t testPort = portA;
-    uint8_t testPin = 1U;
+    pinPort_t testPort      = portA;
+    uint8_t testPin         = 1U;
     buttonState_t testState = BUTTON_LONGPRESSED;
-    int32_t testIntegrator = INTEGRATOR_TARGET;
-    uint32_t testCycles = 0UL;
+    int32_t testIntegrator  = INTEGRATOR_TARGET;
+    uint32_t testCycles     = 0UL;
 
-    button_t testBtn = {.btnPort = testPort,
-                        .pinNo = testPin,
-                        .state = testState,
-                        .integrator = testIntegrator,
+    button_t testBtn = {.btnPort        = testPort,
+                        .pinNo          = testPin,
+                        .state          = testState,
+                        .integrator     = testIntegrator,
                         .debounceCycles = testCycles,
                         .releasedAction = fakeReleaseAction};
 
     // Expectations
-    uint32_t expectedDebounceCyles = 0UL;  // we reset on button state change
+    uint32_t expectedDebounceCyles  = 0UL;  // we reset on button state change
     int32_t expectedIntegratorValue = 0UL;
-    uint32_t expectedPinState = 0UL;
-    buttonState_t expectedState = BUTTON_RELEASED;
+    uint32_t expectedPinState       = 0UL;
+    buttonState_t expectedState     = BUTTON_RELEASED;
 
     for (int32_t i = 0; i < INTEGRATOR_TARGET - 1; i++) {
         readPin_ExpectAndReturn(testPort, testPin, expectedPinState);
@@ -389,17 +389,17 @@ void test_fromLongPressedToReleased(void) {
 // Testing that an unstable input doesn't converge and the button state doesn't change
 // Also, after the total debounce time, we stop rearming the sampling clock
 void test_someNoisyInputs_ButtonReleased(void) {
-    pinPort_t testPort = portA;
-    uint8_t testPin = 1U;
+    pinPort_t testPort      = portA;
+    uint8_t testPin         = 1U;
     buttonState_t testState = BUTTON_RELEASED;
-    int32_t testIntegrator = 0UL;
-    uint32_t testCycles = 0UL;
+    int32_t testIntegrator  = 0UL;
+    uint32_t testCycles     = 0UL;
 
     button_t testBtn = {
-        .btnPort = testPort,
-        .pinNo = testPin,
-        .state = testState,
-        .integrator = testIntegrator,
+        .btnPort        = testPort,
+        .pinNo          = testPin,
+        .state          = testState,
+        .integrator     = testIntegrator,
         .debounceCycles = testCycles,
     };
 
@@ -430,17 +430,17 @@ void test_someNoisyInputs_ButtonReleased(void) {
 }
 
 void test_someNoisyInputs_ButtonPressed(void) {
-    pinPort_t testPort = portA;
-    uint8_t testPin = 1U;
+    pinPort_t testPort      = portA;
+    uint8_t testPin         = 1U;
     buttonState_t testState = BUTTON_PRESSED;
-    int32_t testIntegrator = INTEGRATOR_TARGET;
-    uint32_t testCycles = 0UL;
+    int32_t testIntegrator  = INTEGRATOR_TARGET;
+    uint32_t testCycles     = 0UL;
 
     button_t testBtn = {
-        .btnPort = testPort,
-        .pinNo = testPin,
-        .state = testState,
-        .integrator = testIntegrator,
+        .btnPort        = testPort,
+        .pinNo          = testPin,
+        .state          = testState,
+        .integrator     = testIntegrator,
         .debounceCycles = testCycles,
     };
 

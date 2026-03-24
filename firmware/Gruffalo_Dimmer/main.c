@@ -1,4 +1,4 @@
-/***************************************************************************/ /**
+/*****************************************************************************
  * @file
  * @brief main() function.
  *******************************************************************************
@@ -54,7 +54,7 @@ bool sleepOnce = true;
 sl_power_manager_em_transition_event_handle_t event_handle;
 sl_power_manager_em_transition_event_info_t event_info = {
     .event_mask = EM_EVENT_MASK_ALL,
-    .on_event = my_events_callback,
+    .on_event   = my_events_callback,
 };
 
 extern bool sleepFlag;

@@ -42,13 +42,13 @@ void test_nvm_init_Success(void) {
 
 void test_nvm_readLEDContext_Success(void) {
     LEDContext_t testContext = {0};
-    nvmKeys_t testKey = NVM3_KEY_LED1_CONTEXT;
+    nvmKeys_t testKey        = NVM3_KEY_LED1_CONTEXT;
 
     // Set Expectations
-    uint32_t expectedObejcts = 3;
-    size_t expectedLen = sizeof(LEDContext_t);
+    uint32_t expectedObejcts     = 3;
+    size_t expectedLen           = sizeof(LEDContext_t);
     LEDContext_t expectedContext = {.currAnimation = ANIM_FIXED, .currBreathePeriod = 1000UL, .currBrightness = 5000UL};
-    uint32_t expectedType = NVM3_OBJECTTYPE_DATA;
+    uint32_t expectedType        = NVM3_OBJECTTYPE_DATA;
     // Count nvm objects
     // NOTE: countObjects is an inline to call enumObjects. countObjects doesn't get mocked, but enumObjects does.
     // Finally, during compilation, enumObjects is replaced for countObjects and that way, we can mock
@@ -73,7 +73,7 @@ void test_nvm_readLEDContext_Success(void) {
 
 void test_nvm_readLEDContext_NVMIsEmpty(void) {
     LEDContext_t testContext = {0};
-    nvmKeys_t testKey = NVM3_KEY_LED1_CONTEXT;
+    nvmKeys_t testKey        = NVM3_KEY_LED1_CONTEXT;
 
     // Set Expectations
     uint32_t expectedObjects = 0;
@@ -85,7 +85,7 @@ void test_nvm_readLEDContext_NVMIsEmpty(void) {
 
 void test_nvm_readLEDContext_ObjectNotFound(void) {
     LEDContext_t testContext = {0};
-    nvmKeys_t testKey = NVM3_KEY_LED1_CONTEXT;
+    nvmKeys_t testKey        = NVM3_KEY_LED1_CONTEXT;
 
     // Set Expectations
     uint32_t expecetdObejcts = 3;
@@ -103,7 +103,7 @@ void test_nvm_readLEDContext_ObjectNotFound(void) {
 
 void test_nvm_readLEDContext_ErrorFindingObject(void) {
     LEDContext_t testContext = {0};
-    nvmKeys_t testKey = NVM3_KEY_LED1_CONTEXT;
+    nvmKeys_t testKey        = NVM3_KEY_LED1_CONTEXT;
 
     // Set Expectations
     uint32_t expectedObejcts = 3;
@@ -121,12 +121,12 @@ void test_nvm_readLEDContext_ErrorFindingObject(void) {
 
 void test_nvm_readLEDContext_WrongObjectDataLenght(void) {
     LEDContext_t testContext = {0};
-    nvmKeys_t testKey = NVM3_KEY_LED1_CONTEXT;
+    nvmKeys_t testKey        = NVM3_KEY_LED1_CONTEXT;
 
     // Set Expectations
     uint32_t expectedObejcts = 3;
-    size_t expectedLen = 100;
-    uint32_t expectedType = NVM3_OBJECTTYPE_DATA;
+    size_t expectedLen       = 100;
+    uint32_t expectedType    = NVM3_OBJECTTYPE_DATA;
     // Count nvm objects
     // Not countobjects, because it calls enumObjects? inlining stuff...
     // nvm3_countObjects_ExpectAndReturn(&handle, testObejcts);
@@ -145,12 +145,12 @@ void test_nvm_readLEDContext_WrongObjectDataLenght(void) {
 
 void test_nvm_readLEDContext_WrongObjectType(void) {
     LEDContext_t testContext = {0};
-    nvmKeys_t testKey = NVM3_KEY_LED1_CONTEXT;
+    nvmKeys_t testKey        = NVM3_KEY_LED1_CONTEXT;
 
     // Set Expectations
     uint32_t expectedObejcts = 3;
-    size_t expectedLen = sizeof(LEDContext_t);
-    uint32_t expectedType = NVM3_OBJECTTYPE_COUNTER;
+    size_t expectedLen       = sizeof(LEDContext_t);
+    uint32_t expectedType    = NVM3_OBJECTTYPE_COUNTER;
     // Count nvm objects
     // Not countobjects, because it calls enumObjects? inlining stuff...
     // nvm3_countObjects_ExpectAndReturn(&handle, testObejcts);
@@ -167,13 +167,13 @@ void test_nvm_readLEDContext_WrongObjectType(void) {
 
 void test_nvm_readLEDContext_ErrorReadingData(void) {
     LEDContext_t testContext = {0};
-    nvmKeys_t testKey = NVM3_KEY_LED1_CONTEXT;
+    nvmKeys_t testKey        = NVM3_KEY_LED1_CONTEXT;
 
     // Set Expectations
-    uint32_t expectedObejcts = 3;
-    size_t expectedLen = sizeof(LEDContext_t);
+    uint32_t expectedObejcts     = 3;
+    size_t expectedLen           = sizeof(LEDContext_t);
     LEDContext_t expectedContext = {.currAnimation = ANIM_FIXED, .currBreathePeriod = 1000UL, .currBrightness = 5000UL};
-    uint32_t expectedType = NVM3_OBJECTTYPE_DATA;
+    uint32_t expectedType        = NVM3_OBJECTTYPE_DATA;
     // Count nvm objects
     // Not countobjects, because it calls enumObjects? inlining stuff...
     // nvm3_countObjects_ExpectAndReturn(&handle, testObejcts);
@@ -200,7 +200,7 @@ void test_nvm_readLEDContext_ErrorReadingData(void) {
 
 void test_nvm_writeLEDContext_Success(void) {
     LEDContext_t testContext = {.currAnimation = ANIM_FIXED, .currBreathePeriod = 1000UL, .currBrightness = 5000UL};
-    nvmKeys_t testKey = NVM3_KEY_LED1_CONTEXT;
+    nvmKeys_t testKey        = NVM3_KEY_LED1_CONTEXT;
 
     // Set Expectations
     nvm3_writeData_ExpectAndReturn(&handle, testKey, &testContext, sizeof(LEDContext_t), SL_STATUS_OK);
@@ -210,7 +210,7 @@ void test_nvm_writeLEDContext_Success(void) {
 
 void test_nvm_writeLEDContext_Error(void) {
     LEDContext_t testContext = {.currAnimation = ANIM_FIXED, .currBreathePeriod = 1000UL, .currBrightness = 5000UL};
-    nvmKeys_t testKey = NVM3_KEY_LED1_CONTEXT;
+    nvmKeys_t testKey        = NVM3_KEY_LED1_CONTEXT;
 
     // Set Expectations
     nvm3_writeData_ExpectAndReturn(&handle, testKey, &testContext, sizeof(LEDContext_t), SL_STATUS_INVALID_KEY);

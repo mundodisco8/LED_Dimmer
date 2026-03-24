@@ -99,7 +99,7 @@ void nvm_init(void) {
  */
 void nvm_readLEDContext(const nvmKeys_t key, LEDContext_t* ptrContext) {
     uint32_t objectType = 0;
-    size_t dataLen = 0;
+    size_t dataLen      = 0;
 
     uint32_t numObjs = nvm3_countObjects(&handle);
     if (numObjs == 0UL) {
@@ -124,7 +124,7 @@ void nvm_readLEDContext(const nvmKeys_t key, LEDContext_t* ptrContext) {
     }
     // TODO: add test for object size
     if (objectType == NVM3_OBJECTTYPE_DATA) {
-        nvm3_readData(&handle, key, ptrContext, dataLen);  //TODO: test for status
+        nvm3_readData(&handle, key, ptrContext, dataLen);  // TODO: test for status
         if (status != SL_STATUS_OK) {
             app_log_error("Error on readData\r\n");
             return;

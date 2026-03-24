@@ -71,13 +71,13 @@ void initButton(button_t* btnPtr, const pinPort_t pinPort, const uint8_t pinNo, 
     app_assert(btnPtr != NULL, "Passed NULL Button pointer to initButton");
 
     setPinMode(pinPort, pinNo, MODE_INPUT, false);
-    btnPtr->btnPort = pinPort;
-    btnPtr->pinNo = pinNo;
-    btnPtr->integrator = 0;
-    btnPtr->state = BUTTON_RELEASED;  // buttons are released by default
-    btnPtr->pressedAction = shortPressAction;
+    btnPtr->btnPort           = pinPort;
+    btnPtr->pinNo             = pinNo;
+    btnPtr->integrator        = 0;
+    btnPtr->state             = BUTTON_RELEASED;  // buttons are released by default
+    btnPtr->pressedAction     = shortPressAction;
     btnPtr->longPressedAction = longPressAction;
-    btnPtr->releasedAction = releasedAction;
+    btnPtr->releasedAction    = releasedAction;
 
     slpTimerStatus_t retVal = SLP_reserveTimer(&(btnPtr->longPressTimerPtr));
     // TODO: Test Asserts on error
@@ -108,11 +108,11 @@ void initQuadEncoder(quad_encoder_t* quadPtr, const pinPort_t pin0Port, const ui
     // I only managed to get it working by actively pulling it dowm, but it should not be neccessary. Do more reasearch!
     setPinMode(pin0Port, pin0No, MODE_INPUT_PULL, false);
     setPinMode(pin1Port, pin1No, MODE_INPUT_PULL, false);
-    quadPtr->pin0No = pin0No;
-    quadPtr->pin0Port = pin0Port;
-    quadPtr->pin1No = pin1No;
-    quadPtr->pin1Port = pin1Port;
-    quadPtr->clockWiseAction = CWAction;
+    quadPtr->pin0No                 = pin0No;
+    quadPtr->pin0Port               = pin0Port;
+    quadPtr->pin1No                 = pin1No;
+    quadPtr->pin1Port               = pin1Port;
+    quadPtr->clockWiseAction        = CWAction;
     quadPtr->counterClockWiseAction = CCWAction;
 }
 
@@ -183,7 +183,7 @@ void buttonSetState(button_t* btnPtr, const buttonState_t newState) {
 
     // Keep track of the previous state, as we use that on the action logic
     btnPtr->prevState = btnPtr->state;
-    btnPtr->state = newState;
+    btnPtr->state     = newState;
 }
 
 /**
@@ -216,23 +216,23 @@ static char* getTimerTypeString(const btnTimerType_t timerType) {
 btnError_t startButtonTimer(button_t* btnPtr, const btnTimerType_t timerType) {
     app_assert(btnPtr != NULL, "Passed NULL Button pointer to startButtonTimer");
 
-    uint32_t time = 0;
-    expBehaviour_t behaviour = TIMER_ONE_SHOT;
-    timerHandlePtr_t timerPtr = NULL;
+    uint32_t time               = 0;
+    expBehaviour_t behaviour    = TIMER_ONE_SHOT;
+    timerHandlePtr_t timerPtr   = NULL;
     timerCallback_t callbackPtr = NULL;
 
     switch (timerType) {
         case TIMER_SAMPLE: {
-            time = DEBOUNCE_SAMPLING_PERIOD_MS;
-            behaviour = TIMER_ONE_SHOT;
-            timerPtr = btnPtr->samplingTimerPtr;
+            time        = DEBOUNCE_SAMPLING_PERIOD_MS;
+            behaviour   = TIMER_ONE_SHOT;
+            timerPtr    = btnPtr->samplingTimerPtr;
             callbackPtr = samplingTimerCallback;
             break;
         }
         case TIMER_LONGPRESS: {
-            time = LONGPRESS_TIME_MS;
-            behaviour = TIMER_ONE_SHOT;
-            timerPtr = btnPtr->longPressTimerPtr;
+            time        = LONGPRESS_TIME_MS;
+            behaviour   = TIMER_ONE_SHOT;
+            timerPtr    = btnPtr->longPressTimerPtr;
             callbackPtr = longPressTimerCallback;
             break;
         }

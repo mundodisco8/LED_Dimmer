@@ -55,7 +55,7 @@ const uint32_t DEFAULT_LED_BRIGHTNESS = 5000UL;
 /**
  * @brief The minimum and default values for the breathe period, in ms
  */
-const uint32_t BREATHE_MIN_PERIOD_MS = BREATHE_LUT_SIZE;
+const uint32_t BREATHE_MIN_PERIOD_MS     = BREATHE_LUT_SIZE;
 const uint32_t BREATHE_DEFAULT_PERIOD_MS = 5000;
 
 /**
@@ -63,8 +63,8 @@ const uint32_t BREATHE_DEFAULT_PERIOD_MS = 5000;
  */
 const uint32_t BREATHE_MAX_BRIGHTNESS = MAX_BRIGHTNESS;
 const uint32_t BREATHE_MIN_BRIGHTNESS = 1000;  // 10%
-const double BREATHE_BETA = 0.5L;              // peak at half the period
-const double BREATHE_GAMMA = .15L;
+const double BREATHE_BETA             = 0.5L;  // peak at half the period
+const double BREATHE_GAMMA            = .15L;
 
 /**
  * @brief Contains the pre-calculated values for the breathe effect brightness levels. uint16_t as it contains a percent value
@@ -79,7 +79,7 @@ STATIC uint32_t gausianBreatheLUT[BREATHE_LUT_SIZE] = {0UL};
 const breatheParams_t DEFAULT_BREATHE_PARAMS = {.maxBrightness = BREATHE_MAX_BRIGHTNESS,
                                                 .minBrightness = BREATHE_MIN_BRIGHTNESS,
                                                 .beta = BREATHE_BETA,  // set the breathe effect peak at half the period
-                                                .gamma = BREATHE_GAMMA,
+                                                .gamma   = BREATHE_GAMMA,
                                                 .LUTSize = BREATHE_LUT_SIZE};
 
 // Instances of LED Strips
@@ -121,18 +121,18 @@ efferr_t initLEDStrips(void) {
         // Set animation to fixed brightness
         currChannel_ptr->currAnimation = ANIM_FIXED;
         // Set brightness to starting default, and set the brightness Change Request Flag
-        currChannel_ptr->brightnessCtrl.targetBrightness = DEFAULT_LED_BRIGHTNESS;
-        currChannel_ptr->brightnessCtrl.delta = 0;  // will be calculated in the effect control loop
+        currChannel_ptr->brightnessCtrl.targetBrightness          = DEFAULT_LED_BRIGHTNESS;
+        currChannel_ptr->brightnessCtrl.delta                     = 0;  // will be calculated in the effect control loop
         currChannel_ptr->brightnessCtrl.brightChangeRequestedFlag = true;
         // Set PWM period from clock. multiplied by 1000 to get ms
         currChannel_ptr->pmwPeriodms = 1000UL / (getPWMFrequency());
         // Assert if the PWM period is 0, as that we use it as  a divisor!
         app_assert(currChannel_ptr->pmwPeriodms != 0, "\r\nPWM Period is %" PRIu32 "!", currChannel_ptr->pmwPeriodms);
         // Init breatheControl_t for that LED, set to 0 as we are starting with fixed brightness
-        currChannel_ptr->breatheCtrl.periodms = 0;
+        currChannel_ptr->breatheCtrl.periodms       = 0;
         currChannel_ptr->breatheCtrl.wavesPerSample = 0;
-        currChannel_ptr->breatheCtrl.currWave = 0;
-        currChannel_ptr->breatheCtrl.currLUTIndex = 0;
+        currChannel_ptr->breatheCtrl.currWave       = 0;
+        currChannel_ptr->breatheCtrl.currLUTIndex   = 0;
     }
 
     setBreathePeriod(LED_CHANNEL_1, BREATHE_DEFAULT_PERIOD_MS);
@@ -209,7 +209,7 @@ uint32_t setLEDBrightness(const LEDChannel_t channel, uint32_t percent) {
         percent = MAX_BRIGHTNESS;
     }
 
-    LED_ptr->brightnessCtrl.targetBrightness = percent;
+    LED_ptr->brightnessCtrl.targetBrightness          = percent;
     LED_ptr->brightnessCtrl.brightChangeRequestedFlag = true;
 
     return percent;
@@ -282,7 +282,7 @@ STATIC void effectControl_FadeBrightness(LEDChannel_t LEDChannel) {
     LED_t* LED_ptr = getLEDStruct(LEDChannel);
 
     const uint32_t currentLevel = LED_ptr->brightnessCtrl.currentBrightness;
-    const uint32_t targetLevel = getLEDBrightness(LEDChannel);
+    const uint32_t targetLevel  = getLEDBrightness(LEDChannel);
 
     if (targetLevel == currentLevel) {
         return;  // nothing to do
@@ -306,7 +306,7 @@ STATIC void effectControl_FadeBrightness(LEDChannel_t LEDChannel) {
         delta = (delta == 0) ? 1 : delta;
         // Check if the delta is less than the difference between the current compare and the target.
         LED_ptr->brightnessCtrl.brightChangeRequestedFlag = false;
-        LED_ptr->brightnessCtrl.delta = delta;
+        LED_ptr->brightnessCtrl.delta                     = delta;
     }
 
     uint32_t step = LED_ptr->brightnessCtrl.delta;
