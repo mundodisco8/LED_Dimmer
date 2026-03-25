@@ -69,6 +69,7 @@ void test_initButtonsDoesItsJob(void) {
     SLP_reserveTimer_ReturnThruPtr_handlePtr((timerHandlePtr_t*)&dummy1);
     SLP_reserveTimer_ExpectAndReturn(&(testBtn.samplingTimerPtr), SLPTIMER_OK);
     SLP_reserveTimer_ReturnThruPtr_handlePtr((timerHandlePtr_t*)&dummy2);
+    setPinUpForEM4WakeUp_Expect(expectedPort, expectedPin);
 
     initButton(&testBtn, expectedPort, expectedPin, fakePressedAction, fakeLongPressedAction, fakeReleasedAction);
     // Check retVal is true

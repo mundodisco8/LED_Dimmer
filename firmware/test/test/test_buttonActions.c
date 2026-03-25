@@ -88,29 +88,38 @@ void test_button0ReleasedAfterShortPress(void) {
     channelIdx               = (uint32_t)testChannel;
 
     // Set Expectations - 1st press, switch to ch2
-    LEDChannel_t expectedCh = LED_CHANNEL_2;
+    LEDChannel_t expectedCh     = LED_CHANNEL_2;
+    channel_t expectedIndicator = CHANNEL_2;
+    LEDIndicator_setChannel_Expect(expectedIndicator);
 
     button0Released(&testBtn);
     TEST_ASSERT_EQUAL(expectedCh, channelIdx);
 
     // Second press gets channel 3
-    expectedCh = LED_CHANNEL_3;
+    expectedCh        = LED_CHANNEL_3;
+    expectedIndicator = CHANNEL_3;
+    LEDIndicator_setChannel_Expect(expectedIndicator);
 
     // Set Expectations
     button0Released(&testBtn);
     TEST_ASSERT_EQUAL(expectedCh, channelIdx);
 
     // Third press sets to ALL
-    expectedCh = LED_CHANNELS_ALL;
+    expectedCh        = LED_CHANNELS_ALL;
+    expectedIndicator = CHANNEL_ALL;
+    LEDIndicator_setChannel_Expect(expectedIndicator);
 
     // Set Expectations
     button0Released(&testBtn);
     TEST_ASSERT_EQUAL(expectedCh, channelIdx);
 
-    // And fourth resets
-    expectedCh = LED_CHANNEL_1;
+    // And fourth resets back to channel 1
+    expectedCh        = LED_CHANNEL_1;
+    expectedIndicator = CHANNEL_1;
 
     // Set Expectations
+    LEDIndicator_setChannel_Expect(expectedIndicator);
+
     button0Released(&testBtn);
     TEST_ASSERT_EQUAL(expectedCh, channelIdx);
 }

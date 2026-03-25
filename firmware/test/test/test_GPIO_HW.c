@@ -49,6 +49,18 @@ void test_readPin(void) {
     TEST_ASSERT_EQUAL_UINT32(1, pinStatus);
 }
 
+void test_writePin_Success(void) {
+    uint32_t testPin     = 5;
+    pinPort_t testPort   = portC;
+    pinState_t testState = PIN_SET;
+
+    // Set Expectations
+    GPIO_Port_TypeDef expectedPort = gpioPortC;
+    GPIO_PortOutSetVal_Expect(expectedPort, testState, testPin);
+
+    writePin(testPort, testPin, testState);
+}
+
 void test_configurePinInterrupt(void) {
     pinPort_t testPort  = portA;
     uint8_t testPin     = 4;
@@ -178,10 +190,10 @@ void test_SetPinUpForEM4WakeUp_Success(void) {
     uint8_t testPin    = 5;
 
     // Set Expectations
-    pinMode_t expectedMode   = MODE_INPUT_PULL_FILTER;
-    bool expectedDout        = true;
-    uint32_t expectedEM4Mask = GPIO_IEN_EM4WUIEN0;
-    GPIO_PinModeSet_Expect(testPort, testPin, expectedMode, expectedDout);
+    bool expectedDout                 = true;
+    uint32_t expectedEM4Mask          = GPIO_IEN_EM4WUIEN0;
+    GPIO_Mode_TypeDef expectedPinMode = gpioModeInput;
+    GPIO_PinModeGet_ExpectAndReturn(testPort, testPin, expectedPinMode);
     GPIO_EM4EnablePinWakeup_Expect(expectedEM4Mask, 0);
 
     setPinUpForEM4WakeUp(testPort, testPin);
@@ -189,7 +201,7 @@ void test_SetPinUpForEM4WakeUp_Success(void) {
     testPort        = portB;
     testPin         = 1;
     expectedEM4Mask = GPIO_IEN_EM4WUIEN3;
-    GPIO_PinModeSet_Expect(testPort, testPin, expectedMode, expectedDout);
+    GPIO_PinModeGet_ExpectAndReturn(testPort, testPin, expectedPinMode);
     GPIO_EM4EnablePinWakeup_Expect(expectedEM4Mask, 0);
 
     setPinUpForEM4WakeUp(testPort, testPin);
@@ -197,7 +209,7 @@ void test_SetPinUpForEM4WakeUp_Success(void) {
     testPort        = portB;
     testPin         = 3;
     expectedEM4Mask = GPIO_IEN_EM4WUIEN4;
-    GPIO_PinModeSet_Expect(testPort, testPin, expectedMode, expectedDout);
+    GPIO_PinModeGet_ExpectAndReturn(testPort, testPin, expectedPinMode);
     GPIO_EM4EnablePinWakeup_Expect(expectedEM4Mask, 0);
 
     setPinUpForEM4WakeUp(testPort, testPin);
@@ -205,7 +217,7 @@ void test_SetPinUpForEM4WakeUp_Success(void) {
     testPort        = portC;
     testPin         = 0;
     expectedEM4Mask = GPIO_IEN_EM4WUIEN6;
-    GPIO_PinModeSet_Expect(testPort, testPin, expectedMode, expectedDout);
+    GPIO_PinModeGet_ExpectAndReturn(testPort, testPin, expectedPinMode);
     GPIO_EM4EnablePinWakeup_Expect(expectedEM4Mask, 0);
 
     setPinUpForEM4WakeUp(testPort, testPin);
@@ -213,7 +225,7 @@ void test_SetPinUpForEM4WakeUp_Success(void) {
     testPort        = portC;
     testPin         = 5;
     expectedEM4Mask = GPIO_IEN_EM4WUIEN7;
-    GPIO_PinModeSet_Expect(testPort, testPin, expectedMode, expectedDout);
+    GPIO_PinModeGet_ExpectAndReturn(testPort, testPin, expectedPinMode);
     GPIO_EM4EnablePinWakeup_Expect(expectedEM4Mask, 0);
 
     setPinUpForEM4WakeUp(testPort, testPin);
@@ -221,7 +233,7 @@ void test_SetPinUpForEM4WakeUp_Success(void) {
     testPort        = portC;
     testPin         = 7;
     expectedEM4Mask = GPIO_IEN_EM4WUIEN8;
-    GPIO_PinModeSet_Expect(testPort, testPin, expectedMode, expectedDout);
+    GPIO_PinModeGet_ExpectAndReturn(testPort, testPin, expectedPinMode);
     GPIO_EM4EnablePinWakeup_Expect(expectedEM4Mask, 0);
 
     setPinUpForEM4WakeUp(testPort, testPin);
@@ -229,7 +241,7 @@ void test_SetPinUpForEM4WakeUp_Success(void) {
     testPort        = portD;
     testPin         = 2;
     expectedEM4Mask = GPIO_IEN_EM4WUIEN9;
-    GPIO_PinModeSet_Expect(testPort, testPin, expectedMode, expectedDout);
+    GPIO_PinModeGet_ExpectAndReturn(testPort, testPin, expectedPinMode);
     GPIO_EM4EnablePinWakeup_Expect(expectedEM4Mask, 0);
 
     setPinUpForEM4WakeUp(testPort, testPin);
@@ -238,6 +250,20 @@ void test_SetPinUpForEM4WakeUp_Success(void) {
 void test_SetPinUpForEM4WakeUp_AssertsOnNonWakeUpPin(void) {
     pinPort_t testPort = portA;
     uint8_t testPin    = 0;
+    assertExpectFailure();
+
+    setPinUpForEM4WakeUp(testPort, testPin);
+}
+
+void test_SetPinUpForEM4WakeUp_AssertsOnOutputPin(void) {
+    pinPort_t testPort = portA;
+    uint8_t testPin    = 5;
+
+    // Set Expectations
+    bool expectedDout                 = true;
+    uint32_t expectedEM4Mask          = GPIO_IEN_EM4WUIEN0;
+    GPIO_Mode_TypeDef expectedPinMode = gpioModePushPull;
+    GPIO_PinModeGet_ExpectAndReturn(testPort, testPin, expectedPinMode);
     assertExpectFailure();
 
     setPinUpForEM4WakeUp(testPort, testPin);

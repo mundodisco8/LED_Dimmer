@@ -35,20 +35,20 @@ void LEDIndicator_init(void) {
  */
 void LEDIndicator_setChannel(channel_t newChannel) {
     if (CHANNEL_1 == (newChannel & CHANNEL_1)) {
-        writePin(indicator.ch1_port, PIN_SET, indicator.ch1_pin);
+        writePin(indicator.ch1_port, indicator.ch1_pin, PIN_SET);
     } else {
-        writePin(indicator.ch1_port, PIN_CLEAR, indicator.ch1_pin);
+        writePin(indicator.ch1_port, indicator.ch1_pin, PIN_CLEAR);
     }
 
     if (CHANNEL_2 == (newChannel & CHANNEL_2)) {
-        writePin(indicator.ch2_port, PIN_SET, indicator.ch2_pin);
+        writePin(indicator.ch2_port, indicator.ch2_pin, PIN_SET);
     } else {
-        writePin(indicator.ch2_port, PIN_CLEAR, indicator.ch2_pin);
+        writePin(indicator.ch2_port, indicator.ch2_pin, PIN_CLEAR);
     }
 
     if (CHANNEL_3 == (newChannel & CHANNEL_3)) {
-        writePin(indicator.ch3_port, PIN_SET, indicator.ch3_pin);
+        writePin(indicator.ch3_port, indicator.ch3_pin, PIN_SET);
     } else {
-        writePin(indicator.ch3_port, PIN_CLEAR, indicator.ch3_pin);
+        writePin(indicator.ch3_port, indicator.ch3_pin, PIN_CLEAR);
     }
 }
