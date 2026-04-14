@@ -4,6 +4,11 @@ on:
   pull_request:
     paths:
       - "firmware/**"
+  push:
+    branches:
+      - master
+    paths:
+      - "firmware/**"
 
 jobs:
   ceedling-tests:
@@ -23,8 +28,16 @@ jobs:
             throwtheswitch/madsciencelab:latest \
             ceedling gcov:all
 
+      - name: Upload coverage history XML
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-history-xml
+          path: firmware/test/CoverageReport/*_CoverageHistory.xml
+          if-no-files-found: error
+
   clang-format-check:
     name: Clang Format Check
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -46,6 +59,7 @@ jobs:
 
   cppcheck:
     name: Cppcheck
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -74,3 +88,45 @@ jobs:
             --project=project.cppcheck \
             --std=c17 \
             --error-exitcode=1
+
+  commit-coverage-history:
+    name: Commit Coverage History
+    if: github.event_name == 'push' && github.actor != 'github-actions[bot]'
+    needs: ceedling-tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Download coverage history XML
+        uses: actions/download-artifact@v6
+        with:
+          name: coverage-history-xml
+          path: firmware/test/CoverageReport
+
+      - name: Commit coverage history XML
+        shell: bash
+        run: |
+          shopt -s nullglob
+          files=(firmware/test/CoverageReport/*_CoverageHistory.xml)
+
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "No coverage history XML file was downloaded."
+            exit 1
+          fi
+
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add "${files[@]}"
+
+          if git diff --cached --quiet; then
+            echo "Coverage history XML is unchanged."
+            exit 0
+          fi
+
+          git commit -m "Added Test Coverage"
+          git push
