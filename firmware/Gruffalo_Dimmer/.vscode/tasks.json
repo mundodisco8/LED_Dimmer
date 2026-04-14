@@ -42,6 +42,39 @@
                 "Gruffalo_Dimmer_silabs_debug:default_config_build",
                 "Gruffalo_Dimmer_silabs_debug:default_config_flash"
             ]
+        },
+        {
+            "label": "Check clang-format",
+            "icon": {
+                "id": "paintcan",
+                "color": "terminal.ansiCyan"
+            },
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-NoProfile",
+                "-ExecutionPolicy",
+                "Bypass",
+                "-File",
+                ".vscode/check-clang-format.ps1"
+            ],
+            "options": {
+                "cwd": "c:/Users/mundo/OneDrive/Desktop/LED_Dimmer/firmware/Gruffalo_Dimmer"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Run Static Check (CppCheck)",
+            "icon": {
+                "id": "checklist",
+                "color": "terminal.ansiGreen"
+            },
+            "type": "shell",
+            "command": ".\\staticCheck.bat",
+            "options": {
+                "cwd": "c:/Users/mundo/OneDrive/Desktop/LED_Dimmer/firmware/Gruffalo_Dimmer"
+            },
+            "problemMatcher": []
         }
     ]
 }
