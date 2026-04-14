@@ -4,11 +4,13 @@ on:
   pull_request:
     paths:
       - "firmware/**"
+      - ".github/**"
   push:
     branches:
       - master
     paths:
       - "firmware/**"
+      - ".github/**"
 
 jobs:
   ceedling-tests:
