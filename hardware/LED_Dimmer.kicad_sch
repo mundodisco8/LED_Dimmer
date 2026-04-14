@@ -1803,7 +1803,7 @@
 							)
 						)
 					)
-					(number "1"
+					(number "8"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -1912,7 +1912,7 @@
 							)
 						)
 					)
-					(number "8"
+					(number "1"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -11719,15 +11719,6 @@
 				(hide yes)
 			)
 		)
-		(property "Sim.Enable" ""
-			(at 127 106.68 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(pin "1"
 			(uuid "976ab28a-45b2-4d17-97e9-efed55747aa2")
 		)
@@ -11927,15 +11918,6 @@
 				(hide yes)
 			)
 		)
-		(property "Sim.Enable" ""
-			(at 40.64 140.97 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(pin "1"
 			(uuid "7068b3df-1139-4733-b14f-a65b6076bac9")
 		)
@@ -12051,15 +12033,6 @@
 				(hide yes)
 			)
 		)
-		(property "Sim.Enable" ""
-			(at 222.25 41.91 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(pin "1"
 			(uuid "00d65ced-634f-4fe0-8c17-10dcf7773964")
 		)
@@ -12135,15 +12108,6 @@
 		)
 		(property "Sim.Pin" "1=K 2=A"
 			(at 127 115.57 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Enable" ""
-			(at 127 115.57 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12256,15 +12220,6 @@
 			)
 		)
 		(property "Manufacturer" "Silabs"
-			(at 53.34 36.83 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Enable" ""
 			(at 53.34 36.83 0)
 			(effects
 				(font
@@ -12681,15 +12636,6 @@
 				(hide yes)
 			)
 		)
-		(property "Sim.Enable" ""
-			(at 204.47 83.82 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(pin "2"
 			(uuid "be8dc043-9696-40a0-bba2-020990d1be85")
 		)
@@ -12703,7 +12649,7 @@
 			(uuid "512b6c7f-18d9-4667-8dda-7038c46c073d")
 		)
 		(instances
-			(project ""
+			(project "LED_Dimmer"
 				(path "/682943ce-d527-4ae2-be9e-cc5eaf184b84"
 					(reference "J1")
 					(unit 1)
@@ -12869,15 +12815,6 @@
 			)
 		)
 		(property "Manufacturer" "Silabs"
-			(at 73.66 102.87 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Enable" ""
 			(at 73.66 102.87 0)
 			(effects
 				(font
@@ -13184,15 +13121,6 @@
 				(hide yes)
 			)
 		)
-		(property "Sim.Enable" ""
-			(at 113.03 115.57 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(pin "1"
 			(uuid "712a5b46-8de6-4668-a617-4c5257b18371")
 		)
@@ -13200,7 +13128,7 @@
 			(uuid "fc545f4c-16c1-426b-b315-f8b90a14c1ad")
 		)
 		(instances
-			(project ""
+			(project "LED_Dimmer"
 				(path "/682943ce-d527-4ae2-be9e-cc5eaf184b84"
 					(reference "D2")
 					(unit 1)
@@ -13325,15 +13253,6 @@
 				(hide yes)
 			)
 		)
-		(property "Sim.Enable" ""
-			(at 60.96 142.24 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(pin "1"
 			(uuid "04fc77e0-8254-452a-b41f-bceb7cc6930d")
 		)
@@ -13406,15 +13325,6 @@
 		)
 		(property "Sim.Pin" "1=K 2=A"
 			(at 140.97 115.57 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Enable" ""
-			(at 140.97 115.57 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13595,15 +13505,6 @@
 			)
 		)
 		(property "Manufacturer" "Diodes Inc."
-			(at 186.69 41.91 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Enable" ""
 			(at 186.69 41.91 0)
 			(effects
 				(font
@@ -13804,15 +13705,6 @@
 			)
 		)
 		(property "Sim.Pins" "1=K 2=A"
-			(at 66.04 134.62 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Enable" ""
 			(at 66.04 134.62 0)
 			(effects
 				(font
@@ -14056,15 +13948,6 @@
 				(hide yes)
 			)
 		)
-		(property "Sim.Enable" ""
-			(at 50.8 137.16 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(pin "1"
 			(uuid "ce8a320d-3230-45d2-99c5-bd5247770aad")
 		)
@@ -14190,15 +14073,6 @@
 			)
 		)
 		(property "Manufacturer" "Silabs"
-			(at 73.66 78.74 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Enable" ""
 			(at 73.66 78.74 0)
 			(effects
 				(font
@@ -14364,15 +14238,6 @@
 				(hide yes)
 			)
 		)
-		(property "Sim.Enable" ""
-			(at 113.03 106.68 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(pin "1"
 			(uuid "a3e728c5-58bc-419f-9d46-281bb17feb2d")
 		)
@@ -14380,7 +14245,7 @@
 			(uuid "2bb7f1be-ad2f-414a-b503-1fd31889ffbc")
 		)
 		(instances
-			(project ""
+			(project "LED_Dimmer"
 				(path "/682943ce-d527-4ae2-be9e-cc5eaf184b84"
 					(reference "R11")
 					(unit 1)
@@ -14554,15 +14419,6 @@
 				(hide yes)
 			)
 		)
-		(property "Sim.Enable" ""
-			(at 257.81 41.91 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(pin "1"
 			(uuid "523d915c-d11c-4dfa-a91a-749976b3d8a1")
 		)
@@ -14673,15 +14529,6 @@
 			)
 		)
 		(property "Manufacturer" "Silabs"
-			(at 39.37 76.2 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Enable" ""
 			(at 39.37 76.2 0)
 			(effects
 				(font
@@ -14958,15 +14805,6 @@
 				(hide yes)
 			)
 		)
-		(property "Sim.Enable" ""
-			(at 39.37 101.6 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(pin "1"
 			(uuid "67c4cce0-9555-4f73-ae6a-9727d8c7c429")
 		)
@@ -15116,15 +14954,6 @@
 			)
 		)
 		(property "Description" "Gruffalo PCB Art"
-			(at 262.255 88.9 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Enable" ""
 			(at 262.255 88.9 0)
 			(effects
 				(font
@@ -15316,15 +15145,6 @@
 			)
 		)
 		(property "Vrating" "50V"
-			(at 175.26 83.82 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Enable" ""
 			(at 175.26 83.82 0)
 			(effects
 				(font
@@ -15534,15 +15354,6 @@
 				(hide yes)
 			)
 		)
-		(property "Sim.Enable" ""
-			(at 140.97 106.68 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(pin "1"
 			(uuid "124899de-5679-4f7c-b369-b06ba45399ce")
 		)
@@ -15659,15 +15470,6 @@
 			)
 		)
 		(property "Vrating" "300V / 6A"
-			(at 204.47 93.98 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Enable" ""
 			(at 204.47 93.98 0)
 			(effects
 				(font
