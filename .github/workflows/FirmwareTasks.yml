@@ -1,0 +1,134 @@
+name: FirmwareTasks
+
+on:
+  pull_request:
+    paths:
+      - "firmware/**"
+      - ".github/**"
+  push:
+    branches:
+      - master
+    paths:
+      - "firmware/**"
+      - ".github/**"
+
+jobs:
+  ceedling-tests:
+    name: Ceedling Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Run Ceedling tests in MadScienceLab
+        shell: bash
+        run: |
+          docker run --rm \
+            --user "$(id -u):$(id -g)" \
+            -v "${GITHUB_WORKSPACE}:/home/dev/project" \
+            -w /home/dev/project/firmware/test \
+            throwtheswitch/madsciencelab:latest \
+            ceedling gcov:all
+
+      - name: Upload coverage history XML
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-history-xml
+          path: firmware/test/CoverageReport/*_CoverageHistory.xml
+          if-no-files-found: error
+
+  clang-format-check:
+    name: Clang Format Check
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Verify formatting
+        uses: DoozyX/clang-format-lint-action@v0.18.2
+        with:
+          source: >
+            firmware/test/test
+            firmware/Gruffalo_Dimmer/src
+            firmware/Gruffalo_Dimmer/inc
+            firmware/Gruffalo_Dimmer/app.h
+            firmware/Gruffalo_Dimmer/app.c
+            firmware/Gruffalo_Dimmer/main.c
+          extensions: c,h
+          style: file
+          clangFormatVersion: 20
+
+  cppcheck:
+    name: Cppcheck
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install cppcheck toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cppcheck gcc-arm-none-eabi ninja-build
+
+      - name: Generate compile commands
+        working-directory: firmware/Gruffalo_Dimmer/cmake_gcc
+        env:
+          ARM_GCC_DIR: /usr
+          NINJA_EXE_PATH: /usr/bin/ninja
+        run: |
+          cmake --preset project -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+      - name: Run cppcheck
+        working-directory: firmware/Gruffalo_Dimmer
+        run: |
+          cppcheck \
+            --enable=warning,performance,portability,style \
+            --inline-suppr \
+            --suppressions-list=.cppcheck_ignore \
+            --project=project.cppcheck \
+            --std=c17 \
+            --error-exitcode=1
+
+  commit-coverage-history:
+    name: Commit Coverage History
+    if: github.event_name == 'push' && github.actor != 'github-actions[bot]'
+    needs: ceedling-tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Download coverage history XML
+        uses: actions/download-artifact@v6
+        with:
+          name: coverage-history-xml
+          path: firmware/test/CoverageReport
+
+      - name: Commit coverage history XML
+        shell: bash
+        run: |
+          shopt -s nullglob
+          files=(firmware/test/CoverageReport/*_CoverageHistory.xml)
+
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "No coverage history XML file was downloaded."
+            exit 1
+          fi
+
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add "${files[@]}"
+
+          if git diff --cached --quiet; then
+            echo "Coverage history XML is unchanged."
+            exit 0
+          fi
+
+          git commit -m "Added Test Coverage"
+          git push

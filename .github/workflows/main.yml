@@ -6,20 +6,20 @@ on:
       - master
       - Hardware
     paths:
-    # Changes on kicad eeschema or board
-    - '**/**.kicad_sch'
-    - '**/**.kicad_pcb'
-    # changes on any yml file
-    - '**/**.yml'
-    - '**/**.yaml'
+      # Changes on kicad eeschema or board
+      - "**/**.kicad_sch"
+      - "**/**.kicad_pcb"
+      # changes on any yml file
+      - "**/**.yml"
+      - "**/**.yaml"
   pull_request:
     paths:
-          # Changes on kicad eeschema or board
-    - '**/**.kicad_sch'
-    - '**/**.kicad_pcb'
-    # changes on any yml file
-    - '**/**.yml'
-    - '**/**.yaml'
+      # Changes on kicad eeschema or board
+      - "**/**.kicad_sch"
+      - "**/**.kicad_pcb"
+      # changes on any yml file
+      - "**/**.yml"
+      - "**/**.yaml"
 
 jobs:
   KiBotCICD:
@@ -29,26 +29,26 @@ jobs:
       CI_COMMIT_AUTHOR: Github Actions
     steps:
       - name: Checkout Step
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: KiBot does its thing
-        uses: INTI-CMNB/KiBot@v2_dk7
+        uses: INTI-CMNB/KiBot@v1.8.5
         with:
           # Required - kibot config file
           config: ArtifactCreation.kibot.yaml
           # optional - schematic file
-          schema: 'hardware/LED_Dimmer.kicad_sch'
+          schema: "hardware/LED_Dimmer.kicad_sch"
           # optional - PCB design file
-          board: 'hardware/LED_Dimmer.kicad_pcb'
+          board: "hardware/LED_Dimmer.kicad_pcb"
       - name: upload results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v7
         with:
           name: Artifacts
           path: Artifacts
-    # In case we want to SSH into the machine
-    # To exit
-    # sudo /continue
-    #   - name: Setup upterm session
-    #     uses: lhotari/action-upterm@v1
+      # In case we want to SSH into the machine
+      # To exit
+      # sudo /continue
+      #   - name: Setup upterm session
+      #     uses: lhotari/action-upterm@v1
       - name: push changes to repo
         if: ${{ github.ref == 'refs/heads/master'}}
         run: |
